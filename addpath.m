@@ -1,2 +1,3 @@
 function addpath
-addpath(genpath('/home/tdnguyen/git_repos/bispectrum_decomposition'))
+cd ..
+addpath(genpath('bispectrum_decomposition'))
