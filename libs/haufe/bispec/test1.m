@@ -1,13 +1,14 @@
 function test1
 
-P = 20;
-Q = 3;
+P = 20; % number of channels
+Q = 3;  % model order
 
 a_true = randn(P, Q);
 b_true = randn(Q, Q, Q)+sqrt(-1)*randn(Q, Q, Q);
-b_true = b_true./norm(vec(b_true));
+b_true = b_true./norm(b_true(:));
 
 B = tprod(a_true, [3 -1], tprod(a_true, [2 -1], tprod(a_true, [1 -1], b_true, [-1 2 3]), [1 -1 3]), [1 2 -1]);
+disp(size(B))
 
 
 a_init = randn(P, Q);

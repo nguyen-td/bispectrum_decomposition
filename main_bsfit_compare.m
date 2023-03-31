@@ -1,4 +1,4 @@
-addpath d:\nolte\mypapers\bispecs\code2\tprod 
+%% load empirical bispectrum bispectrum
 load bsori
 
 bs=bsori;
@@ -6,7 +6,7 @@ bs=bsori;
 
 n=3; % model order 
 
-% Stefan 
+%% Stefan 
 
 bx=reshape(bs,nchan^2,nchan);
 bx=[real(bx);imag(bx)];
@@ -20,7 +20,7 @@ bs_est=calc_bsmodel(a_lm,b_lm);
 err=norm(bs(:)-bs_est(:))/norm(bs(:))
 
 
-% Guido 
+%% Guido 
 
 tic
 [a_lm b_lm err] = bsfit(bs,n);

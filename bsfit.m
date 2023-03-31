@@ -28,33 +28,33 @@ function [a,d,err,err_all,bsmodel]=bsfit(bs,n,para)
 % bsmodel: the model  cross-bispectrum 
 
 
-% defaults: 
-alpha=.01; % starting value for regularation of LM procedure
-kmax=50; %maximum number of iterations 
-kmin=8; % minimum number of iterations 
-a=[];  %starting value for mixing matrix. If empty, it is estimated from bs
-errtol=10^(-6); % programs stops if error decreases by less than this value 
-                % within the last two iterations. Only calculated after 7
-                % iterations. (For bad starting values 
+% defaults
+alpha = .01; % starting value for regularation of LM procedure
+kmax = 50;   % maximum number of iterations 
+kmin = 8;    % minimum number of iterations 
+a = [ ];     % starting value for mixing matrix. If empty, it is estimated from bs
+errtol = 10^(-6); % programs stops if error decreases by less than this value 
+                  % within the last two iterations. Only calculated after 
+                  % 7 iterations. (For bad starting values) 
                
 
-[nchan,nchan,nchan]=size(bs);
-if nargin>2;
+[nchan,nchan,nchan] = size(bs);
+if nargin > 2
     if isfield(para,'a')
-        a=para.a;
+        a = para.a;
     end
 end
 
-if length(a)==0
-  [a,d,erstart]=calc_parstart(bs,n);
+if isempty(a)
+  [a,d,erstart] = calc_parstart(bs,n);
 else
-    [d,erstart]=calc_parstart_d(bs,a,n);
+    [d,erstart] = calc_parstart_d(bs,a,n); % initialization of parameters?
 end
 
 
-err=erstart;
-err_all=zeros(kmax+1,1);
-err_all(1)=err;
+err = erstart;
+err_all = zeros(kmax+1,1);
+err_all(1) = err;
  
 kont=1;
 k=0;
@@ -248,82 +248,6 @@ end
     
 %JdtB=reshape(JdtB,n^3,1);
 return;
-
-function jdtjd=calc_jdtjd(a)
-
-[nchan,n]=size(a);
-b=a'*a;
-
-
-
-bb=reshape(kron(b,b),n,n,n,n);
-t2=zeros(n,n,n,n,n,n);
-for p1=1:n;
-       for p2=1:n;
-           t2(p1,:,:,p2,:,:)=b(p1,p2)*bb;
-        end
-end
-
-%jdtjd=reshape(t2,n^3,n^3);
-jdtjd=t2;
-return;
-
-function [a,d,erstart,model]=calc_parstart(bs,n)
-
-[nchan,nchan,nchan]=size(bs);
-
-erfit=zeros(3,1);
-for k=1:3;
-    if k==1;
-        indspermute=[1,2,3];
-    elseif k==2;
-        indspermute=[3,1,2];
-    else
-        indspermute=[2,3,1];
-    end
-bx=reshape(permute(bs,indspermute),nchan^2,nchan);
-bx=[real(bx);imag(bx)];
-bx2=bx'*bx;
-[u,s,v]=svd(bx2);
-a=u(:,1:n);
-%a=a_ori;
-%a=a+randn(size(a))/10;
-
-
-
-jdtjd=calc_jdtjd(a);
-jdtjdr=reshape(jdtjd,n^3,n^3);
-jdtBreal=calc_jdtB(a,real(bs));
-jdtBimag=calc_jdtB(a,imag(bs));
-jdtBrealr=reshape(jdtBreal,n^3,1);
-jdtBimagr=reshape(jdtBimag,n^3,1);
-dreal=inv(jdtjdr)*jdtBrealr;
-dimag=inv(jdtjdr)*jdtBimagr;
-d=dreal+sqrt(-1)*dimag;
-d=reshape(d,n,n,n);
-
-
-scale_a=mean(abs(a(:)));
-scale_b=mean(abs(d(:)));
-lambda=(scale_a/scale_b)^(.25);
-d=d*lambda^3;
-a=a/lambda;
-bs_est=calc_bsmodel(a,d);
-
-
-erfit(k)=norm(bs(:)-bs_est(:))/norm(bs(:));
-model{k}.a=a;
-model{k}.d=d;
-model{k}.er=erfit;
-end
-%erfit=erfit
-[erfitmin,kmin]=min(erfit);
-a=model{kmin}.a;
-d=model{kmin}.d;
-erstart=erfitmin;
-
-return;
-
 
 
 function [d,erstart]=calc_parstart_d(bs,a,n)

@@ -1,5 +1,8 @@
 load clab_10_20;
 load clab_10_10;
+% functions are missing: prepare_sourceanalysis, grid_coarse,
+% forward_general.. probably part of a toolbox or a folder?
+% ask Stefan about it
 
 clab = clab_10_20;
 sa = prepare_sourceanalysis(clab, 'icbm152b_sym');
