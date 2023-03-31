@@ -329,7 +329,7 @@ mxArray* MATLAB_mm(MxInfo zinfo, const MxInfo xinfo, const MxInfo yinfo,
   mxSetPr(Ymx,yinfo.rp); if ( yinfo.ip ) mxSetPi(Ymx,yinfo.ip);
 
   /* Set trap so errors return here so we can clean up correctly */
-  mexSetTrapFlag(1);
+  /* mexSetTrapFlag(1); */
 
   /* now do the calls to matlab to get the result */
   args[0] = Xmx; args[1]= Ymx;
@@ -339,7 +339,7 @@ mxArray* MATLAB_mm(MxInfo zinfo, const MxInfo xinfo, const MxInfo yinfo,
 	 /* set X as its vector version, implicitly transpose Y and then prod */
 	 mxSetM(Xmx,MAX(sz(xrest,0),1)); mxSetN(Xmx,1);
 	 mxSetM(Ymx,1);                  mxSetN(Ymx,MAX(sz(yrest,1),1)); 
-	 mexCallMATLAB(1, &Zmx, 2, args, "*");
+	 maxCallMATLABWithTrap(1, &Zmx, 2, args, "*");
 
   } else if ( xmacc.stride[0] == 1 && ymacc.stride[0] == 1 ){ 
 	 /* | x | == macc/rest * macc/rest*/
@@ -349,20 +349,20 @@ mxArray* MATLAB_mm(MxInfo zinfo, const MxInfo xinfo, const MxInfo yinfo,
 	 /* transpose X and call matlab */
 	 if( yinfo.numel+zinfo.numel>xinfo.numel*.75 ){/*cheaper to transpose X*/
 		mxArray *XmxT;
-		mexCallMATLAB(1, &XmxT, 1, &Xmx, ".\'");/* N.B. this copies X!!! */
+		maxCallMATLABWithTrap(1, &XmxT, 1, &Xmx, ".\'");/* N.B. this copies X!!! */
 		args[0]=XmxT;
-		mexCallMATLAB(1, &Zmx, 2, args, "*");
+		maxCallMATLABWithTrap(1, &Zmx, 2, args, "*");
 		mxDestroyArray(XmxT);
 
 	 } else { /*cheaper to transpose y and z */
 		mxArray *YmxT;
-		mexCallMATLAB(1, &YmxT, 1, &Ymx, ".\'");/* N.B. this copies Y!!! */
+		maxCallMATLABWithTrap(1, &YmxT, 1, &Ymx, ".\'");/* N.B. this copies Y!!! */
 		args[0]=YmxT; args[1]=Xmx;
-		mexCallMATLAB(1, &Zmx, 2, args, "*");
+		maxCallMATLABWithTrap(1, &Zmx, 2, args, "*");
 		mxDestroyArray(YmxT);
 		if( ymacc.sz[0]!=yinfo.numel ) {/* transpose result if necessary */
 		  mxArray *ZmxT;
-		  mexCallMATLAB(1, &ZmxT, 1, &Zmx, ".\'");/* N.B. this copies Z!!! */
+		  maxCallMATLABWithTrap(1, &ZmxT, 1, &Zmx, ".\'");/* N.B. this copies Z!!! */
 		  mxDestroyArray(Zmx);
 		  Zmx=ZmxT;		
 		}
@@ -378,17 +378,17 @@ mxArray* MATLAB_mm(MxInfo zinfo, const MxInfo xinfo, const MxInfo yinfo,
 		/* reverse order of multiply, call matlab and transpose Z */	 
 		mxArray *ZmxT;
 		args[0]=Ymx; args[1]=Xmx;
-		mexCallMATLAB(1, &Zmx, 2, args, "*");
-		mexCallMATLAB(1, &ZmxT, 1, &Zmx, ".\'");/* N.B. this copies Z!!! */
+		maxCallMATLABWithTrap(1, &Zmx, 2, args, "*");
+		maxCallMATLABWithTrap(1, &ZmxT, 1, &Zmx, ".\'");/* N.B. this copies Z!!! */
 		mxDestroyArray(Zmx);
 		Zmx=ZmxT;
 
 	 } else { /* cheaper to transpose twice */
 		mxArray *XmxT, *YmxT;
-		mexCallMATLAB(1, &XmxT, 1, &Xmx, ".\'");/* N.B. this copies X!!! */
-		mexCallMATLAB(1, &YmxT, 1, &Ymx, ".\'");/* N.B. this copies Y!!! */
+		maxCallMATLABWithTrap(1, &XmxT, 1, &Xmx, ".\'");/* N.B. this copies X!!! */
+		maxCallMATLABWithTrap(1, &YmxT, 1, &Ymx, ".\'");/* N.B. this copies Y!!! */
 		args[0]=XmxT; args[1]=YmxT;
-		mexCallMATLAB(1, &Zmx, 2, args, "*");
+		maxCallMATLABWithTrap(1, &Zmx, 2, args, "*");
 		mxDestroyArray(XmxT); mxDestroyArray(YmxT);
 	 }
 	 
@@ -398,7 +398,7 @@ mxArray* MATLAB_mm(MxInfo zinfo, const MxInfo xinfo, const MxInfo yinfo,
 	 mxSetN(Xmx,xinfo.numel/xmacc.stride[0]);
 	 mxSetM(Ymx,ymacc.sz[0]);     
 	 mxSetN(Ymx,yinfo.numel/ymacc.sz[0]); 
-	 mexCallMATLAB(1, &Zmx, 2, args, "*");
+	 maxCallMATLABWithTrap(1, &Zmx, 2, args, "*");
 
   } else if ( xmacc.stride[0] > 1 && ymacc.stride[0] > 1 ){
 	 /* _ x _ == rest/macc * rest/macc */ 
@@ -410,20 +410,20 @@ mxArray* MATLAB_mm(MxInfo zinfo, const MxInfo xinfo, const MxInfo yinfo,
 	 if( xinfo.numel+zinfo.numel>yinfo.numel*.75 ){/* cheaper to transpose Y */
 		/* transpose Y and call matlab */
 		mxArray *YmxT;
-		mexCallMATLAB(1, &YmxT, 1, &Ymx, ".\'");/* N.B. this copies Y!!! */
+		maxCallMATLABWithTrap(1, &YmxT, 1, &Ymx, ".\'");/* N.B. this copies Y!!! */
 		args[1]=YmxT;
-		mexCallMATLAB(1, &Zmx, 2, args, "*");
+		maxCallMATLABWithTrap(1, &Zmx, 2, args, "*");
 		mxDestroyArray(YmxT);
 
 	 } else { /* cheaper to transpose X and Z */
 		mxArray *XmxT;
-		mexCallMATLAB(1, &XmxT, 1, &Xmx, ".\'");/* N.B. this copies X!!! */
+		maxCallMATLABWithTrap(1, &XmxT, 1, &Xmx, ".\'");/* N.B. this copies X!!! */
 		args[0]=Ymx; args[1]=XmxT;
-		mexCallMATLAB(1, &Zmx, 2, args, "*");
+		maxCallMATLABWithTrap(1, &Zmx, 2, args, "*");
 		mxDestroyArray(XmxT);
 		if( xmacc.sz[0]!=xinfo.numel ) {/* transpose result if necessary */
 		  mxArray *ZmxT;
-		  mexCallMATLAB(1, &ZmxT, 1, &Zmx, ".\'");/* N.B. this copies Z!!! */
+		  maxCallMATLABWithTrap(1, &ZmxT, 1, &Zmx, ".\'");/* N.B. this copies Z!!! */
 		  mxDestroyArray(Zmx);
 		  Zmx=ZmxT;		
 		}
@@ -435,7 +435,7 @@ mxArray* MATLAB_mm(MxInfo zinfo, const MxInfo xinfo, const MxInfo yinfo,
   }
 
   /* Set trap so errors return here so we can clean up correctly */
-  mexSetTrapFlag(0);
+  /* mexSetTrapFlag(0); */
 
   /* set the tempory X and Y matrices back to empty without ref to data to
 	  stop matlab "helpfully" double freeing them? */
