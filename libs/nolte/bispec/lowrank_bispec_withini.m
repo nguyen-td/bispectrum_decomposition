@@ -119,7 +119,7 @@ function [f J] = myfun_lm(x)
   a = real(reshape(x(1:P*Q), P, Q));
   b = reshape(x((P*Q+1):end), [Q Q Q]);
 
-  f = vec(B-tprod(a, [3 -1], tprod(a, [2 -1], tprod(a, [1 -1], b, [-1 2 3]), [1 -1 3]), [1 2 -1]));
+  f = vec(B-tprod(a, [3 -1], tprod(a, [2 -1], tprod(a, [1 -1], b, [-1 2 3]), [1 -1 3]), [1 2 -1])); % objective function 
 
   J = zeros(P, P, P, P, Q);
   

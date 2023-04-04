@@ -6,10 +6,10 @@ function jdtjd = calc_jdtjd(a)
     t2 = zeros(n,n,n,n,n,n);
     for p1 = 1:n
         for p2=1:n
-            t2(p1,:,:,p2,:,:) = b(p1,p2) * bb;
+            t2(p1,:,:,p2,:,:) = b(p1,p2) * bb; 
         end
     end
     
-    %jdtjd=reshape(t2,n^3,n^3);
     jdtjd = t2;
 end
+
