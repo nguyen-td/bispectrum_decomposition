@@ -1,7 +1,7 @@
 function plt_fulleeg
+    % plot raw EEG signal of vp2
+    load('home/tdnguyen/data/vp2.mat');
     figure1 = figure;
-    x = 0:1:1000;
-    y = x.^2;
-    plot(y);
-    saveas(figure1, 'vp2.jpg')
+    plot(cnt.x');
+    saveas(figure1, 'vp2.fig')
 end
