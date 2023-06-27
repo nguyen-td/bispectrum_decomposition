@@ -17,6 +17,9 @@
 % para.a (starting values for the mixing matrix a, e.g.
 %         para.a=randn(nchan,n);
 %         If no starting value is given, it is estimated from bs
+% para.isfit_a (boolean, 1 if the mixing matrix a should be fitted, 0 if 
+%         the mixing matrix should be held fixed and only d should be fitted 
+%         which turns the problem into a convex one)
 %
 % Output
 % a: nchan x n mixing matrix
@@ -37,9 +40,13 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
                       % 7 iterations. (For bad starting values) 
                    
     [nchan,nchan,nchan] = size(bs);
+    isfit_a = true; % fit a by default unless explicitely specified otherwise
     if nargin > 2
         if isfield(para,'a')
             a = para.a;
+        end
+        if isfield(para, 'isfit_a')
+            isfit_a = para.isfit_a;
         end
     end
     
@@ -47,9 +54,8 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
     if isempty(a)
         [a,d,erstart] = calc_parstart(bs,n);
     else
-        [d,erstart] = calc_parstart_d(bs,a,n);
+        [d,erstart] = calc_parstart_d(bs, a, n, isfit_a);
     end
-    
     
     err = erstart;
     err_all = zeros(kmax+1,1);
@@ -66,8 +72,12 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
         npar = length(jtj);
         jtj_regu = jtj + alpha * trace(jtj) * eye(npar) / npar;
         par_new = inv(jtj_regu) * jtB;
-    
-        a_new = a + reshape(par_new(1:nchan * n),nchan,n);
+        
+        if isfit_a
+            a_new = a + reshape(par_new(1:nchan * n),nchan,n);
+        else
+            a_new = a;
+        end
         d_new_real = real(d) + reshape(par_new(nchan * n + 1:nchan * n + n^3),n,n,n);
         d_new_imag = imag(d) + reshape(par_new(nchan * n + 1 + n^3:end),n,n,n);
         d_new = d_new_real + 1i * d_new_imag;

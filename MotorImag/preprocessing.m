@@ -25,9 +25,9 @@ for isub = 2:nsub % subject 1 is not available
         % filter before resampling
         fs = 1000;
         notchb = [48 52];
-        [bband, aband] = butter(2, notchb/fs*2, 'stop');
-        [bhigh, ahigh] = butter(2, 1/fs*2, 'high');
-        [blow, alow] = butter(2, 45/fs*2, 'low');
+        [bband, aband] = butter(2, notchb/(fs/2), 'stop');
+        [bhigh, ahigh] = butter(2, 1/(fs/2), 'high');
+        [blow, alow] = butter(2, 45/(fs/2), 'low');
         
         data = filtfilt(bhigh, ahigh, data');
         data = filtfilt(bband, aband, data);

@@ -24,7 +24,7 @@ function [bsall,bsori,nave]=data2bs_event_surro_final(data,segleng,segshift,eple
 %  set. x(f1+f2-1)_k was taken from a random epoch. 
 %  where f1=freqpairs(f,1) and  f2=freqpairs(f,1),
 %
-% bsori: oriiginal bispectrum with randomization
+% bsori: original bispectrum without randomization
 
 % nave: number of averages
 
@@ -52,7 +52,6 @@ end
 
 
 
-
 nep=floor(ndat/epleng);
  if nep<10;
         warning('too few epochs for randomization') 
@@ -74,8 +73,15 @@ for j=1:nep;
     end
 end
 
+bsori = zeros(nchan, nchan, nchan);
+fprintf('Progress of %d:', nrun);
+for kk=1:nrun+1; 
+    if mod(kk, 10) == 0
+        fprintf('%d', kk);
+    elseif mod(kk, 2) == 0
+        fprintf('.');
+    end
 
-for kk=0:nrun; 
     nave=0;
     cs=zeros(nchan,nchan,nchan);
     csloc=zeros(nchan,nchan,nchan);
@@ -86,7 +92,7 @@ for kk=0:nrun;
          f1=freqpairs(1);f2=freqpairs(2);
          xx=transpose(datafft(f1,:,i,j))*datafft(f2,:,i,j);
          for k=1:nchan;
-             if kk==0;
+             if kk==1;
                   csloc(:,:,k)=xx*conj(datafft(f1+f2-1,k,i,j));
              else 
                   csloc(:,:,k)=xx*conj(datafft(f1+f2-1,k,i,jrand(j)));
@@ -99,13 +105,14 @@ for kk=0:nrun;
   end
 
   cs=cs/nave; 
-  if kk==0;
+  if kk==1;
        bsori(:,:,:)=cs;
-    
   else
        bsall(:,:,:,kk)=cs;  
   end
 end
+bsall = bsall(:,:,:,2:end);
+fprintf('\n');
   
 
   
