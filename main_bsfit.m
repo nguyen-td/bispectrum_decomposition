@@ -7,6 +7,7 @@
 %   isub  - index of subject (the pipeline works for a single subject)
 
 function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
+    DIROUT = '/data/tdnguyen/data/p_imag/';
     eeglab
 
     % load data
@@ -36,9 +37,15 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
     
     [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, EEG.srate, segleng, segshift, epleng);
 
-    save_bsall = ['bsall_' sub '.set'];
-    save_bsorig = ['bsorig_' sub '.set'];
-    save_P = ['P' sub '.set'];
+    save_bsall = ['/bsall_' sub '.set'];
+    save_bsorig = ['/bsorig_' sub '.set'];
+    save_P = ['/P' sub '.set'];
+
+    save(strcat(DIROUT, save_bsall));
+    save(strcat(DIROUT, save_bsorig));
+    save(strcat(DIROUT, save_P));
+
+)
     
 %     % plotting
 %     tiledlayout(1, n)
