@@ -44,8 +44,6 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
     save(strcat(DIROUT, save_bsall));
     save(strcat(DIROUT, save_bsorig));
     save(strcat(DIROUT, save_P));
-
-)
     
 %     % plotting
 %     tiledlayout(1, n)
