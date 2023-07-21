@@ -7,9 +7,9 @@ eeglab
 addpath('/Users/nguyentiendung/Desktop/Studium/Charite/matlab/eeglab/plugins/dipfit/standard_BEM/elec/')
 
 %% Set up directories and load classification scores
-DIRIN = '/Volumes/Seagate/VitalBCI/mat/imag/';
-DIROUT = '/Volumes/Seagate/MotorImag/data/';
-load('/Volumes/Seagate/VitalBCI/mat/scores.mat')
+DIRIN = '/Volumes/PortableSSD/VitalBCI/mat/imag/';
+DIROUT = '/Volumes/PortableSSD/MotorImag/data/';
+load('/Volumes/PortableSSD/VitalBCI/mat/scores.mat')
 
 %% Run preprocessing pipeline
 nsub = 40;
