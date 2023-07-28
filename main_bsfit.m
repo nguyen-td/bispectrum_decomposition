@@ -37,19 +37,12 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
     
     [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, EEG.srate, segleng, segshift, epleng);
 
-    save_bsall = ['/bsall_' sub '.set'];
-    save_bsorig = ['/bsorig_' sub '.set'];
-    save_P = ['/P_' sub '.set'];
+    save_bsall = ['/bsall_' sub '.mat'];
+    save_bsorig = ['/bsorig_' sub '.mat'];
+    save_P = ['/P_' sub '.mat'];
 
     save(strcat(DIROUT, save_bsall), 'bs_all', '-v7.3');
     save(strcat(DIROUT, save_bsorig), 'bs_orig', '-v7.3');
     save(strcat(DIROUT, save_P), 'P', '-v7.3');
     
-%     % plotting
-%     tiledlayout(1, n)
-%     for i = 1:n
-%         nexttile
-%         imagesc(-log10(P(:, :, i))); colorbar;
-%         title(sprintf('n:n:%d', i))
-%     end
 end
