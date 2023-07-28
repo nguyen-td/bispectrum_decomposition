@@ -37,12 +37,12 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
     
     [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, EEG.srate, segleng, segshift, epleng);
 
-    save_bsall = ['/bsall_' sub '.mat'];
-    save_bsorig = ['/bsorig_' sub '.mat'];
+%     save_bsall = ['/bsall_' sub '.mat'];
+%     save_bsorig = ['/bsorig_' sub '.mat'];
     save_P = ['/P_' sub '.mat'];
 
-    save(strcat(DIROUT, save_bsall), 'bs_all', '-v7.3');
-    save(strcat(DIROUT, save_bsorig), 'bs_orig', '-v7.3');
+%     save(strcat(DIROUT, save_bsall), 'bs_all', '-v7.3');
+%     save(strcat(DIROUT, save_bsorig), 'bs_orig', '-v7.3');
     save(strcat(DIROUT, save_P), 'P', '-v7.3');
     
 end
