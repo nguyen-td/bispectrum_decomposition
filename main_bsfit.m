@@ -39,11 +39,11 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
 
     save_bsall = ['/bsall_' sub '.set'];
     save_bsorig = ['/bsorig_' sub '.set'];
-    save_P = ['/P' sub '.set'];
+    save_P = ['/P_' sub '.set'];
 
     save(strcat(DIROUT, save_bsall), 'bs_all', '-v7.3');
     save(strcat(DIROUT, save_bsorig), 'bs_orig', '-v7.3');
-    save(strcat(DIROUT, save_P), 'P', 'v7.3');
+    save(strcat(DIROUT, save_P), 'P', '-v7.3');
     
 %     % plotting
 %     tiledlayout(1, n)
