@@ -45,7 +45,7 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub, varargin)
     
     % test significance of the fitted source cross-bispectrum within subjects
     fres = EEG.srate;
-    [bs_all, bs_orig, P, A] = run_bsfit(data, f1, f2, n, nshuf, fres, EEG.srate, segleng, segshift, epleng, alpha);
+    [bs_all, bs_orig, P, A] = run_bsfit(data, g.f1, g.f2, g.n, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
 
 %     save_bsall = ['/bsall_' sub '.mat'];
 %     save_bsorig = ['/bsorig_' sub '.mat'];
