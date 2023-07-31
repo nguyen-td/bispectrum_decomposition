@@ -28,7 +28,7 @@
 %   segshift    - overlap of segments (see METH toolbox documentation)
 %   epleng      - epoch length (see METH toolbox documentation)
 
-function [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, srate, segleng, segshift, epleng)
+function [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, srate, segleng, segshift, epleng, alpha)
 
     % estimate sensor cross-bispectrum
     clear para
@@ -66,6 +66,8 @@ function [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, srate, s
     P = sum(abs(D_hat) < abs(D_shuf), 4) ./ nshuf;
 
     % correct for multiple comparisons
-    [p_fdr, ~] = fdr(P, 0.05);
+    [p_fdr, ~] = fdr(P, alpha);
     P(P > p_fdr) = 1;
+    P(P==0) = 1 / nshuf;
+
 end

@@ -33,9 +33,10 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
     f1 = 11; %  mu
     f2 = 22; % beta
     n = 5;
+    alpha = 0.05; % significance level
     fres = EEG.srate;
     
-    [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, EEG.srate, segleng, segshift, epleng);
+    [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, EEG.srate, segleng, segshift, epleng, alpha);
 
 %     save_bsall = ['/bsall_' sub '.mat'];
 %     save_bsorig = ['/bsorig_' sub '.mat'];
