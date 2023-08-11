@@ -5,9 +5,24 @@
 % Inputs:
 %   nshuf - number of shuffles
 %   isub  - index of subject (the pipeline works for a single subject)
+%
+% Optional inputs:
+%   n     - model order/number of fitted sources, default is 5.
+%   alpha - significane level, default is 0.05.
+%   f1    - phase frequency, default is 11 (mu rhythm)
+%   f2    - amplitude frequency, default is 22 (beta rhythm)
 
-function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
+function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub, varargin)
+    
     eeglab
+    g = finputcheck(varargin, { ...
+        'n'        'integer'       { }     5;
+        'alpha'    'float'         { }     0.05;
+        'f1'       'integer'       { }     11;
+        'f2'       'integer'       { }     22;
+        });
+    if ischar(g), error(g); end
+    DIROUT = '/data/tdnguyen/data/p_imag/'; % save directory
 
     % load data
     sub = ['vp' num2str(isub)];
@@ -29,22 +44,17 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub)
     epleng = EEG.pnts; 
     
     % test significance of the fitted source cross-bispectrum within subjects
-    f1 = 11; %  mu
-    f2 = 22; % beta
-    n = 5;
     fres = EEG.srate;
-    
-    [bs_all, bs_orig, P] = run_bsfit(data, f1, f2, n, nshuf, fres, EEG.srate, segleng, segshift, epleng);
+    [bs_all, bs_orig, P, A] = run_bsfit(data, g.f1, g.f2, g.n, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
 
-    save_bsall = ['bsall_' sub '.set'];
-    save_bsorig = ['bsorig_' sub '.set'];
-    save_P = ['P' sub '.set'];
+%     save_bsall = ['/bsall_' sub '.mat'];
+%     save_bsorig = ['/bsorig_' sub '.mat'];
+    save_P = ['/P_' sub '.mat'];
+    save_A = ['/A_' sub '.mat'];
+
+%     save(strcat(DIROUT, save_bsall), 'bs_all', '-v7.3');
+%     save(strcat(DIROUT, save_bsorig), 'bs_orig', '-v7.3');
+    save(strcat(DIROUT, save_P), 'P', '-v7.3');
+    save(strcat(DIROUT, save_A), 'A', '-v7.3');
     
-%     % plotting
-%     tiledlayout(1, n)
-%     for i = 1:n
-%         nexttile
-%         imagesc(-log10(P(:, :, i))); colorbar;
-%         title(sprintf('n:n:%d', i))
-%     end
 end

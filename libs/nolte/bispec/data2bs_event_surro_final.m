@@ -23,6 +23,8 @@ function [bsall,bsori,nave]=data2bs_event_surro_final(data,segleng,segshift,eple
 %  bsall(i,j,k,m)=<x(f1)_i*x(f2)_j*conj(x(f1+f2-1)_k)> for the m.th data
 %  set. x(f1+f2-1)_k was taken from a random epoch. 
 %  where f1=freqpairs(f,1) and  f2=freqpairs(f,1),
+%  Note that the first shuffle is NOT the true bispectrum. bsall contains
+%  only surrogate bispectra.
 %
 % bsori: original bispectrum without randomization
 
