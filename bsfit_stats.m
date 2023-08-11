@@ -5,11 +5,12 @@
 % 2. Run the decomposition method on B_true to estimate A_hat (true mixing
 %    matrix) and D_hat (true source cross-bispectrum)
 % 3. Get a null distribution by computing surrogate sensor cross-bispectra
-%    B_ishuf and then estimate D_ishuf by holding A fixed (use A_hat and
-%    only fit D_ishuf)
-% 4. Compute p-values based on the absolute values of the estimate source cross-bispectra.
+%    B_shuf 
+% 4. Estimate surrogate source cross-bispectra D_shuf by holding the mixing 
+%    matrtix A_hat fixed (use/fix A_hat and only fit D_shuf)
+% 5. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
-% 5. Perform source localization using significant A_hat.
+% 6. TO-DO: Perform source localization using significant A_hat.
 %
 % Notations:
 %   k - number of EEG channels (sensors)
