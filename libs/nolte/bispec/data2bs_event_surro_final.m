@@ -2,6 +2,7 @@ function [bsall,bsori,nave]=data2bs_event_surro_final(data,segleng,segshift,eple
 % calculates bispectral-tensors  from data in general for event-related
 % measurements for original data and surrogates using cycling random shifts
 % of epochs for the highest frequency. 
+% Based on the data2bs_event function of the METH toolbox by Guido Nolte.
 %
 % usage: [bsall,bsori,nave]=data2bs_event(data,segleng,segshift,epleng,freqpairs,para);
 %
