@@ -24,7 +24,7 @@ function main_bsfit(nshuf, isub, varargin)
         'f2'             'integer'       { }              22; 
         });
     if ischar(g), error(g); end
-    DIROUT = '/data/tdnguyen/data/p_imag/'; % save directory
+    DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
 
     % load data
     sub = ['vp' num2str(isub)];
@@ -48,18 +48,18 @@ function main_bsfit(nshuf, isub, varargin)
     fres = EEG.srate;
 
     % make frequency pre-selection by assessing the significane of frequency pairs of the univariate sensor bispectrum
-    [f1, f2, P_sens_fdr, P_sens] = freq_preselection(data, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
+    [f1, f2, P_sens_fdr, P_sens, frqs] = freq_preselection(data, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
     
     % test significance of the fitted source cross-bispectrum within subjects
     [P_source_fdr, P_source, A] = bsfit_stats(data, f1, f2, g.n, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
 
     % create plots
-    plot_pvalues(P_sens_fdr, P_sens, P_source_fdr, P_source, A, f1, f2, isub)
+    plot_pvalues(P_sens_fdr, P_sens, P_source_fdr, P_source, A, f1, f2, frqs, isub, DIROUT)
 
-    save_P = ['/P_' sub '.mat'];
-    save_A = ['/A_' sub '.mat'];
-
-    save(strcat(DIROUT, save_P), 'P_source_fdr', '-v7.3');
-    save(strcat(DIROUT, save_A), 'A', '-v7.3');
+%     save_P = ['/P_' sub '.mat'];
+%     save_A = ['/A_' sub '.mat'];
+% 
+%     save(strcat(DIROUT, save_P), '/P_source_fdr', '-v7.3');
+%     save(strcat(DIROUT, save_A), '/A', '-v7.3');
     
 end

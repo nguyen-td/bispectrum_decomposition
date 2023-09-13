@@ -9,14 +9,16 @@
 %   A_hat         - (n_chan x n) mixing matrix
 %   freq_manual   - manual frequency selection. Default is 'off', i.e., frequencies will be selected automatically.
 %   f1, f2        - frequencies in Hz, used for title
+%   frqs          - (n_frqs x 1) array of frequencies, used for labels
 %   isub          - subject ID, used for title
 
-function plot_pvalues(P_sens_fdr, P_sens, P_source_fdr, P_source, A_hat, f1, f2, isub)
+function plot_pvalues(P_sens_fdr, P_sens, P_source_fdr, P_source, A_hat, f1, f2, frqs, isub, DIROUT)
 
     n = size(P_source, 1);
     load('MotorImag/data/chanlocs.mat')
 
     % p-values of source cross-bispectrum
+    figure('Position', [600 100 1500 300]);
     tl1 = tiledlayout(1, n);
     for i = 1:n 
         nexttile;
@@ -29,8 +31,12 @@ function plot_pvalues(P_sens_fdr, P_sens, P_source_fdr, P_source, A_hat, f1, f2,
             c.Label.String = '-log10(p)';
         end
     end
+    title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))
+    save_P_source = [DIROUT '/P_source_' int2str(isub) '.png'];
+    exportgraphics(gcf, save_P_source)
 
     % topoplots of mixing matrix
+    figure('Position', [600 100 1500 300]);
     tl2 = tiledlayout(1, n);
     for i = 1:n
         nexttile
@@ -42,11 +48,20 @@ function plot_pvalues(P_sens_fdr, P_sens, P_source_fdr, P_source, A_hat, f1, f2,
             topoplot(A_hat(:, i), chanlocs, 'electrodes', 'on'); clim([min(A_hat, [], 'all') max(A_hat, [], 'all')])
         end
     end
+    save_A = [DIROUT '/A_' int2str(isub) '.png'];
+    exportgraphics(gcf, save_A)
 
     % p-values of sensor bispectrum
-    imagesc(-log10(P_sens_fdr))
+    figure;
+    imagesc(-log10(P_sens_fdr)); 
+    c = colorbar();
+    c.Label.String = '-log10(p)';
+    title('Univariate sensor bispectrum')
     hold on;
     imagesc(-log10(P_sens), 'AlphaData', 0.7)
+    axis([frqs(2) frqs(end-1) frqs(2) frqs(end-1)]) % set axis limit
     xlabel('Frequency (Hz)')
     ylabel('Frequency (Hz)')
+    save_P_sensor = [DIROUT '/P_sensor_' int2str(isub) '.png'];
+    exportgraphics(gcf, save_P_sensor)
 end

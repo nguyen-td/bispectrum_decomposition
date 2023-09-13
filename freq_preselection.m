@@ -22,8 +22,9 @@
 %   f1, f2 - frequencies in Hz
 %   P_fdr  - (n_freq x n_freq) matrix of FDR-corrected p-values
 %   P      - (n_freq x n_freq) matrix of p-values
+%   frqs   - (n_frq x 1) array of frequencies
 
-function [f1, f2, P_fdr, P] = freq_preselection(data, nshuf, fres, srate, segleng, segshift, epleng, alpha)
+function [f1, f2, P_fdr, P, frqs] = freq_preselection(data, nshuf, fres, srate, segleng, segshift, epleng, alpha)
     
     % compute univariate sensor bispectrum
     clear para
