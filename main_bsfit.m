@@ -46,10 +46,15 @@ function main_bsfit(nshuf, isub, varargin)
     segshift = floor(segleng/2);
     epleng = EEG.pnts; 
     fres = EEG.srate;
-
-    % make frequency pre-selection by assessing the significane of frequency pairs of the univariate sensor bispectrum
-    [f1, f2, P_sens_fdr, P_sens, frqs] = freq_preselection(data, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
     
+    if strcmpi(g.freq_manual, 'off')
+        % make frequency pre-selection by assessing the significane of frequency pairs of the univariate sensor bispectrum
+        [f1, f2, P_sens_fdr, P_sens, frqs] = freq_preselection(data, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
+    else
+        f1 = g.f1;
+        f2 = g.f2;
+    end
+        
     % test significance of the fitted source cross-bispectrum within subjects
     [P_source_fdr, P_source, A] = bsfit_stats(data, f1, f2, g.n, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
 
