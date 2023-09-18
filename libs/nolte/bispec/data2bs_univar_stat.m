@@ -144,7 +144,7 @@ for irun = 1:nrun+1
                     csloc(ichan,:,:)=(datalocfft(1:nf,ichan)*transpose(datalocfft_k(1:nf,ichan))).*xx(1:nf,1:nf);
                     cs(ichan,:,:)=cs(ichan,:,:)+csloc(ichan,:,:);
                 end
-                nave=nae+1;
+                nave=nave+1;
             end
         end
 
