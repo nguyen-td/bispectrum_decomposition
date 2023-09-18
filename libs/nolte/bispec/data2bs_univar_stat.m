@@ -64,9 +64,12 @@ else
 end
 
 bsori = zeros(nchan,nf,nf); % bispectrum
+bsallnr = zeros(nchan,nf,nf); % NEW
+nave = 0; % NEW
 
 fprintf('Progress of %d:', nrun);
-for irun = 1:nrun+1
+% for irun = 1:nrun+1
+parfor irun = 1:nrun+1
     if mod(irun, 10) == 0
         fprintf('%d', irun);
     elseif mod(irun, 2) == 0
@@ -109,13 +112,13 @@ for irun = 1:nrun+1
                 end
             end
         end
-        bsall(:,:,:,irun) = cs; bsallnr(:,:,:) = csnr;
+        bsall(:,:,:,irun) = cs; bsallnr = csnr;
+%         bsall(:,:,:,irun) = cs; bsallnr(:,:,:) = csnr;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     else % Added JDVDV on 05.07.23 to generate surrogate data for stat analysis
         krand = randperm(nep);
         lrand = randperm(nep);
-%         for j=1:nep
-        parfor j=1:nep
+        for j=1:nep
             %disp(j)
             dataep=data((j-1)*epleng+1:j*epleng,:);
             dataep_k = data((krand(j)-1)*epleng+1:krand(j)*epleng,:);
@@ -137,8 +140,6 @@ for irun = 1:nrun+1
                 datalocfft_l = fft(dataloc_l.*mywindow);
                 datalocfft_l = datalocfft_l(1:2*nf-1,:);
 
-                cs = zeros(nchan,nf,nf); % NEW
-                csloc = zeros(nchan,nf,nf); % NEW
                 for ichan=1:nchan
                     xx=hankel(conj(datalocfft_l(1:2*nf-1,ichan)));
                     csloc(ichan,:,:)=(datalocfft(1:nf,ichan)*transpose(datalocfft_k(1:nf,ichan))).*xx(1:nf,1:nf);
