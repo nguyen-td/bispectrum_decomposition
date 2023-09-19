@@ -12,6 +12,7 @@
 %   freq_manual - manual frequency selection. Default is 'off', i.e., frequencies will be selected automatically.
 %   f1          - phase frequency, default is 11 (mu rhythm)
 %   f2          - amplitude frequency, default is 22 (beta rhythm)
+%   poolsize    - number of workers in the parellel pool (check parpool documentation) for parallel computing
 
 function main_bsfit(nshuf, isub, varargin)
     
@@ -22,6 +23,7 @@ function main_bsfit(nshuf, isub, varargin)
         'freq_manual'    'string'        { 'on' 'off' }   'off';
         'f1'             'integer'       { }              11; 
         'f2'             'integer'       { }              22; 
+        'poolsize'       'integer'       { }              1;
         });
     if ischar(g), error(g); end
     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
@@ -29,8 +31,8 @@ function main_bsfit(nshuf, isub, varargin)
     % load data
     sub = ['vp' num2str(isub)];
     f_name = ['prep_' sub '.set'];
-    f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
-%     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
+%     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+    f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
     
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
@@ -49,7 +51,7 @@ function main_bsfit(nshuf, isub, varargin)
     
     if strcmpi(g.freq_manual, 'off')
         % make frequency pre-selection by assessing the significane of frequency pairs of the univariate sensor bispectrum
-        [f1, f2, P_sens_fdr, P_sens, frqs] = freq_preselection(data, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
+        [f1, f2, P_sens_fdr, P_sens, frqs] = freq_preselection(data, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha, g.poolsize);
     else
         f1 = g.f1;
         f2 = g.f2;

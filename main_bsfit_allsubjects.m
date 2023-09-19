@@ -1,4 +1,14 @@
-function main_bsfit_allsubjects(nshuf)
+function main_bsfit_allsubjects(nshuf, varargin)
+    g = finputcheck(varargin, { ...
+        'n'              'integer'       { }                5;
+        'alpha'          'float'         { }              0.05;
+        'freq_manual'    'string'        { 'on' 'off' }   'off';
+        'f1'             'integer'       { }              11; 
+        'f2'             'integer'       { }              22; 
+        'poolsize'       'integer'       { }              1;
+        });
+    if ischar(g), error(g); end
+
     subjects = 1:1:37;
     exclude = [1, 2, 6, 7, 10, 13, 20, 24, 26, 32, 36]; % 26 subjects
     
@@ -8,7 +18,7 @@ function main_bsfit_allsubjects(nshuf)
             continue
         else
             fprintf('Subject %d  .............................................................................................. \n', isub)
-            main_bsfit(nshuf, isub)
+            main_bsfit(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', g.f1, 'f2', g.f2, 'poolsize', g.poolsize)
         end
         toc
     end

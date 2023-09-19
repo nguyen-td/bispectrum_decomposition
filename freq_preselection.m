@@ -17,6 +17,7 @@
 %   segshift - overlap of segments (see METH toolbox documentation)
 %   epleng   - epoch length (see METH toolbox documentation)
 %   alpha    - significance level, default is 0.05.
+%   poolsize - number of workers in the parellel pool (check parpool documentation) for parallel computing
 %
 % Outputs:
 %   f1, f2 - frequencies in Hz
@@ -24,7 +25,7 @@
 %   P      - (n_freq x n_freq) matrix of p-values
 %   frqs   - (n_frq x 1) array of frequencies
 
-function [f1, f2, P_fdr, P, frqs] = freq_preselection(data, nshuf, fres, srate, segleng, segshift, epleng, alpha)
+function [f1, f2, P_fdr, P, frqs] = freq_preselection(data, nshuf, fres, srate, segleng, segshift, epleng, alpha, poolsize)
     
     % compute univariate sensor bispectrum
     clear para
@@ -32,7 +33,7 @@ function [f1, f2, P_fdr, P, frqs] = freq_preselection(data, nshuf, fres, srate, 
     frqs = sfreqs(fres, srate);
     
     disp('Start calculating surrogate univariate sensor bispectra for frequency selection...')
-    parpool(10)
+    parpool(poolsize)
     [bsall, ~, ~] = data2bs_univar_stat(data(:, :)', segleng, segshift, epleng, length(frqs) - 1, para);
     % shut down current parallel pool
     poolobj = gcp('nocreate');
