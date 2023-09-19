@@ -68,8 +68,8 @@ bsallnr = zeros(nchan,nf,nf); % NEW
 nave = 0; % NEW
 
 fprintf('Progress of %d:', nrun);
-% for irun = 1:nrun+1
-parfor irun = 1:nrun+1
+for irun = 1:nrun+1
+% parfor irun = 1:nrun+1
     if mod(irun, 10) == 0
         fprintf('%d', irun);
     elseif mod(irun, 2) == 0
