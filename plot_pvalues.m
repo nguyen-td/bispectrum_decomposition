@@ -15,7 +15,8 @@
 function plot_pvalues(P_sens_fdr, P_sens, P_source_fdr, P_source, A_hat, f1, f2, frqs, isub, DIROUT)
 
     n = size(P_source, 1);
-    load('MotorImag/data/chanlocs.mat')
+%     load('MotorImag/data/chanlocs.mat')
+    load('/data/tdnguyen/data/imag_data/chanlocs.mat'); % change if necessary)
 
     % p-values of source cross-bispectrum
     figure('Position', [600 100 1500 300]);

@@ -32,11 +32,11 @@ function [f1, f2, P_fdr, P, frqs] = freq_preselection(data, nshuf, fres, srate, 
     frqs = sfreqs(fres, srate);
     
     disp('Start calculating surrogate univariate sensor bispectra for frequency selection...')
-    parpool(10)
+%     parpool(10)
     [bsall, ~, ~] = data2bs_univar_stat(data(:, :)', segleng, segshift, epleng, length(frqs) - 1, para);
     % shut down current parallel pool
-    poolobj = gcp('nocreate');
-    delete(poolobj);
+%     poolobj = gcp('nocreate');
+%     delete(poolobj);
     
     % compute p-values, take mean over regions
     P = squeeze(sum(abs(mean(bsall(:, :, :, 1), 1)) < abs(mean(bsall(:, :, :, 2:end), 1)), 4) ./ nshuf);
