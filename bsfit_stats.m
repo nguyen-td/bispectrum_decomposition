@@ -7,18 +7,19 @@
 % 3. Get a null distribution by computing surrogate sensor cross-bispectra
 %    B_shuf 
 % 4. Estimate surrogate source cross-bispectra D_shuf by holding the mixing 
-%    matrtix A_hat fixed (use/fix A_hat and only fit D_shuf)
+%    matrix A_hat fixed (use/fix A_hat and only fit D_shuf)
 % 5. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
 % 6. TO-DO: Perform source localization using significant A_hat.
 %
 % Notations:
-%   k - number of EEG channels (sensors)
-%   n - model order (number of estimated sources)
-%   T - length of a time series (number of data points)
+%   n_chans  - number of EEG channels (sensors)
+%   n        - model order (number of estimated sources)
+%   epleng   - length of a single epoch/trial
+%   n_epochs - number of epochs/trials
 %
 % Inputs:
-%   data        - (k, T) time series used to estimate the sensor cross-bispectrum
+%   data        - (n_chans x epleng x n_epochs) time series used to estimate the sensor cross-bispectrum
 %   f1          - single frequency in Hz (low frequency)
 %   f2          - single frequency in Hz (high frequency)
 %   n           - number of estimated sources
@@ -28,8 +29,14 @@
 %   segleng     - segment length (see METH toolbox documentation)
 %   segshift    - overlap of segments (see METH toolbox documentation)
 %   epleng      - epoch length (see METH toolbox documentation)
+%   alpha       - significance level, default is 0.05.
+%
+% Outputs:
+%   P_fdr - (n x n x n) tensor of fdr-corrected p-values
+%   P     - (n x n x n) tensor of p-values (before fdr correction)
+%   A_hat - (n_chan x n) mixing matrix
 
-function [bs_all, bs_orig, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, segleng, segshift, epleng, alpha)
+function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, segleng, segshift, epleng, alpha)
 
     % estimate sensor cross-bispectrum
     clear para
@@ -39,7 +46,7 @@ function [bs_all, bs_orig, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres,
 
     disp('Start calculating surrogate sensor cross-bispectra...')
 %     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data', segleng, segshift, epleng, freqpairs, para);
-    [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:,:)', segleng, segshift, epleng, freqpairs, para);
+    [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
 
     % run decomposition on the original sensor cross-bispectrum 
     [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
@@ -65,10 +72,11 @@ function [bs_all, bs_orig, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres,
     
     % compute p-values
     P = sum(abs(D_hat) < abs(D_shuf), 4) ./ nshuf;
+    P(P==0) = 1 / nshuf;
 
     % correct for multiple comparisons
     [p_fdr, ~] = fdr(P, alpha);
-    P(P > p_fdr) = 1;
-    P(P==0) = 1 / nshuf;
+    P_fdr = P;
+    P_fdr(P > p_fdr) = 1;
 
 end

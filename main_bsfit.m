@@ -7,27 +7,32 @@
 %   isub  - index of subject (the pipeline works for a single subject)
 %
 % Optional inputs:
-%   n     - model order/number of fitted sources, default is 5.
-%   alpha - significane level, default is 0.05.
-%   f1    - phase frequency, default is 11 (mu rhythm)
-%   f2    - amplitude frequency, default is 22 (beta rhythm)
+%   n           - model order/number of fitted sources, default is 5.
+%   alpha       - significance level, default is 0.05.
+%   freq_manual - manual frequency selection. Default is 'off', i.e., frequencies will be selected automatically.
+%   f1          - phase frequency, default is 11 (mu rhythm)
+%   f2          - amplitude frequency, default is 22 (beta rhythm)
+%   poolsize    - number of workers in the parellel pool (check parpool documentation) for parallel computing
 
-function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub, varargin)
+function main_bsfit(nshuf, isub, varargin)
     
     eeglab
     g = finputcheck(varargin, { ...
-        'n'        'integer'       { }     5;
-        'alpha'    'float'         { }     0.05;
-        'f1'       'integer'       { }     11;
-        'f2'       'integer'       { }     22;
+        'n'              'integer'       { }                5;
+        'alpha'          'float'         { }              0.05;
+        'freq_manual'    'string'        { 'on' 'off' }   'off';
+        'f1'             'integer'       { }              11; 
+        'f2'             'integer'       { }              22; 
+        'poolsize'       'integer'       { }              1;
         });
     if ischar(g), error(g); end
-    DIROUT = '/data/tdnguyen/data/p_imag/'; % save directory
+    DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
 
     % load data
     sub = ['vp' num2str(isub)];
     f_name = ['prep_' sub '.set'];
-    f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+%     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+    f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
     
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
@@ -37,24 +42,31 @@ function [bs_all, bs_orig, P] = main_bsfit(nshuf, isub, varargin)
     EEG = eeg_checkset(EEG);
     EEG = pop_epoch(EEG, { }, epoch, 'epochinfo', 'yes');
     
-    % set parameter values for cross-bispectrum estimation
+    % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
     segleng = EEG.pnts;
     segshift = floor(segleng/2);
     epleng = EEG.pnts; 
-    
-    % test significance of the fitted source cross-bispectrum within subjects
     fres = EEG.srate;
-    [bs_all, bs_orig, P, A] = run_bsfit(data, g.f1, g.f2, g.n, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
+    
+    if strcmpi(g.freq_manual, 'off')
+        % make frequency pre-selection by assessing the significane of frequency pairs of the univariate sensor bispectrum
+        [f1, f2, P_sens_fdr, P_sens, frqs] = freq_preselection(data, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha, g.poolsize);
+    else
+        f1 = g.f1;
+        f2 = g.f2;
+    end
+        
+    % test significance of the fitted source cross-bispectrum within subjects
+    [P_source_fdr, P_source, A] = bsfit_stats(data, f1, f2, g.n, nshuf, fres, EEG.srate, segleng, segshift, epleng, g.alpha);
 
-%     save_bsall = ['/bsall_' sub '.mat'];
-%     save_bsorig = ['/bsorig_' sub '.mat'];
-    save_P = ['/P_' sub '.mat'];
-    save_A = ['/A_' sub '.mat'];
+    % create plots
+    plot_pvalues(P_sens_fdr, P_sens, P_source_fdr, P_source, A, f1, f2, frqs, isub, DIROUT)
 
-%     save(strcat(DIROUT, save_bsall), 'bs_all', '-v7.3');
-%     save(strcat(DIROUT, save_bsorig), 'bs_orig', '-v7.3');
-    save(strcat(DIROUT, save_P), 'P', '-v7.3');
-    save(strcat(DIROUT, save_A), 'A', '-v7.3');
+%     save_P = ['/P_' sub '.mat'];
+%     save_A = ['/A_' sub '.mat'];
+% 
+%     save(strcat(DIROUT, save_P), '/P_source_fdr', '-v7.3');
+%     save(strcat(DIROUT, save_A), '/A', '-v7.3');
     
 end
