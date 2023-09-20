@@ -1,4 +1,6 @@
 function main_bsfit_allsubjects(nshuf, varargin)
+
+    eeglab
     g = finputcheck(varargin, { ...
         'n'              'integer'       { }                5;
         'alpha'          'float'         { }              0.05;
