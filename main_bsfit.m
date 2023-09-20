@@ -31,8 +31,8 @@ function main_bsfit(nshuf, isub, varargin)
     % load data
     sub = ['vp' num2str(isub)];
     f_name = ['prep_' sub '.set'];
-%     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
-    f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
+    f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+%     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
     
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
