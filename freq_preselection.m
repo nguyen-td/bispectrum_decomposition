@@ -42,7 +42,9 @@ function [f1, f2, P_fdr, P, frqs] = freq_preselection(data, nshuf, fres, srate, 
     % compute p-values, take mean over regions
     P = squeeze(sum(abs(mean(bsall(:, :, :, 1), 1)) < abs(mean(bsall(:, :, :, 2:end), 1)), 4) ./ nshuf);
     P(P==0) = 1 / nshuf;
-    [~, argmax] = max(-log10(P(:)));
+    [maxval, ~] = max(-log10(P(:)));
+    argmaxs = find(-log10(P(:)) == maxval);
+    argmax = argmaxs(randi(length(argmaxs), 1));
     [f1_bin, f2_bin] = ind2sub(size(P), argmax); 
 
     % convert to Hz
