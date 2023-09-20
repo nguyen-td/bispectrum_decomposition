@@ -10,7 +10,8 @@ function main_bsfit_allsubjects(nshuf, varargin)
     if ischar(g), error(g); end
 
     subjects = 1:1:37;
-    exclude = [1, 2, 6, 7, 10, 13, 20, 24, 26, 32, 36]; % 26 subjects
+%     exclude = [1, 2, 6, 7, 10, 13, 20, 24, 26, 32, 36]; % 26 subjects
+    exclude = [1, 2, 3, 6, 7, 10, 13, 20, 24, 26, 32, 36]; % 26 subjects, subject 3 already done
     
     for isub = 1:length(subjects)
         tic
