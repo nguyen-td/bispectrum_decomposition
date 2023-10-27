@@ -8,9 +8,10 @@
 %    B_shuf 
 % 4. Estimate surrogate source cross-bispectra D_shuf by holding the mixing 
 %    matrix A_hat fixed (use/fix A_hat and only fit D_shuf)
-% 5. Compute p-values based on the absolute values of the estimate source cross-bispectra.
+% 5. Unmix the estimated source interactions using MOCA (applied on A_hat).
+% 6. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
-% 6. TO-DO: Perform source localization using significant A_hat.
+% 7. TO-DO: Perform source localization using significant A_hat.
 %
 % Notations:
 %   n_chans  - number of EEG channels (sensors)
@@ -30,13 +31,14 @@
 %   segshift    - overlap of segments (see METH toolbox documentation)
 %   epleng      - epoch length (see METH toolbox documentation)
 %   alpha       - significance level, default is 0.05.
+%   L_3D        - (n_chans x n_voxels x dip_dir) leadfield tensor, dipole directions are typically 3
 %
 % Outputs:
 %   P_fdr - (n x n x n) tensor of fdr-corrected p-values
 %   P     - (n x n x n) tensor of p-values (before fdr correction)
 %   A_hat - (n_chan x n) mixing matrix
 
-function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, segleng, segshift, epleng, alpha)
+function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, segleng, segshift, epleng, alpha, L_3D)
 
     % estimate sensor cross-bispectrum
     clear para
@@ -45,11 +47,13 @@ function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, se
     freqpairs = [find(frqs == f1), find(frqs == f2)];
 
     disp('Start calculating surrogate sensor cross-bispectra...')
-%     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data', segleng, segshift, epleng, freqpairs, para);
     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
 
     % run decomposition on the original sensor cross-bispectrum 
     [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
+
+    % unmix source interactions using MOCA
+    
 
     % fit surrogate source cross-bispectra with fixed mixing matrix 
     disp('Start calculating surrogate source cross-bispectra...')
