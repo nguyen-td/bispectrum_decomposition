@@ -1,4 +1,5 @@
 % Reduce the leadfield to match the EEG channels of the data.
+% Please make sure to download the leadfield beforehand: https://www.parralab.org/nyhead/
 %
 % Input:
 %   EEG  - EEG struct
@@ -9,7 +10,11 @@
 function L_3D = reduce_leadfield(EEG)
 
     % load the leadfield
-    load sa_nyhead
+    try
+        load sa_nyhead
+    catch
+        warning("Please download the leadfield first: https://www.parralab.org/nyhead/")
+    end
     
     % get data channels
     data_struct2cell = struct2cell(EEG.chanlocs);
