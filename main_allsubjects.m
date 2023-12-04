@@ -1,4 +1,7 @@
 function main_allsubjects(nshuf, varargin)
+    
+    % add paths
+    addpath_cluster
 
     eeglab
     g = finputcheck(varargin, { ...
