@@ -25,25 +25,24 @@
 %   f2          - single frequency in Hz (high frequency)
 %   n           - number of estimated sources
 %   nshuf       - number of shuffles
-%   fres        - frequency resolution
+%   frqs        - (n_frq x 1) array of frequencies
 %   srate       - sampling rate
 %   segleng     - segment length (see METH toolbox documentation)
 %   segshift    - overlap of segments (see METH toolbox documentation)
 %   epleng      - epoch length (see METH toolbox documentation)
 %   alpha       - significance level, default is 0.05.
-%   L_3D        - (n_chans x n_voxels x dip_dir) leadfield tensor, dipole directions are typically 3
+%   L_3D        - (n_chans x n_voxels x n_dum) leadfield tensor, dipole directions are typically 3 
 %
 % Outputs:
-%   P_fdr - (n x n x n) tensor of fdr-corrected p-values
-%   P     - (n x n x n) tensor of p-values (before fdr correction)
-%   A_hat - (n_chan x n) mixing matrix
+%   P_fdr  - (n x n x n) tensor of fdr-corrected p-values
+%   P      - (n x n x n) tensor of p-values (before fdr correction)
+%   A_sens - (n_chan x n) mixing matrix
 
-function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, segleng, segshift, epleng, alpha, L_3D)
+function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D)
 
     % estimate sensor cross-bispectrum
     clear para
     para.nrun = nshuf;
-    frqs = sfreqs(fres, srate);
     freqpairs = [find(frqs == f1), find(frqs == f2)];
 
     disp('Start calculating surrogate sensor cross-bispectra...')
@@ -53,12 +52,13 @@ function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, se
     [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
 
     % unmix source interactions using MOCA
-    
+    A_moca = apply_moca(L_3D, A_hat, n);
+    A_sens = A_hat * A_moca; % combined sensor patterns
 
     % fit surrogate source cross-bispectra with fixed mixing matrix 
     disp('Start calculating surrogate source cross-bispectra...')
-    clear para
-    para.a = A_hat;
+    clear para d
+    para.a = A_sens;
     para.isfit_a = false;
 
     fprintf('Progress of %d:', nshuf);

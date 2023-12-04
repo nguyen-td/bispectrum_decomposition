@@ -27,5 +27,5 @@ function L_3D = reduce_leadfield(EEG)
     end
     
     % 3D leadfield for the selected subset of channels
-    L_3D = sa.cortex75K.V_fem(idx_chans, :, :);
+    L_3D = sa.cortex75K.V_fem(idx_chans, sa.cortex2K.in_from_cortex75K, :);
 end

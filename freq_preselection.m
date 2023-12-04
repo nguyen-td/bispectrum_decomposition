@@ -11,8 +11,7 @@
 % Inputs:
 %   data     - (n_chans x epleng x n_epochs) time series used to estimate the sensor cross-bispectrum
 %   nshuf    - number of shuffles
-%   fres     - frequency resolution
-%   srate    - sampling rate
+%   frqs     - (n_frq x 1) array of frequencies
 %   segleng  - segment length (see METH toolbox documentation)
 %   segshift - overlap of segments (see METH toolbox documentation)
 %   epleng   - epoch length (see METH toolbox documentation)
@@ -23,14 +22,12 @@
 %   f1, f2 - frequencies in Hz
 %   P_fdr  - (n_freq x n_freq) matrix of FDR-corrected p-values
 %   P      - (n_freq x n_freq) matrix of p-values
-%   frqs   - (n_frq x 1) array of frequencies
 
-function [f1, f2, P_fdr, P, frqs] = freq_preselection(data, nshuf, fres, srate, segleng, segshift, epleng, alpha, poolsize)
+function [f1, f2, P_fdr, P] = freq_preselection(data, nshuf, frqs, segleng, segshift, epleng, alpha, poolsize)
     
     % compute univariate sensor bispectrum
     clear para
     para.nrun = nshuf;
-    frqs = sfreqs(fres, srate);
     
     disp('Start calculating surrogate univariate sensor bispectra for frequency selection...')
     parpool(poolsize)

@@ -39,8 +39,7 @@ while kont==0
     for i=1:ng
         Winv(:,:,i)=(inv(W(:,:,i)+trace(W(:,:,i))/(ndum*10^6)));
         %if i==ng;disp(W(:,:,i));end
-    end
-    for i=1:ng
+        
         %winvkt(i,:,:)=Winv(:,:,i)*(squeeze(LL(:,:,i)))';
         %winvkt(i,:,:)=(squeeze(LL(:,:,i)))';
         winvkt(ndum*(i-1)+1:ndum*i,:)=Winv(:,:,i)*LL(:,ndum*(i-1)+1:ndum*i)';
