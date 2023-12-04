@@ -1,4 +1,7 @@
 function main_allsubjects(nshuf, varargin)
+    
+    % add path
+    addpath_cluster
 
     eeglab
     g = finputcheck(varargin, { ...
@@ -20,7 +23,7 @@ function main_allsubjects(nshuf, varargin)
             continue
         else
             fprintf('Subject %d  .............................................................................................. \n', isub)
-            main_bsfit(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', g.f1, 'f2', g.f2, 'poolsize', g.poolsize)
+            main(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', g.f1, 'f2', g.f2, 'poolsize', g.poolsize)
         end
         toc
     end
