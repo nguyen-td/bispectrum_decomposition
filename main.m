@@ -46,7 +46,7 @@ function main(nshuf, isub, varargin)
 
     % compute and plot ICA components (optional)
     if strcmpi(g.run_ica, 'on')
-        run_ica(EEG, g.n, f_chanlocs)
+        run_ica(EEG, g.n, f_chanlocs, DIROUT)
     end
     
     % epoching
@@ -76,9 +76,9 @@ function main(nshuf, isub, varargin)
 
     % create plots
     if strcmpi(g.freq_manual, 'off')
-        plot_pvalues(A, f1, f2, frqs, isub, DIROUT, f_chanlocs, P_source_fdr, P_source, P_sens_fdr, P_sens)
+        plot_pvalues(A, f1, f2, frqs, isub, f_chanlocs, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
     else
-        plot_pvalues(A, f1, f2, frqs, isub, DIROUT, f_chanlocs, P_source_fdr, P_source)
+        plot_pvalues(A, f1, f2, frqs, isub, f_chanlocs, DIROUT, P_source_fdr, P_source)
     end
 
 %     save_P = ['/P_' sub '.mat'];
