@@ -5,9 +5,9 @@
 % 2. Run the decomposition method on B_true to estimate A_hat (true mixing
 %    matrix) and D_hat (true source cross-bispectrum)
 % 3. Fit surrogate source cross-bispectra by holding the mixing matrix A_sens fix (i.e., only fit D_shuf).
-% 4. Compute p-values based on the absolute values of the estimate source cross-bispectra.
+% 4. Unmix the estimated source interactions using MOCA (applied on A_hat) to get a new unmixed A_sens.
+% 5. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
-% 5. Unmix the estimated source interactions using MOCA (applied on A_hat) to get a new unmixed A_sens.
 % 6. TO-DO: Perform source localization using significant A_hat.
 %
 % Notations:
