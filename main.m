@@ -46,7 +46,7 @@ function main(nshuf, isub, varargin)
 
     % compute and plot ICA components (optional)
     if strcmpi(g.run_ica, 'on')
-        run_ica(EEG, g.n, f_chanlocs, DIROUT)
+        run_ica(EEG, g.n, isub, f_chanlocs, DIROUT)
     end
     
     % epoching

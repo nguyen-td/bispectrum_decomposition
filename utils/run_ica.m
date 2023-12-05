@@ -3,10 +3,11 @@
 % Inputs:
 %   EEG        - EEGLAB struct
 %   n          - model order/number of fitted sources
+%   isub       - subject ID, used for title
 %   f_chanlocs - directory to load channel locations "chanlocs.mat"
 %   DIROUT     - output directory to save images
 
-function run_ica(EEG, n, f_chanlocs, DIROUT)
+function run_ica(EEG, n, isub, f_chanlocs, DIROUT)
 
     load(f_chanlocs) 
     OUT_EEG = pop_runica(EEG, 'icatype', 'runica', 'pca', n);
