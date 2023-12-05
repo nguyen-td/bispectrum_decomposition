@@ -33,7 +33,7 @@ function main(nshuf, isub, varargin)
         'f1'             'integer'       { }              11; 
         'f2'             'integer'       { }              22; 
         'run_ica'        'string'        { 'on' 'off' }   'off';
-        'poolsize'       'integer'       { }              1;
+        poolsize'       'integer'       { }              1;
         });
     if ischar(g), error(g); end
 

@@ -26,7 +26,7 @@ function main_allsubjects(nshuf, varargin)
             continue
         else
             fprintf('Subject %d  .............................................................................................. \n', isub)
-            main(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', g.f1, 'f2', g.f2, 'poolsize', g.poolsize)
+            main(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', g.f1, 'f2', g.f2, 'run_ica', g.run_ica, 'poolsize', g.poolsize)
         end
         toc
     end
