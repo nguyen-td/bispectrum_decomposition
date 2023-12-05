@@ -1,7 +1,7 @@
 function [a,d,erstart,model] = calc_parstart(bs,n)
     [nchan,nchan,nchan] = size(bs);
     
-    errfit = zeros(3,1); % maybe we should rather loop over n?
+    errfit = zeros(3,1);
     for k = 1:3
         if k == 1
             indspermute = [1,2,3];
@@ -13,7 +13,7 @@ function [a,d,erstart,model] = calc_parstart(bs,n)
     
         bx = reshape(permute(bs,indspermute),nchan^2,nchan);
         bx = [real(bx); imag(bx)];
-        bx2 = bx' * bx; % why do we estimate A this way?
+        bx2 = bx' * bx; 
         [u,s,v] = svd(bx2);
         a = u(:,1:n); 
         % a = a_ori;

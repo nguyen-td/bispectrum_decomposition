@@ -9,9 +9,10 @@
 % Optional inputs:
 %   n           - model order/number of fitted sources, default is 5.
 %   alpha       - significance level, default is 0.05.
-%   freq_manual - manual frequency selection. Default is 'off', i.e., frequencies will be selected automatically.
+%   freq_manual - manual frequency selection, default is 'off', i.e., frequencies will be selected automatically.
 %   f1          - phase frequency, default is 11 (mu rhythm)
 %   f2          - amplitude frequency, default is 22 (beta rhythm)
+%   run_ica     - run ICA decomposition and save the first n components, default is 'off'
 %   poolsize    - number of workers in the parellel pool (check parpool documentation) for parallel computing
 
 function main(nshuf, isub, varargin)
@@ -20,6 +21,8 @@ function main(nshuf, isub, varargin)
     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
+%     f_chanlocs = 'MotorImag/data/chanlocs.mat';
+    f_chanlocs = '/data/tdnguyen/data/imag_data/chanlocs.mat'; % change if necessary)
 
     % setup
     eeglab
@@ -29,6 +32,7 @@ function main(nshuf, isub, varargin)
         'freq_manual'    'string'        { 'on' 'off' }   'off';
         'f1'             'integer'       { }              11; 
         'f2'             'integer'       { }              22; 
+        'run_ica'        'string'        { 'on' 'off' }   'off';
         'poolsize'       'integer'       { }              1;
         });
     if ischar(g), error(g); end
@@ -39,6 +43,11 @@ function main(nshuf, isub, varargin)
     
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
+
+    % compute and plot ICA components (optional)
+    if strcmpi(g.run_ica, 'on')
+        run_ica(EEG, g.n, f_chanlocs)
+    end
     
     % epoching
     epoch = [1 3]; % from 1 second after stimulus onset to 3 seconds after stimulus onset
@@ -67,9 +76,9 @@ function main(nshuf, isub, varargin)
 
     % create plots
     if strcmpi(g.freq_manual, 'off')
-        plot_pvalues(A, f1, f2, frqs, isub, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
+        plot_pvalues(A, f1, f2, frqs, isub, DIROUT, f_chanlocs, P_source_fdr, P_source, P_sens_fdr, P_sens)
     else
-        plot_pvalues(A, f1, f2, frqs, isub, DIROUT, P_source_fdr, P_source)
+        plot_pvalues(A, f1, f2, frqs, isub, DIROUT, f_chanlocs, P_source_fdr, P_source)
     end
 
 %     save_P = ['/P_' sub '.mat'];
