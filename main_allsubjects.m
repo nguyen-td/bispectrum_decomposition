@@ -1,3 +1,5 @@
+% Calls main.m for all subjects. Refer to that function for documentation.
+
 function main_allsubjects(nshuf, varargin)
     
     % add path
@@ -10,6 +12,7 @@ function main_allsubjects(nshuf, varargin)
         'freq_manual'    'string'        { 'on' 'off' }   'off';
         'f1'             'integer'       { }              11; 
         'f2'             'integer'       { }              22; 
+        'run_ica'        'string'        { 'on' 'off' }   'off';
         'poolsize'       'integer'       { }              1;
         });
     if ischar(g), error(g); end

@@ -1,4 +1,4 @@
-% Run ICA decomposition on the EEG data and plot the first n components.
+% Run ICA decomposition (using EEGLAB) on the EEG data and plot the first n components.
 %
 % Inputs:
 %   EEG        - EEGLAB struct
