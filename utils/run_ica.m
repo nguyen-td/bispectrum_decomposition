@@ -1,5 +1,10 @@
 % Run ICA decomposition on the EEG data and plot the first n components.
 %
+% Inputs:
+%   EEG        - EEGLAB struct
+%   n          - model order/number of fitted sources
+%   f_chanlocs - directory to load channel locations "chanlocs.mat"
+
 function run_ica(EEG, n, f_chanlocs)
 
     load(f_chanlocs) 
