@@ -5,14 +5,14 @@
 %   f1, f2        - frequencies in Hz, used for title
 %   frqs          - (n_frqs x 1) array of frequencies, used for labels
 %   isub          - subject ID, used for title
-%   f_chanlocs    - directory to load channel locations "chanlocs.mat"
+%   chanlocs  - EEG channel locations from the EEG struct
 %   DIROUT        - output directory to save images
 %   P_source_fdr  - (n x n x n) matrix of FDR-corrected p-values of the source cross-bispectrum
 %   P_source      - (x x n x n) matrix of p-values of the source cross-bispectrum
 %   P_sens_fdr    - (n_freq x n_freq) matrix of FDR-corrected p-values of the sensor bispectrum
 %   P_sens        - (n_freq x n_freq) matrix of p-values of the sensor bispectrum
 
-function plot_pvalues(A_sens, f1, f2, frqs, isub, f_chanlocs, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
+function plot_pvalues(A_sens, f1, f2, frqs, isub, chanlocs, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
         
     if nargin < 10
         freq_manual = 1;
@@ -20,8 +20,6 @@ function plot_pvalues(A_sens, f1, f2, frqs, isub, f_chanlocs, DIROUT, P_source_f
         freq_manual = 0;
     end
     n = size(P_source_fdr, 1);
-
-    load(f_chanlocs);
 
     % p-values of source cross-bispectrum
     figure('Position', [600 100 1500 300]);

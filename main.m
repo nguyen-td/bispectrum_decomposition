@@ -17,12 +17,10 @@
 
 function main(nshuf, isub, varargin)
     
-    % set paths
+    % set directory paths
     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
-    f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+% %     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
-%     f_chanlocs = 'MotorImag/data/chanlocs.mat';
-    f_chanlocs = '/data/tdnguyen/data/imag_data/chanlocs.mat'; % change if necessary)
 
     % setup
     eeglab
@@ -46,7 +44,7 @@ function main(nshuf, isub, varargin)
 
     % compute and plot ICA components (optional)
     if strcmpi(g.run_ica, 'on')
-        run_ica(EEG, g.n, isub, f_chanlocs, DIROUT)
+        run_ica(EEG, g.n, isub, DIROUT)
     end
     
     % epoching
@@ -72,13 +70,13 @@ function main(nshuf, isub, varargin)
         
     % test significance of the fitted source cross-bispectrum within subjects
     L_3D = reduce_leadfield(EEG); 
-    [P_source_fdr, P_source, A] = bsfit_stats(data, f1, f2, g.n, nshuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);
+    [P_source_fdr, P_source, A] = bsfit_stats(data, f1, f2, g.n, nshuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);    
 
     % create plots
     if strcmpi(g.freq_manual, 'off')
-        plot_pvalues(A, f1, f2, frqs, isub, f_chanlocs, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
+        plot_pvalues(A, f1, f2, frqs, isub, EEG.chanlocs, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
     else
-        plot_pvalues(A, f1, f2, frqs, isub, f_chanlocs, DIROUT, P_source_fdr, P_source)
+        plot_pvalues(A, f1, f2, frqs, isub, EEG.chanlocs, DIROUT, P_source_fdr, P_source)
     end
 
 %     save_P = ['/P_' sub '.mat'];
