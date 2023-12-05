@@ -19,7 +19,7 @@ function main(nshuf, isub, varargin)
     
     % set directory paths
     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
-% %     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+    f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
 
     % setup
