@@ -4,14 +4,11 @@
 % 1. Estimate the (true) sensor cross-bispectrum B_true.
 % 2. Run the decomposition method on B_true to estimate A_hat (true mixing
 %    matrix) and D_hat (true source cross-bispectrum)
-% 3. Get a null distribution by computing surrogate sensor cross-bispectra
-%    B_shuf 
-% 4. Estimate surrogate source cross-bispectra D_shuf by holding the mixing 
-%    matrix A_hat fixed (use/fix A_hat and only fit D_shuf)
-% 5. Unmix the estimated source interactions using MOCA (applied on A_hat).
-% 6. Compute p-values based on the absolute values of the estimate source cross-bispectra.
+% 3. Fit surrogate source cross-bispectra by holding the mixing matrix A_sens fix (i.e., only fit D_shuf).
+% 4. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
-% 7. TO-DO: Perform source localization using significant A_hat.
+% 5. Unmix the estimated source interactions using MOCA (applied on A_hat) to get a new unmixed A_sens.
+% 6. TO-DO: Perform source localization using significant A_hat.
 %
 % Notations:
 %   n_chans  - number of EEG channels (sensors)
@@ -51,14 +48,10 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
     % run decomposition on the original sensor cross-bispectrum 
     [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
 
-    % unmix source interactions using MOCA
-    A_moca = apply_moca(L_3D, A_hat, n);
-    A_sens = A_hat * A_moca; % combined sensor patterns
-
     % fit surrogate source cross-bispectra with fixed mixing matrix 
     disp('Start calculating surrogate source cross-bispectra...')
     clear para d
-    para.a = A_sens;
+    para.a = A_hat;
     para.isfit_a = false;
 
     fprintf('Progress of %d:', nshuf);
@@ -73,6 +66,10 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
         [~, D_ishuf, ~, ~, ~] = bsfit(bs_all(:, :, :, ishuf), n, para);
         D_shuf(:, :, :, ishuf) = D_ishuf;
     end
+
+    % unmix source interactions using MOCA
+    A_moca = apply_moca(L_3D, A_hat, n);
+    A_sens = A_hat * A_moca; % combined sensor patterns
     
     % compute p-values
     P = sum(abs(D_hat) < abs(D_shuf), 4) ./ nshuf;
