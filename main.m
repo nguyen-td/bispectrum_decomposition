@@ -19,10 +19,10 @@ function main(nshuf, isub, varargin)
     
     % set paths
     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
-%     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
-    f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
-    f_chanlocs = 'MotorImag/data/chanlocs.mat';
-%     f_chanlocs = '/data/tdnguyen/data/imag_data/chanlocs.mat'; % change if necessary)
+    f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+%     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
+%     f_chanlocs = 'MotorImag/data/chanlocs.mat';
+    f_chanlocs = '/data/tdnguyen/data/imag_data/chanlocs.mat'; % change if necessary)
 
     % setup
     eeglab
