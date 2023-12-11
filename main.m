@@ -10,8 +10,8 @@
 %   n           - model order/number of fitted sources, default is 5.
 %   alpha       - significance level, default is 0.05.
 %   freq_manual - manual frequency selection, default is 'off', i.e., frequencies will be selected automatically.
-%   f1          - phase frequency, default is 11 (mu rhythm)
-%   f2          - amplitude frequency, default is 22 (beta rhythm)
+%   f1          - phase frequency, single frequency in Hz or frequencyband, e.g., [9 11]. Default is 11.
+%   f2          - amplitude frequency single frequency in Hz or frequency band, e.g., [20 22]. Default is 22.
 %   run_ica     - run ICA decomposition and save the first n components, default is 'off'
 %   poolsize    - number of workers in the parellel pool (check parpool documentation) for parallel computing
 
@@ -19,8 +19,8 @@ function main(nshuf, isub, varargin)
     
     % set directory paths
     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
-    f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
-%     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
+%     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+    f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
 
     % setup
     eeglab

@@ -56,7 +56,6 @@ info.prep.filterOrder = filterOrder;
 nsub = 18;
 exclude = [15]; 
 
-isub = 1; % for testing
 for isub = 1:nsub
     if ismember(isub, exclude)
         continue
@@ -265,5 +264,7 @@ for isub = 1:nsub
     EEG = eeg_checkset( EEG );
     figure; pop_spectopo(EEG, 1, [0      EEG.xmax*1000*Nepoch], 'EEG' , 'percent', 15, 'freq', [10 20 ], 'freqrange',[0 45],'electrodes','on');
     saveas(gcf,[resultDir,'spectra_prep2'],'jpg');
+
+    %% Save preprocessed data
     
 end

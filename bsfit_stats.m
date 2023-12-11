@@ -18,8 +18,8 @@
 %
 % Inputs:
 %   data        - (n_chans x epleng x n_epochs) time series used to estimate the sensor cross-bispectrum
-%   f1          - single frequency in Hz (low frequency)
-%   f2          - single frequency in Hz (high frequency)
+%   f1          - single frequency in Hz or frequency band, e.g., [9 11](low frequency)
+%   f2          - single frequency in Hz or frequency band, e.g., [22 24] (high frequency)
 %   n           - number of estimated sources
 %   nshuf       - number of shuffles
 %   frqs        - (n_frq x 1) array of frequencies
@@ -37,11 +37,29 @@
 
 function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D)
 
+    % extract all individual frequencies in the selected bands
+    size_low = size(f1, 2);
+    size_high = size(f2, 2);
+    mask_inds_low = frqs >= f1(1) & frqs <= f1(size_low);
+    mask_inds_high = frqs >= f2(1) & frqs <= f2(size_high);
+    frqs_low = frqs(mask_inds_low); 
+    frqs_high = frqs(mask_inds_high);
+
+    % determine all frequency combinations
+    [k, j] = ndgrid(frqs_low, frqs_high);
+    frqs_combs = [k(:), j(:)]; 
+    n_combs = size(frqs_combs, 1);
+    freqpairs = zeros(n_combs, 2);
+    warning('The surrogate bispectra are going to be estimated on %d frequency pair(s).', n_combs);
+    for i = 1:n_combs
+        low = frqs_combs(i, 1);
+        high = frqs_combs(i, 2);
+        freqpairs(i, :) = [find(frqs == low), find(frqs == high)];
+    end
+
     % estimate sensor cross-bispectrum
     clear para
     para.nrun = nshuf;
-    freqpairs = [find(frqs == f1), find(frqs == f2)];
-
     disp('Start calculating surrogate sensor cross-bispectra...')
     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
 
