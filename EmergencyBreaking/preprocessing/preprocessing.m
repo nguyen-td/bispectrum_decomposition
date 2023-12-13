@@ -1,11 +1,12 @@
 %% Add paths
-addpath('/Users/nguyentiendung/Desktop/Studium/Charite/matlab/eeglab') % eeglab path
-addpath(genpath('/Volumes/PortableSSD/EmergencyBreaking')) % data location
-addpath(genpath('/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking')) % script location
-addpath('/Users/nguyentiendung/Desktop/Studium/Charite/Matlab/eeglab/plugins/Fieldtrip-lite20230125/template/electrode')
+% addpath('/Users/nguyentiendung/Desktop/Studium/Charite/matlab/eeglab') % eeglab path
+% addpath(genpath('/Volumes/PortableSSD/EmergencyBreaking')) % data location
+% addpath(genpath('/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking')) % script location
+% addpath('/Users/nguyentiendung/Desktop/Studium/Charite/Matlab/eeglab/plugins/Fieldtrip-lite20230125/template/electrode')
 
 % data directory
-data_dir = '/Volumes/PortableSSD/EmergencyBreaking/data/';
+% data_dir = '/Volumes/PortableSSD/EmergencyBreaking/data/';
+data_dir = '/data/tdnguyen/data/carracer/';
 
 %%% Creating result folder (Plots will be saved here)
 resultDir = ['analysis_output/preprocessing/'];
@@ -20,7 +21,7 @@ if ~isdir(outputDataDir)
     mkdir(outputDataDir)
 end
     
-load metadata
+% load metadata
 
 fs = 100;
 fres = fs;
@@ -53,13 +54,12 @@ info.prep.filterOrder = filterOrder;
 
 [ALLEEG, EEG, CURRENTSET, ALLCOM] = eeglab;
 
-nsub = 18;
-exclude = [15]; 
+% exclude = [15]; 
 
 for isub = 1:nsub
-    if ismember(isub, exclude)
-        continue
-    end
+%     if ismember(isub, exclude)
+%         continue
+%     end
 
     fprintf('Current subject: %d\n', isub)
     sub = ['vp' num2str(isub)];
@@ -118,20 +118,20 @@ for isub = 1:nsub
     info.data.lengthPoints = EEG.pnts;
     info.prep.ref0 = 'common'; info.prep.chanLabels = {EEG.chanlocs.labels};
 
-    %% Plotting Channel locations
+    % Plotting Channel locations
     EEG = eeg_checkset( EEG );
     figure; topoplot([],EEG.chanlocs, 'style', 'blank',  'electrodes', 'labelpoint', 'chaninfo', EEG.chaninfo);
-    saveas(gcf,[resultDir,'topo_labels'],'jpg');
+    saveas(gcf,[resultDir,sub,'_','topo_labels'],'jpg');
     EEG = eeg_checkset( EEG );
     figure; topoplot([],EEG.chanlocs, 'style', 'blank',  'electrodes', 'numpoint', 'chaninfo', EEG.chaninfo);
-    saveas(gcf,[resultDir,'topo_indices'],'jpg');
+    saveas(gcf,[resultDir,sub,'_','topo_indices'],'jpg');
 
-    %% Plotting Spectra of raw data
+    % Plotting Spectra of raw data
     EEG = eeg_checkset( EEG );
     figure; pop_spectopo(EEG, 1, [0 EEG.xmax*1000], 'EEG' , 'percent', 15, 'freq', [10 20], 'freqrange',[0 45],'electrodes','on');
-    saveas(gcf,[resultDir,'spectra_raw'],'jpg');
+    saveas(gcf,[resultDir,sub,'_','spectra_raw'],'jpg');
 
-    %% zero-phase filtering
+    % zero-phase filtering
     [b_low, a_low] = butter(filterOrder, lpFilter/(EEG.srate/2), 'low');
     [b_high, a_high] = butter(filterOrder, hpFilter/(EEG.srate/2), 'high');
     [b_notch, a_notch] = butter(filterOrder, bsFilter/(EEG.srate/2),'stop');
@@ -140,7 +140,7 @@ for isub = 1:nsub
     %     fvtool(b_all, a_all)
     EEG.data = filtfilt(b_all, a_all, double(EEG.data)')';
 
-    %% plain downsampling to 100 Hz. 
+    % plain downsampling to 100 Hz. 
     EEG.data = EEG.data(:, 1:dsRatio:end);
     EEG.srate = EEG.srate/dsRatio;
     EEG.pnts    = size(EEG.data,2);
@@ -148,7 +148,7 @@ for isub = 1:nsub
     EEG.times   = linspace(EEG.xmin*1000, EEG.xmax*1000, EEG.pnts);
     EEG = eeg_checkset( EEG );
 
-    %% Epoching: Trasforming data from Nchan*NtpAll  to Nchan*NtpEpoch*Nepoch
+    % Epoching: Trasforming data from Nchan*NtpAll  to Nchan*NtpEpoch*Nepoch
     %epochLeng = 2; % epoch length in seconds
     [Nchan, Ntp]=size(EEG.data);
     EEG = pop_select( EEG,'point',[1 (Ntp - mod(Ntp,EEG.srate*epochLeng))] );
@@ -163,10 +163,10 @@ for isub = 1:nsub
     EEG = eeg_checkset( EEG );
     EEG = pop_epoch( EEG, {  num2str(epochLeng)  }, [0  epochLeng], 'epochinfo', 'yes');
 
-    %% Plotting Spectra of filtered and downsampled data
+    % Plotting Spectra of filtered and downsampled data
     EEG = eeg_checkset( EEG );
     figure; pop_spectopo(EEG, 1, [0      EEG.xmax*1000*Nepoch], 'EEG' , 'percent', 15, 'freq', [10 20 ], 'freqrange',[0 45],'electrodes','on');
-    saveas(gcf,[resultDir,'spectra_prep1'],'jpg');
+    saveas(gcf,[resultDir,sub,'_','spectra_prep1'],'jpg');
 
     % Updating 'info' variable
     % info.subject.ID = isbj;
@@ -181,12 +181,12 @@ for isub = 1:nsub
     info.prep.dsRation = dsRatio;
     info.prep.ref = '';
 
-    %% Detecting Bad channels/epochs
+    % Detecting Bad channels/epochs
     par.HFAnalysis.run = 1 ;
     par.HFAnalysis.channelRejection = 1;
     info.outlier = k1_detect_bad_epoch_channel(EEG,par);
 
-    %% Detecting channels/epochs rejected because of Strong alpha activity
+    % Detecting channels/epochs rejected because of Strong alpha activity
     [b, a] = butter(2, [5 12]/(EEG.srate/2),'stop');
     XNoAlpha = reshape(filtfilt(b, a, reshape(double(EEG.data), Nchan, [])')',Nchan,[],Nepoch);
     par = [];
@@ -199,7 +199,7 @@ for isub = 1:nsub
 
     info.outlier.epochRejectFinal = info.outlier.epochRejectFinal & infoAlpha.epochRejectFinal;  
 
-    %% Plotting Rejceted channels/epochs
+    % Plotting Rejceted channels/epochs
     epoch = find(info.outlier.epochRejectFinal);
     epochchanind = cell(1, length(epoch)); %{[],[3,9,12],[6:12,16,18]};
     rejepochcol =  [.6 .8 .9];
@@ -212,38 +212,38 @@ for isub = 1:nsub
     winrej = trial2eegplot(rejepoch, rejepochE, EEG.pnts, rejepochcol);
     colors = cell(1,Nchan); colors(1,:) = {'k'};
     colors(1,info.outlier.chanRejectFinal) = {'r'};
-    eegplot(EEG.data, 'srate', EEG.srate, 'title', 'Rejected Channels Epochs', ...
-      'limits', [EEG.xmin EEG.xmax]*1000, 'color', colors, 'winrej',winrej, 'eloc_file', EEG.chanlocs);
+%     eegplot(EEG.data, 'srate', EEG.srate, 'title', 'Rejected Channels Epochs', ...
+%       'limits', [EEG.xmin EEG.xmax]*1000, 'color', colors, 'winrej',winrej, 'eloc_file', EEG.chanlocs);
 
-    %% Additional plots for testing channel/epoch rejection
+    % Additional plots for testing channel/epoch rejection
     if 1
       figure, imagesc(info.outlier.epoch.epochDeviation);
       title('Epoch-Epoch-Deviation')
       xlabel('Epoch','fontweight','b'); ylabel('Channel','fontweight','b');
     %         xticks(5:5:Nepoch);
     %         yticks(1:2:Nchan);
-      saveas(gcf,[resultDir,'epoch_epoch_deviation'],'jpg');
+      saveas(gcf,[resultDir,sub,'_','epoch_epoch_deviation'],'jpg');
     
       figure, imagesc(info.outlier.epoch.chanDeviation);
       title('Epoch-Chan-Deviation')
       xlabel('Epoch','fontweight','b'); ylabel('Channel','fontweight','b');
     %         xticks(5:5:Nepoch);
     %         yticks(1:2:Nchan);
-      saveas(gcf,[resultDir,'epoch_chan_deviation'],'jpg');
+      saveas(gcf,[resultDir,sub,'_','epoch_chan_deviation'],'jpg');
     
       figure, imagesc(info.outlier.epoch.epochHFNoise);
       title('Epoch-Epoch-HFNOISE')
       xlabel('Epoch','fontweight','b'); ylabel('Channel','fontweight','b');
     %         xticks(5:5:Nepoch);
     %         yticks(1:2:Nchan);
-      saveas(gcf,[resultDir,'epoch_epoch_hfnoise'],'jpg');
+      saveas(gcf,[resultDir,sub,'_','epoch_epoch_hfnoise'],'jpg');
     
       figure, imagesc(info.outlier.epoch.chanHFNoise);
       title('Epoch-Chan-HFNOISE')
       xlabel('Epoch','fontweight','b'); ylabel('Channel','fontweight','b');
     %         xticks(5:5:Nepoch);
     %         yticks(1:2:Nchan);
-      saveas(gcf,[resultDir,'epoch_chan_hfnoise'],'jpg');
+      saveas(gcf,[resultDir,sub,'_','epoch_chan_hfnoise'],'jpg');
     
       chanEpochMatrix = zeros(Nchan, Nepoch);
       chanEpochMatrix(info.outlier.chanRejectFinal, :) = 1;
@@ -253,18 +253,17 @@ for isub = 1:nsub
       xlabel('Epoch','fontweight','b'); ylabel('Channel','fontweight','b');
     %         xticks(5:5:Nepoch);
     %         yticks(1:2:Nchan);
-      saveas(gcf,[resultDir,'outlier_chans_epochs'],'jpg');
+      saveas(gcf,[resultDir,sub,'_','outlier_chans_epochs'],'jpg');
     end
 
-    %% Rejecting bad channels/epochs before ICA
+    % Rejecting bad channels/epochs before ICA
     info.originalChanlocs = EEG.chanlocs;
     EEG = pop_select( EEG,'notrial',find(info.outlier.epochRejectFinal) ,'nochannel',find(info.outlier.chanRejectFinal));
 
-    %% Plotting Spectra after channel/epochs rejection
+    % Plotting Spectra after channel/epochs rejection
     EEG = eeg_checkset( EEG );
     figure; pop_spectopo(EEG, 1, [0      EEG.xmax*1000*Nepoch], 'EEG' , 'percent', 15, 'freq', [10 20 ], 'freqrange',[0 45],'electrodes','on');
-    saveas(gcf,[resultDir,'spectra_prep2'],'jpg');
+    saveas(gcf,[resultDir,sub,'_','spectra_prep2'],'jpg');
 
-    %% Save preprocessed data
-    
+    % Save preprocessed data
 end

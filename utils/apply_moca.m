@@ -2,14 +2,14 @@
 %
 % Inputs:
 %   L_3D  - (n_chans x n_voxels x n_dum) leadfield tensor, dipole directions are typically 3 
-%   A_hat - (n_chan x n) mixing matrix, where n is the model order (number of estimated sources)
+%   A     - (n_chan x n) mixing matrix, where n is the model order (number of estimated sources)
 %   n     - number of estimated sources
 %   regu  - regularization term for eLORETA, default is 0.05.
 %
 % Output:
 %   A_moca - (n x n) demixing matrix, where n is the model order (number of estimated sources)
 
-function A_moca = apply_moca(L_3D, A_hat, n, regu)
+function A_moca = apply_moca(L_3D, A, n, regu)
 
     % calculate 3D eLORETA inverse filter 
     if nargin < 4; regu = 0.05; end
@@ -22,7 +22,7 @@ function A_moca = apply_moca(L_3D, A_hat, n, regu)
 
     for i = 1:n 
         for k=1:ndum
-            F(:, k, i) = P_eloreta(:,:,k)' * A_hat(:,i); 
+            F(:, k, i) = P_eloreta(:,:,k)' * A(:,i); 
         end
     end
 
