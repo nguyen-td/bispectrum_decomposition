@@ -55,7 +55,7 @@ info.prep.filterOrder = filterOrder;
 [ALLEEG, EEG, CURRENTSET, ALLCOM] = eeglab;
 
 % exclude = [15]; 
-
+nsub = 18;
 for isub = 1:nsub
 %     if ismember(isub, exclude)
 %         continue
