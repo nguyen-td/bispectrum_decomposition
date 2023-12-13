@@ -2,7 +2,7 @@
 % addpath('/Users/nguyentiendung/Desktop/Studium/Charite/matlab/eeglab') % eeglab path
 % addpath(genpath('/Volumes/PortableSSD/EmergencyBreaking')) % data location
 % addpath(genpath('/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking')) % script location
-% addpath('/Users/nguyentiendung/Desktop/Studium/Charite/Matlab/eeglab/plugins/Fieldtrip-lite20230125/template/electrode')
+addpath('/data/tdnguyen/git_repos/eeglab/plugins/Fieldtrip-lite20230125/template/electrode')
 
 % data directory
 % data_dir = '/Volumes/PortableSSD/EmergencyBreaking/data/';
