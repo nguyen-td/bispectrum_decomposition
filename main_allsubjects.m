@@ -17,8 +17,9 @@ function main_allsubjects(nshuf, varargin)
         });
     if ischar(g), error(g); end
 
-    subjects = 1:1:37;
-    exclude = [1, 2, 6, 7, 10, 13, 20, 24, 26, 32, 36]; % 26 subjects
+%     subjects = 1:1:37;
+%     exclude = [1, 2, 6, 7, 10, 13, 20, 24, 26, 32, 36]; % 26 subjects
+    subjects = 1:1:18; % carracer
     
     for isub = 1:length(subjects)
         tic
