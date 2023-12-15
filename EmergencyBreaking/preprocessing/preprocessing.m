@@ -265,5 +265,7 @@ for isub = 1:nsub
     figure; pop_spectopo(EEG, 1, [0      EEG.xmax*1000*Nepoch], 'EEG' , 'percent', 15, 'freq', [10 20 ], 'freqrange',[0 45],'electrodes','on');
     saveas(gcf,[resultDir,sub,'_','spectra_prep2'],'jpg');
 
-    % Save preprocessed data
+    % Save preprocessed EEG struct
+    pop_saveset(EEG, 'filename', ['prep_' sub], 'filepath', outputDataDir)
+
 end
