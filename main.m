@@ -21,6 +21,7 @@ function main(nshuf, isub, varargin)
 %     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
     DIROUT = '/data/tdnguyen/data/p_carracer'; % save directory
 %     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+%     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
     f_path = '/data/tdnguyen/git_repos/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
 
@@ -49,10 +50,10 @@ function main(nshuf, isub, varargin)
         run_ica(EEG, g.n, isub, DIROUT)
     end
     
-    % epoching
-    epoch = [1 3]; % from 1 second after stimulus onset to 3 seconds after stimulus onset
-    EEG = eeg_checkset(EEG);
-    EEG = pop_epoch(EEG, { }, epoch, 'epochinfo', 'yes');
+%     % epoching
+%     epoch = [1 3]; % from 1 second after stimulus onset to 3 seconds after stimulus onset
+%     EEG = eeg_checkset(EEG);
+%     EEG = pop_epoch(EEG, { }, epoch, 'epochinfo', 'yes');
     
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
