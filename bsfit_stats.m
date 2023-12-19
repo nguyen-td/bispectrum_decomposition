@@ -6,9 +6,9 @@
 %    matrix) and D_hat (true source cross-bispectrum)
 % 3. Fit surrogate source cross-bispectra by holding the mixing matrix A_sens fix (i.e., only fit D_shuf).
 % 4. Unmix the estimated source interactions using MOCA (applied on A_hat) to get a new unmixed A_sens.
-% 5. Compute p-values based on the absolute values of the estimate source cross-bispectra.
+% 5. Perform source localization using significant A_hat.
+% 6. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
-% 6. TO-DO: Perform source localization using significant A_hat.
 %
 % Notations:
 %   n_chans  - number of EEG channels (sensors)
@@ -29,13 +29,17 @@
 %   epleng      - epoch length (see METH toolbox documentation)
 %   alpha       - significance level, default is 0.05.
 %   L_3D        - (n_chans x n_voxels x n_dum) leadfield tensor, dipole directions are typically 3 
+%   cortex75k   - 75k cortex structure from the NYhead for later plotting
+%   cortex2k    - 2k subset of the cortex structure
+%   isub        - subject ID, used for cortex plot
+%   DIROUT      - output directory to save images
 %
 % Outputs:
 %   P_fdr  - (n x n x n) tensor of fdr-corrected p-values
 %   P      - (n x n x n) tensor of p-values (before fdr correction)
 %   A_sens - (n_chan x n) mixing matrix
 
-function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D)
+function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D, cortex75k, cortex2k, isub, DIROUT)
 
     % extract all individual frequencies in the selected bands
     size_low = size(f1, 2);
@@ -86,8 +90,17 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
     end
 
     % unmix source interactions using MOCA
-    A_moca = apply_moca(L_3D, A_hat, n);
+    [A_moca, F_moca] = apply_moca(L_3D, A_hat, n);
     A_sens = A_hat * A_moca; % combined sensor patterns
+    
+    % plot sources
+    % TO-DO: Write extra function, also plot inverse stuff, decide on a single cortex plot (and not 8)
+    load cm17
+    for i = 1:n
+        source = F_moca(:, :, i); % only a single source for now
+        f_name = [DIROUT '/F' int2str(i) '_' int2str(isub) '_'];
+        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod, :), [min(source, [], 'all') max(source, [], 'all')], cm17, '', 1, f_name)
+    end
     
     % compute p-values
     P = sum(abs(D_hat) < abs(D_shuf), 4) ./ nshuf;

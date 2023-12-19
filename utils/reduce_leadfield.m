@@ -5,9 +5,11 @@
 %   EEG  - EEG struct
 %
 % Output:
-%   L_3D - (n_chans x n_voxels x dip_dir) leadfield tensor, dipole directions are typically 3
+%   L_3D      - (n_chans x n_voxels x dip_dir) leadfield tensor, dipole directions are typically 3
+%   cortex75k - cortex structure from the NYhead for later plotting
+%   cortex2k  - 2k subset of the cortex structure
 
-function L_3D = reduce_leadfield(EEG)
+function [L_3D, cortex75k, cortex2k] = reduce_leadfield(EEG)
 
     % load the leadfield
     try
@@ -28,4 +30,8 @@ function L_3D = reduce_leadfield(EEG)
     
     % 3D leadfield for the selected subset of channels
     L_3D = sa.cortex75K.V_fem(idx_chans, sa.cortex2K.in_from_cortex75K, :);
+
+    % save cortex structures for later plotting
+    cortex75k = sa.cortex75K;
+    cortex2k = sa.cortex2K;
 end

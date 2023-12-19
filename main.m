@@ -18,11 +18,12 @@
 function main(nshuf, isub, varargin)
     
     % set directory paths
-%     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
-    DIROUT = '/data/tdnguyen/data/p_carracer'; % save directory
-%     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
+    DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
+%     DIROUT = '/data/tdnguyen/data/p_carracer'; % save directory
+%     DIROUT = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data/figures';
+    f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
-    f_path = '/data/tdnguyen/git_repos/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
+%     f_path = '/data/tdnguyen/git_repos/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
 
     % setup
@@ -72,8 +73,8 @@ function main(nshuf, isub, varargin)
     end
         
     % test significance of the fitted source cross-bispectrum within subjects
-    L_3D = reduce_leadfield(EEG); 
-    [P_source_fdr, P_source, A] = bsfit_stats(data, f1, f2, g.n, nshuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);    
+    [L_3D, cortex75k, cortex2k] = reduce_leadfield(EEG); 
+    [P_source_fdr, P_source, A] = bsfit_stats(data, f1, f2, g.n, nshuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, cortex75k, cortex2k, isub, DIROUT);    
 
     % create plots
     if strcmpi(g.freq_manual, 'off')
