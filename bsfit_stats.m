@@ -88,6 +88,7 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
         [~, D_ishuf, ~, ~, ~] = bsfit(bs_all(:, :, :, ishuf), n, para);
         D_shuf(:, :, :, ishuf) = D_ishuf;
     end
+    fprintf('\n');
 
     % unmix source interactions using MOCA
     [A_moca, F_moca] = apply_moca(L_3D, A_hat, n);
@@ -95,11 +96,12 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
     
     % plot sources
     % TO-DO: Write extra function, also plot inverse stuff, decide on a single cortex plot (and not 8)
+    % TO-DO: Do source reconstructiton and plot demixed sources
     load cm17
     for i = 1:n
         source = F_moca(:, :, i); % only a single source for now
         f_name = [DIROUT '/F' int2str(i) '_' int2str(isub) '_'];
-        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod, :), [min(source, [], 'all') max(source, [], 'all')], cm17, '', 1, f_name)
+        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod, :), [min(source, [], 'all') max(source, [], 'all')], cm17, 'mixed sources', 1, f_name)
     end
     
     % compute p-values
