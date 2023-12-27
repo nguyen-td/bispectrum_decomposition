@@ -4,13 +4,11 @@
 % 1. Estimate the (true) sensor cross-bispectrum B_true.
 % 2. Run the decomposition method on B_true to estimate A_hat (true mixing
 %    matrix) and D_hat (true source cross-bispectrum)
-% 3. Get a null distribution by computing surrogate sensor cross-bispectra
-%    B_shuf 
-% 4. Estimate surrogate source cross-bispectra D_shuf by holding the mixing 
-%    matrix A_hat fixed (use/fix A_hat and only fit D_shuf)
-% 5. Compute p-values based on the absolute values of the estimate source cross-bispectra.
+% 3. Fit surrogate source cross-bispectra by holding the mixing matrix A_hat fix (i.e., only fit D_shuf).
+% 4. Unmix the estimated source interactions using MOCA (applied on A_hat) to get a new unmixed A_sens.
+% 5. Perform source localization using significant A_sens.
+% 6. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
-% 6. TO-DO: Perform source localization using significant A_hat.
 %
 % Notations:
 %   n_chans  - number of EEG channels (sensors)
@@ -20,32 +18,53 @@
 %
 % Inputs:
 %   data        - (n_chans x epleng x n_epochs) time series used to estimate the sensor cross-bispectrum
-%   f1          - single frequency in Hz (low frequency)
-%   f2          - single frequency in Hz (high frequency)
+%   f1          - single frequency in Hz or frequency band, e.g., [9 11](low frequency)
+%   f2          - single frequency in Hz or frequency band, e.g., [22 24] (high frequency)
 %   n           - number of estimated sources
 %   nshuf       - number of shuffles
-%   fres        - frequency resolution
+%   frqs        - (n_frq x 1) array of frequencies
 %   srate       - sampling rate
 %   segleng     - segment length (see METH toolbox documentation)
 %   segshift    - overlap of segments (see METH toolbox documentation)
 %   epleng      - epoch length (see METH toolbox documentation)
 %   alpha       - significance level, default is 0.05.
+%   L_3D        - (n_chans x n_voxels x n_dum) leadfield tensor, dipole directions are typically 3 
+%   cortex75k   - 75k cortex structure from the NYhead for later plotting
+%   cortex2k    - 2k subset of the cortex structure
+%   isub        - subject ID, used for cortex plot
+%   DIROUT      - output directory to save images
 %
 % Outputs:
-%   P_fdr - (n x n x n) tensor of fdr-corrected p-values
-%   P     - (n x n x n) tensor of p-values (before fdr correction)
-%   A_hat - (n_chan x n) mixing matrix
+%   P_fdr  - (n x n x n) tensor of fdr-corrected p-values
+%   P      - (n x n x n) tensor of p-values (before fdr correction)
+%   A_sens - (n_chan x n) mixing matrix
 
-function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, segleng, segshift, epleng, alpha)
+function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D, cortex75k, cortex2k, isub, DIROUT)
+
+    % extract all individual frequencies in the selected bands
+    size_low = size(f1, 2);
+    size_high = size(f2, 2);
+    mask_inds_low = frqs >= f1(1) & frqs <= f1(size_low);
+    mask_inds_high = frqs >= f2(1) & frqs <= f2(size_high);
+    frqs_low = frqs(mask_inds_low); 
+    frqs_high = frqs(mask_inds_high);
+
+    % determine all frequency combinations
+    [k, j] = ndgrid(frqs_low, frqs_high);
+    frqs_combs = [k(:), j(:)]; 
+    n_combs = size(frqs_combs, 1);
+    freqpairs = zeros(n_combs, 2);
+    warning('The surrogate bispectra are going to be estimated on %d frequency pair(s).', n_combs);
+    for i = 1:n_combs
+        low = frqs_combs(i, 1);
+        high = frqs_combs(i, 2);
+        freqpairs(i, :) = [find(frqs == low), find(frqs == high)];
+    end
 
     % estimate sensor cross-bispectrum
     clear para
     para.nrun = nshuf;
-    frqs = sfreqs(fres, srate);
-    freqpairs = [find(frqs == f1), find(frqs == f2)];
-
     disp('Start calculating surrogate sensor cross-bispectra...')
-%     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data', segleng, segshift, epleng, freqpairs, para);
     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
 
     % run decomposition on the original sensor cross-bispectrum 
@@ -53,7 +72,7 @@ function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, se
 
     % fit surrogate source cross-bispectra with fixed mixing matrix 
     disp('Start calculating surrogate source cross-bispectra...')
-    clear para
+    clear para d
     para.a = A_hat;
     para.isfit_a = false;
 
@@ -68,6 +87,21 @@ function [P_fdr, P, A_hat] = bsfit_stats(data, f1, f2, n, nshuf, fres, srate, se
 
         [~, D_ishuf, ~, ~, ~] = bsfit(bs_all(:, :, :, ishuf), n, para);
         D_shuf(:, :, :, ishuf) = D_ishuf;
+    end
+    fprintf('\n');
+
+    % unmix source interactions using MOCA
+    [A_moca, F_moca] = apply_moca(L_3D, A_hat, n);
+    A_sens = A_hat * A_moca'; % combined sensor patterns
+    
+    % plot sources
+    % TO-DO: Write extra function, also plot inverse stuff, decide on a single cortex plot (and not 8)
+    % TO-DO: Do source reconstructiton and plot demixed sources
+    load cm17
+    for i = 1:n
+        source = sum(F_moca(:, :, i).^2, 2); % only a single source for now
+        f_name = [DIROUT '/F' int2str(i) '_' int2str(isub) '_'];
+        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod), [min(source, [], 'all') max(source, [], 'all')], cm17, 'demixed sources', 1, f_name)
     end
     
     % compute p-values

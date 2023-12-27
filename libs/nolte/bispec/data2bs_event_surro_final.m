@@ -19,23 +19,27 @@ function [bsall,bsori,nave]=data2bs_event_surro_final(data,segleng,segshift,eple
 %             default: para.nrun=100
 %
 % output: 
-% bsall: nchan by nchan by nchan by number of surrogate data sets
+% bsall: nchan by nchan by nchan by nfreqpairs by number of surrogate data sets
 %     tensor such that 
 %  bsall(i,j,k,m)=<x(f1)_i*x(f2)_j*conj(x(f1+f2-1)_k)> for the m.th data
-%  set. x(f1+f2-1)_k was taken from a random epoch. 
-%  where f1=freqpairs(f,1) and  f2=freqpairs(f,1),
+%  set, where f1=freqpairs(f,1) and  f2=freqpairs(f,1). 
+%  x(f1+f2-1)_k was taken from a random epoch. 
+%
 %  Note that the first shuffle is NOT the true bispectrum. bsall contains
-%  only surrogate bispectra.
+%  only surrogate bispectra. bs_orig gives the original bispectrum.
 %
 % bsori: original bispectrum without randomization
 
 % nave: number of averages
 
-[ndat,nchan]=size(data);
-maxfreqbin=sum(freqpairs)-1;
+[ndat, nchan] = size(data);
+[nf, ndum] = size(freqpairs);
+
+% maxfreqbin=sum(freqpairs)-1;
+maxfreqbin = sum([max(freqpairs(:, 1)), max(freqpairs(:, 2))]) - 1;
 
 mywindow=repmat(hanning(segleng),1,nchan);
-nrun=100; 
+nrun=100; % default number of shuffles
 if nargin>5
     if isfield(para,'mywindow');
        mywindow=repmat(para.mywindow,1,nchan);
@@ -45,10 +49,10 @@ if nargin>5
     end
 end
 
-if nrun>0
-bsall=zeros(nchan,nchan,nchan,nrun); 
+if nrun > 0
+bsall = zeros(nchan, nchan, nchan, nf, nrun); 
 else
-    bsall=[];
+    bsall = [];
 end
 
 
@@ -76,7 +80,7 @@ for j=1:nep;
     end
 end
 
-bsori = zeros(nchan, nchan, nchan);
+bsori = zeros(nchan, nchan, nchan, nf);
 fprintf('Progress of %d:', nrun);
 for kk=1:nrun+1; 
     if mod(kk, 10) == 0
@@ -86,35 +90,36 @@ for kk=1:nrun+1;
     end
 
     nave=0;
-    cs=zeros(nchan,nchan,nchan);
+    cs=zeros(nchan,nchan,nchan,nf);
     csloc=zeros(nchan,nchan,nchan);
     jcut=ceil((nep-1)*rand)+1;
     jrand=[jcut:nep, 1:jcut-1];
-  for j=1:nep;
-      for i=1:nseg; 
-         f1=freqpairs(1);f2=freqpairs(2);
-         xx=transpose(datafft(f1,:,i,j))*datafft(f2,:,i,j);
-         for k=1:nchan;
-             if kk==1;
-                  csloc(:,:,k)=xx*conj(datafft(f1+f2-1,k,i,j));
-             else 
-                  csloc(:,:,k)=xx*conj(datafft(f1+f2-1,k,i,jrand(j)));
-             end
-         end    
-         cs=cs+csloc;
-         nave=nave+1;
-      end
-     
-  end
+    for j=1:nep
+        for i=1:nseg 
+            for f=1:nf
+                f1 = freqpairs(f,1); f2 = freqpairs(f,2);
+                xx=transpose(datafft(f1,:,i,j))*datafft(f2,:,i,j);
+                for k=1:nchan
+                    if kk==1
+                      csloc(:,:,k)=xx*conj(datafft(f1+f2-1,k,i,j));
+                    else 
+                      csloc(:,:,k)=xx*conj(datafft(f1+f2-1,k,i,jrand(j)));
+                    end
+                end    
+                cs(:,:,:,f) = cs(:,:,:,f) + csloc;
+            end
+            nave=nave+1;
+        end
+    end
 
   cs=cs/nave; 
-  if kk==1;
-       bsori(:,:,:)=cs;
+  if kk==1
+       bsori(:,:,:,:)=cs;
   else
-       bsall(:,:,:,kk)=cs;  
+       bsall(:,:,:,:,kk)=cs; % nchan, nchan, nchan, nfreq, ishuf
   end
 end
-bsall = bsall(:,:,:,2:end);
+bsall = squeeze(bsall(:,:,:,:,2:end));
 fprintf('\n');
   
 

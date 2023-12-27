@@ -50,7 +50,7 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
         end
     end
     
-    % initialization?
+    % initialization
     if isempty(a)
         [a,d,erstart] = calc_parstart(bs,n);
     else
