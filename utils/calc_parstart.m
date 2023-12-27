@@ -15,17 +15,19 @@ function [a,d,erstart,model] = calc_parstart(bs,n)
         bx = [real(bx); imag(bx)];
         bx2 = pagemtimes(bx, 'transpose', bx, 'none'); 
         [u,s,v] = pagesvd(bx2);
-        a = mean(u(:,1:n,:), 3); % not optimal
+%         a_init = mean(u(:,1:n,:), 3); % not optimal
+        a_init = u(:,1:n,1); % not optimal*
+%         a = u(:,1:n); 
         % a = a_ori;
         % a = a + randn(size(a)) / 10;
         
         bs_est = zeros(nchan,nchan,nchan,nfreqpairs);
         d_est = zeros(n,n,n,nfreqpairs);
         for ifreq = 1:nfreqpairs
-            jdtjd = calc_jdtjd(a); 
+            jdtjd = calc_jdtjd(a_init); 
             jdtjdr = reshape(jdtjd,n^3,n^3); 
-            jdtBreal = calc_jdtB(a,real(bs(:,:,:,ifreq)));
-            jdtBimag = calc_jdtB(a,imag(bs(:,:,:,ifreq)));
+            jdtBreal = calc_jdtB(a_init,real(bs(:,:,:,ifreq)));
+            jdtBimag = calc_jdtB(a_init,imag(bs(:,:,:,ifreq)));
             jdtBrealr = reshape(jdtBreal,n^3,1);
             jdtBimagr = reshape(jdtBimag,n^3,1);
             dreal = inv(jdtjdr) * jdtBrealr;
@@ -33,11 +35,11 @@ function [a,d,erstart,model] = calc_parstart(bs,n)
             d = dreal + 1i * dimag;
             d = reshape(d,n,n,n); 
             
-            scale_a = mean(abs(a(:)));
+            scale_a = mean(abs(a_init(:)));
             scale_b = mean(abs(d(:)));
             lambda = (scale_a / scale_b)^(.25);
             d = d * lambda^3;
-            a = a / lambda;
+            a = a_init / lambda; 
             bs_est(:,:,:,ifreq) = calc_bsmodel(a,d);
             d_est(:,:,:,ifreq) = d;
         end

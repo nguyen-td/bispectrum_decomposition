@@ -4,9 +4,9 @@
 % 1. Estimate the (true) sensor cross-bispectrum B_true.
 % 2. Run the decomposition method on B_true to estimate A_hat (true mixing
 %    matrix) and D_hat (true source cross-bispectrum)
-% 3. Fit surrogate source cross-bispectra by holding the mixing matrix A_sens fix (i.e., only fit D_shuf).
+% 3. Fit surrogate source cross-bispectra by holding the mixing matrix A_hat fix (i.e., only fit D_shuf).
 % 4. Unmix the estimated source interactions using MOCA (applied on A_hat) to get a new unmixed A_sens.
-% 5. Perform source localization using significant A_hat.
+% 5. Perform source localization using significant A_sens.
 % 6. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
 %
@@ -92,16 +92,16 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
 
     % unmix source interactions using MOCA
     [A_moca, F_moca] = apply_moca(L_3D, A_hat, n);
-    A_sens = A_hat * A_moca; % combined sensor patterns
+    A_sens = A_hat * A_moca'; % combined sensor patterns
     
     % plot sources
     % TO-DO: Write extra function, also plot inverse stuff, decide on a single cortex plot (and not 8)
     % TO-DO: Do source reconstructiton and plot demixed sources
     load cm17
     for i = 1:n
-        source = F_moca(:, :, i); % only a single source for now
+        source = sum(F_moca(:, :, i).^2, 2); % only a single source for now
         f_name = [DIROUT '/F' int2str(i) '_' int2str(isub) '_'];
-        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod, :), [min(source, [], 'all') max(source, [], 'all')], cm17, 'mixed sources', 1, f_name)
+        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod), [min(source, [], 'all') max(source, [], 'all')], cm17, 'demixed sources', 1, f_name)
     end
     
     % compute p-values
