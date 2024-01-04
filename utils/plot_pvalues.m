@@ -5,7 +5,7 @@
 %   f1, f2        - frequencies in Hz, used for title
 %   frqs          - (n_frqs x 1) array of frequencies, used for labels
 %   isub          - subject ID, used for title
-%   chanlocs  - EEG channel locations from the EEG struct
+%   chanlocs      - EEG channel locations from the EEG struct
 %   DIROUT        - output directory to save images
 %   P_source_fdr  - (n x n x n) matrix of FDR-corrected p-values of the source cross-bispectrum
 %   P_source      - (x x n x n) matrix of p-values of the source cross-bispectrum

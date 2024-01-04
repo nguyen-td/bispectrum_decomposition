@@ -12,8 +12,10 @@ else
 end
 
 set(0,'DefaultFigureColor',[1 1 1])
-printfolder = [printfolder '/'];
-mkdir(printfolder)
+% printfolder = [printfolder '/'];
+% if ~isdir(printfolder)
+%     mkdir(printfolder)
+% end
 
 res = '150';
 
@@ -43,45 +45,53 @@ end
     
 surface_pars.myviewdir = [-1 0 0];
 figure; showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
-export_fig([printfolder 'cortex' sm '_left'], ['-r' num2str(res)], '-a2'); 
+% export_fig([printfolder 'cortex' sm '_left'], ['-r' num2str(res)], '-a2'); 
+exportgraphics(gcf, [printfolder 'cortex' sm '_left.png'])
 
 
 figure; showsurface3(vc, cortex.tri_right, surface_pars, data, varargin1{:});
-export_fig([printfolder 'cortex' sm '_right_inner'], ['-r' num2str(res)], '-a2'); 
+% export_fig([printfolder 'cortex' sm '_right_inner'], ['-r' num2str(res)], '-a2'); 
+exportgraphics(gcf, [printfolder 'cortex' sm '_right_inner.png'])
 
 
 surface_pars.myviewdir = [1 0 0];
 
 figure; showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
-export_fig([printfolder 'cortex' sm '_left_inner'], ['-r' num2str(res)], '-a2'); 
+% export_fig([printfolder 'cortex' sm '_left_inner'], ['-r' num2str(res)], '-a2'); 
+exportgraphics(gcf, [printfolder 'cortex' sm '_left_inner.png'])
+
 
 figure; showsurface3(vc, cortex.tri_right, surface_pars, data, varargin1{:});
-export_fig([printfolder 'cortex' sm '_right'], ['-r' num2str(res)], '-a2'); 
-
+% export_fig([printfolder 'cortex' sm '_right'], ['-r' num2str(res)], '-a2'); 
+exportgraphics(gcf, [printfolder 'cortex' sm '_right.png'])
 
 surface_pars.myviewdir = [-1e-10 0 1];
 surface_pars.directions = [1 1 1 1 0 0];
 
 figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
-export_fig([printfolder 'cortex' sm '_top'], ['-r' num2str(res)], '-a2'); 
+% export_fig([printfolder 'cortex' sm '_top'], ['-r' num2str(res)], '-a2'); 
+exportgraphics(gcf, [printfolder 'cortex' sm '_top.png'])
 
 
 surface_pars.myviewdir = [0 0 1];
 
 figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
-export_fig([printfolder 'cortex' sm '_top_upright'], ['-r' num2str(res)], '-a2'); 
+% export_fig([printfolder 'cortex' sm '_top_upright'], ['-r' num2str(res)], '-a2'); 
+exportgraphics(gcf, [printfolder 'cortex' sm '_top_upright.png'])
 
 
 surface_pars.myviewdir = [-1e-10 0 -1];
 
 figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
-export_fig([printfolder 'cortex' sm '_bottom'], ['-r' num2str(res)], '-a2'); 
+% export_fig([printfolder 'cortex' sm '_bottom'], ['-r' num2str(res)], '-a2'); 
+exportgraphics(gcf, [printfolder 'cortex' sm '_bottom.png'])
 
 
 surface_pars.myviewdir = [0 1e-10 -1];
 
 figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
-export_fig([printfolder 'cortex' sm '_bottom_upright'], ['-r' num2str(res)], '-a2'); 
+% export_fig([printfolder 'cortex' sm '_bottom_upright'], ['-r' num2str(res)], '-a2'); 
+exportgraphics(gcf, [printfolder 'cortex' sm '_bottom_upright.png'])
 
 
 figure; 
@@ -91,7 +101,8 @@ set(hf, 'visible', 'off')
 cb = colorbar; 
 set(cb, 'fontsize', 30)
 ylabel(cb, unit)
-export_fig([printfolder 'cortex_cbar'], ['-r' num2str(res)], '-a2')  
+% export_fig([printfolder 'cortex_cbar'], ['-r' num2str(res)], '-a2')  
+exportgraphics(gcf, [printfolder 'cortex_cbar.png'])
 
 
 % set(0,'DefaultFigureColor','remove')
