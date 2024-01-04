@@ -9,8 +9,9 @@
 % Output:
 %   A_moca - (n x n) demixing matrix, where n is the model order (number of estimated sources)
 %   F_moca - (n_voxels x n_dum x n) demixed sources
+%   F      - (n_voxels x n_dum x n) mixed sources
 
-function [A_moca, F_moca] = apply_moca(L_3D, A, n, regu)
+function [A_moca, F_moca, F] = apply_moca(L_3D, A, n, regu)
 
     % calculate 3D eLORETA inverse filter 
     if nargin < 4; regu = 0.05; end

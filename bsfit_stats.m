@@ -91,7 +91,7 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
     fprintf('\n');
 
     % unmix source interactions using MOCA
-    [A_moca, F_moca] = apply_moca(L_3D, A_hat, n);
+    [A_moca, F_moca, F] = apply_moca(L_3D, A_hat, n);
     A_sens = A_hat * A_moca'; % combined sensor patterns
     
     % plot sources
