@@ -3,6 +3,9 @@
 % Set output filename and paths
 DIROUT = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/simulations/figures';
 addpath('/Users/nguyentiendung/Desktop/Studium/Charite/matlab/eeglab')
+if ~exist(DIROUT, 'dir')
+   mkdir(DIROUT)
+end
 
 % Load the leadfield
 try
