@@ -22,6 +22,7 @@ if ~isdir(outputDataDir)
 end
     
 % load metadata
+[ALLEEG, EEG, CURRENTSET, ALLCOM] = eeglab;
 
 fs = 100;
 fres = fs;
@@ -50,9 +51,6 @@ info.prepStartTime = [' ',num2str(c(3)),'.',num2str(c(2)),'.',num2str(c(1)),'   
 info.prep.lpFilter = lpFilter;
 info.prep.hpFilter  = hpFilter;
 info.prep.filterOrder = filterOrder;
-
-
-[ALLEEG, EEG, CURRENTSET, ALLCOM] = eeglab;
 
 % exclude = [15]; 
 nsub = 18;

@@ -2,6 +2,7 @@
 
 % Set output filename and paths
 DIROUT = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/simulations/figures';
+addpath(genpath('/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition'))
 addpath('/Users/nguyentiendung/Desktop/Studium/Charite/matlab/eeglab')
 if ~exist(DIROUT, 'dir')
    mkdir(DIROUT)
@@ -18,9 +19,15 @@ load L_3D % 90 channels
 
 % Select spatially distributed patterns at n voxels randomly
 n = 4;
-rng(42)
-vox_ind = randi(1006, n, 1);
-B = L_3D(:, vox_ind, 1);
+rng(100)
+vox_ind = randi(2004, n, 1);
+B_3D = L_3D(:, vox_ind, :); 
+B = zeros(90, n);
+for b = 1:n
+    ori = randn(3, 1);
+    ori = ori / norm(ori);
+    B(:, b) = squeeze(B_3D(:, b, :)) * ori;
+end
 
 % Create mixed patterns
 M = randn(n, n);

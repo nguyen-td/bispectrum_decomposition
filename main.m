@@ -35,7 +35,7 @@ function main(nshuf, isub, varargin)
     g = finputcheck(varargin, { ...
         'n'              'integer'       { }                5;
         'alpha'          'float'         { }              0.05;
-        'freq_manual'    'string'        { 'on' 'off' }   'off';
+        'freq_manual'    'string'        { 'on' 'off' }   'on';
         'f1'             'integer'       { }              11; 
         'f2'             'integer'       { }              22; 
         'run_ica'        'string'        { 'on' 'off' }   'off';
