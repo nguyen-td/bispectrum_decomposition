@@ -78,6 +78,7 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
         else
             a_new = a;
         end
+   
         d_new_real = real(d) + reshape(par_new(nchan * n + 1:nchan * n + n^3),n,n,n);
         d_new_imag = imag(d) + reshape(par_new(nchan * n + 1 + n^3:end),n,n,n);
         d_new = d_new_real + 1i * d_new_imag;

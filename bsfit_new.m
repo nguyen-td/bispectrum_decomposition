@@ -39,7 +39,7 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
                       % within the last two iterations. Only calculated after 
                       % 7 iterations. (For bad starting values) 
                    
-    [nchan, nchan, nchan, nfreqs] = size(bs);
+    [nchan, nchan, nchan, nfreqpairs] = size(bs);
     isfit_a = true; % fit a by default unless explicitely specified otherwise
     if nargin > 2
         if isfield(para,'a')
@@ -52,7 +52,7 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
     
     % initialization
     if isempty(a)
-        [a,d,erstart] = calc_parstart_new(bs,n);
+        [a,d,erstart] = calc_parstart(bs,n);
     else
         [d,erstart] = calc_parstart_d(bs,a,n,isfit_a);
     end
@@ -63,14 +63,13 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
      
     kont = 1;
     k = 0;
-    d_new = zeros(nchan, nchan, nchan, nfreqs);
+    d_new = zeros(n, n, n, nfreqpairs);
     while kont == 1
         k = k+1;
-        err_new = 0;
-        for ifreq = 1:nfreqs 
+        for ifreq = 1:nfreqpairs 
             d_freq = d(:, :, :, ifreq);
             bs_est = calc_bsmodel(a, d_freq);
-            bsdiff = bs - bs_est;
+            bsdiff = bs(:, :, :, ifreq) - bs_est;
         
             [jtj,jtB] = calc_jtj_and_jtb(a, d_freq, bsdiff);
             npar = length(jtj);
@@ -79,15 +78,18 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
             d_new_real = real(d_freq) + reshape(par_new(nchan * n + 1:nchan * n + n^3),n,n,n); 
             d_new_imag = imag(d_freq) + reshape(par_new(nchan * n + 1 + n^3:end),n,n,n);
             d_new(:,:,:,ifreq) = d_new_real + 1i * d_new_imag;
+
+            if isfit_a
+                a = a + reshape(par_new(1:nchan * n),nchan,n); % test later if A really stayed the same
+            end
         end
-        if isfit_a
-            a_new = a + reshape(par_new(1:nchan * n),nchan,n); % sum over par_new or sth?
-        else
-            a_new = a;
+        a_new = a;
+
+        bs_est_new = zeros(nchan, nchan, nchan, nfreqpairs);
+        for ifreq = 1:nfreqpairs % parallelize calc_bsmodel? or use tensorprod?
+            bs_est_new(:, :, :, ifreq) = calc_bsmodel(a_new, d_new(:, :, :, ifreq)); 
         end
-        bs_est_new = calc_bsmodel(a_new, d_new); % calc_bsmodel needs to be adjusted 
-        err_new = err_new + norm(bs(:) - bs_est_new(:)) / norm(bs(:));
-        err_new = err_new / nfreqs;
+        err_new = norm(bs(:) - bs_est_new(:)) / norm(bs(:));
 
         if err_new < err
             alpha = alpha/10;
@@ -109,7 +111,9 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
                 kont = 0;
             end
         end
-        bs_est = calc_bsmodel(a,d);
+        for ifreq = 1:nfreqpairs
+            bs_est = calc_bsmodel(a,d(:,:,:,ifreq)); % parallelize calc_bsmodel? or use tensorprod?
+        end
     end
     err_all = err_all(1:k+1);
     bsmodel = bs_est;
