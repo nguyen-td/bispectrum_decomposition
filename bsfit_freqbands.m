@@ -60,6 +60,8 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
     err = erstart;
     err_all = zeros(kmax+1,1);
     err_all(1) = err;
+    err_news = zeros(kmax+1,1);
+    err_news(1) = err;
      
     kont = 1;
     k = 0;
@@ -90,6 +92,7 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
             bs_est_new(:, :, :, ifreq) = calc_bsmodel(a_new, d_new(:, :, :, ifreq)); 
         end
         err_new = norm(bs(:) - bs_est_new(:)) / norm(bs(:));
+        err_news(k+1) = err_new;
 
         if err_new < err
             alpha = alpha/10;
@@ -116,6 +119,7 @@ function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
         end
     end
     err_all = err_all(1:k+1);
+    err_news = err_news(1:k+1);
     bsmodel = bs_est;
 end
    

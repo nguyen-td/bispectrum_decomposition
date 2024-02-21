@@ -68,7 +68,9 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
 
     % run decomposition on the original sensor cross-bispectrum 
-    [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
+%     [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
+%     para.a = randi([-100, 100], 90, 5);
+    [A_hat, D_hat, ~, ~, ~] = bsfit_new(bs_orig, n);
 
     % fit surrogate source cross-bispectra with fixed mixing matrix 
     disp('Start calculating surrogate source cross-bispectra...')
