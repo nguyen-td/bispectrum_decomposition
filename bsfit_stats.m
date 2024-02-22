@@ -5,8 +5,9 @@
 % 2. Run the decomposition method on B_true to estimate A_hat (true mixing
 %    matrix) and D_hat (true source cross-bispectrum)
 % 3. Fit surrogate source cross-bispectra by holding the mixing matrix A_hat fix (i.e., only fit D_shuf).
-% 4. Unmix the estimated source interactions using MOCA (applied on A_hat) to get a new unmixed A_sens.
-% 5. Perform source localization using significant A_sens.
+% 4. Unmix the estimated pattern A_hat and cross-bispectrum D_hat using MOCA to get the demixed pattern 
+%    A_demixed and demixed cross-bispectrum D_demixed.
+% 5. Perform source localization using significant demixed pattern A_demixed.
 % 6. Compute p-values based on the absolute values of the estimate source cross-bispectra.
 %    The result will be a (n x n x n) tensor of p-values.
 %
@@ -35,11 +36,11 @@
 %   DIROUT      - output directory to save images
 %
 % Outputs:
-%   P_fdr  - (n x n x n) tensor of fdr-corrected p-values
-%   P      - (n x n x n) tensor of p-values (before fdr correction)
-%   A_sens - (n_chan x n) mixing matrix
+%   P_fdr     - (n x n x n) tensor of fdr-corrected p-values
+%   P         - (n x n x n) tensor of p-values (before fdr correction)
+%   A_demixed - (n_chan x n) mixing matrix
 
-function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D, cortex75k, cortex2k, isub, DIROUT)
+function [P_fdr, P, A_demixed] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D, cortex75k, cortex2k, isub, DIROUT)
 
     % extract all individual frequencies in the selected bands
     size_low = size(f1, 2);
@@ -70,7 +71,7 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
     % run decomposition on the original sensor cross-bispectrum 
 %     [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
 %     para.a = randi([-100, 100], 90, 5);
-    [A_hat, D_hat, ~, ~, ~] = bsfit_new(bs_orig, n);
+    [A_hat, D_hat, ~, ~, ~] = bsfit_freqbands(bs_orig, n);
 
     % fit surrogate source cross-bispectra with fixed mixing matrix 
     disp('Start calculating surrogate source cross-bispectra...')
@@ -87,25 +88,16 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
             fprintf('.');
         end
 
-        [~, D_ishuf, ~, ~, ~] = bsfit(bs_all(:, :, :, ishuf), n, para);
+        [~, D_ishuf, ~, ~, ~] = bsfit_freqbands(bs_all(:, :, :, ishuf), n, para);
         D_shuf(:, :, :, ishuf) = D_ishuf;
     end
     fprintf('\n');
 
-    % unmix source interactions using MOCA
+    % unmix the source interactions using MOCA
     [A_moca, F_moca, F] = apply_moca(L_3D, A_hat, n);
-    A_sens = A_hat * A_moca'; % combined sensor patterns
-    
-    % plot sources
-    % TO-DO: Write extra function, also plot inverse stuff, decide on a single cortex plot (and not 8)
-    % TO-DO: Do source reconstructiton and plot demixed sources
-    load cm17
-    for i = 1:n
-        source = sum(F_moca(:, :, i).^2, 2); % only a single source for now
-        f_name = [DIROUT '/F' int2str(i) '_' int2str(isub) '_'];
-        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod), [min(source, [], 'all') max(source, [], 'all')], cm17, 'demixed sources', 1, f_name)
-    end
-    
+    A_demixed = A_hat * A_moca'; % unmix sensor pattern
+    D_demixed = calc_bsmodel(A_moca', D_hat); % unmix source cross-bispectrum
+
     % compute p-values
     P = sum(abs(D_hat) < abs(D_shuf), 4) ./ nshuf;
     P(P==0) = 1 / nshuf;
@@ -114,5 +106,14 @@ function [P_fdr, P, A_sens] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng,
     [p_fdr, ~] = fdr(P, alpha);
     P_fdr = P;
     P_fdr(P > p_fdr) = 1;
+
+    % plot sources
+    % TO-DO: Write extra function, also plot inverse stuff, decide on a single cortex plot (and not 8)
+    load cm17
+    for i = 1:n
+        source = sum(F_moca(:, :, i).^2, 2); % only a single source for now
+        f_name = [DIROUT '/F' int2str(i) '_' int2str(isub) '_'];
+        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod), [min(source, [], 'all') max(source, [], 'all')], cm17, 'demixed sources', 1, f_name)
+    end
 
 end
