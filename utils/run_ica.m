@@ -24,6 +24,6 @@ function run_ica(EEG, n, isub, DIROUT)
             topoplot(W(:, i), EEG.chanlocs, 'electrodes', 'on'); clim([min(W, [], 'all') max(W, [], 'all')])
         end
     end
-    save_WICA = [DIROUT '/W_ICA_' int2str(isub) '.png'];
+    save_WICA = [DIROUT 'W_ICA_' int2str(isub) '.png'];
     exportgraphics(gcf, save_WICA)
 end

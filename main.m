@@ -20,11 +20,11 @@ function main(nshuf, isub, varargin)
     % set directory paths
 %     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
 %     DIROUT = '/data/tdnguyen/data/p_carracer'; % save directory
-    DIROUT = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data/figures';
+    DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
 %     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
 %     f_path = '/data/tdnguyen/git_repos/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
-    f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/MotorImag/data';
+    f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
 
     if ~exist(DIROUT, 'dir')
         mkdir(DIROUT)
@@ -44,8 +44,8 @@ function main(nshuf, isub, varargin)
     if ischar(g), error(g); end
 
     % load data
-    sub = ['vp' num2str(isub)];
-    f_name = ['prep_' sub '.set'];
+    sub = 
+    f_name = ['sub-032' isub '_EC.set']; % load LEMON eyes-closed data
     
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
@@ -54,11 +54,6 @@ function main(nshuf, isub, varargin)
     if strcmpi(g.run_ica, 'on')
         run_ica(EEG, g.n, isub, DIROUT)
     end
-    
-%     % epoching
-%     epoch = [1 3]; % from 1 second after stimulus onset to 3 seconds after stimulus onset
-%     EEG = eeg_checkset(EEG);
-%     EEG = pop_epoch(EEG, { }, epoch, 'epochinfo', 'yes');
     
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
@@ -78,19 +73,25 @@ function main(nshuf, isub, varargin)
         
     % test significance of the fitted source cross-bispectrum within subjects
     [L_3D, cortex75k, cortex2k] = reduce_leadfield(EEG); 
-    [P_source_fdr, P_source, A] = bsfit_stats(data, f1, f2, g.n, nshuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, cortex75k, cortex2k, isub, DIROUT);    
+    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats(data, f1, f2, g.n, nshuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);    
 
-    % create plots
+    % plot p-values
     if strcmpi(g.freq_manual, 'off')
-        plot_pvalues(A, f1, f2, frqs, isub, EEG.chanlocs, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
+        plot_pvalues(f1, f2, frqs, isub, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
     else
-        plot_pvalues(A, f1, f2, frqs, isub, EEG.chanlocs, DIROUT, P_source_fdr, P_source)
+        plot_pvalues(f1, f2, frqs, isub, DIROUT, P_source_fdr, P_source)
     end
 
-%     save_P = ['/P_' sub '.mat'];
-%     save_A = ['/A_' sub '.mat'];
-% 
-%     save(strcat(DIROUT, save_P), '/P_source_fdr', '-v7.3');
-%     save(strcat(DIROUT, save_A), '/A', '-v7.3');
+    % plot estimated and demixed spatial patterns
+    plot_topomaps(A_hat, g.n, EEG.chanlocs, isub, 'estimated', DIROUT) 
+    plot_topomaps(A_demixed, g.n, EEG.chanlocs, isub, 'demixed', DIROUT)
+
+    % plot sources
+    load cm17
+    plot_sources(F_moca, F, g.n, cortex75k, cortex2k, [], cm17, isub, DIROUT)
     
+    % plot D_hat and D_demixed
+    plot_bispectra(D_hat, f1, f2, isub, 'estimated', DIROUT)
+    plot_bispectra(D_demixed, f1, f2, isub, 'demixed', DIROUT)
+
 end

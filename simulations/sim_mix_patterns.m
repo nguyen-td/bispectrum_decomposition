@@ -2,9 +2,9 @@
 
 %% Set output filename and paths
 clear
-DIROUT = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/simulations/figures';
-addpath(genpath('/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition'))
-addpath('/Users/nguyentiendung/Desktop/Studium/Charite/matlab/eeglab')
+DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/simulations/figures/';
+addpath(genpath('/Users/nguyentiendung/GitHub/bispectrum_decomposition/'))
+addpath('/Users/nguyentiendung/GitHub/eeglab')
 if ~exist(DIROUT, 'dir')
    mkdir(DIROUT)
 end
@@ -47,8 +47,8 @@ plot_sources(F_moca, F, n, sa.cortex75K, sa.cortex2K, vox_ind, cm17, '', DIROUT)
 %% Plot and save topomaps of mixed and demixed patterns
 load chanlocs 
 eeglab
-plot_topomaps(B, n, chanlocs, 'original', DIROUT) 
-plot_topomaps(A, n, chanlocs, 'mixed', DIROUT)
+plot_topomaps(B, n, chanlocs, '', 'original', DIROUT) 
+plot_topomaps(A, n, chanlocs, '', 'mixed', DIROUT)
 
 B_hat = A * A_moca'; % demixed patterns
-plot_topomaps(B_hat, n, chanlocs, 'demixed', DIROUT) 
+plot_topomaps(B_hat, n, chanlocs, '', 'demixed', DIROUT) 

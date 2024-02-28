@@ -30,17 +30,18 @@
 %   epleng      - epoch length (see METH toolbox documentation)
 %   alpha       - significance level, default is 0.05.
 %   L_3D        - (n_chans x n_voxels x n_dum) leadfield tensor, dipole directions are typically 3 
-%   cortex75k   - 75k cortex structure from the NYhead for later plotting
-%   cortex2k    - 2k subset of the cortex structure
-%   isub        - subject ID, used for cortex plot
-%   DIROUT      - output directory to save images
 %
 % Outputs:
 %   P_fdr     - (n x n x n) tensor of fdr-corrected p-values
 %   P         - (n x n x n) tensor of p-values (before fdr correction)
-%   A_demixed - (n_chan x n) mixing matrix
+%   F         - (n_voxels x n_dum x n) mixed sources
+%   F_moca    - (n_voxels x n_dum x n) demixed sources after MOCA
+%   A_hat     - (n_chan x n) estimated spatial pattern (mixing matrix)
+%   A_demixed - (n_chan x n) demixed spatial pattern 
+%   D_hat     - (n x n x n) estimated source cross-bispectrum
+%   D_demixed - (n x n x n) demixed source cross-bispectrum
 
-function [P_fdr, P, A_demixed] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D, cortex75k, cortex2k, isub, DIROUT)
+function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D)
 
     % extract all individual frequencies in the selected bands
     size_low = size(f1, 2);
@@ -93,10 +94,10 @@ function [P_fdr, P, A_demixed] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segle
     end
     fprintf('\n');
 
-    % unmix the source interactions using MOCA
+    % demix the source interactions using MOCA
     [A_moca, F_moca, F] = apply_moca(L_3D, A_hat, n);
-    A_demixed = A_hat * A_moca'; % unmix sensor pattern
-    D_demixed = calc_bsmodel(A_moca', D_hat); % unmix source cross-bispectrum
+    A_demixed = A_hat * A_moca'; % demix sensor pattern
+    D_demixed = calc_bsmodel(A_moca', D_hat); % demix source cross-bispectrum
 
     % compute p-values
     P = sum(abs(D_hat) < abs(D_shuf), 4) ./ nshuf;
@@ -106,14 +107,5 @@ function [P_fdr, P, A_demixed] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segle
     [p_fdr, ~] = fdr(P, alpha);
     P_fdr = P;
     P_fdr(P > p_fdr) = 1;
-
-    % plot sources
-    % TO-DO: Write extra function, also plot inverse stuff, decide on a single cortex plot (and not 8)
-    load cm17
-    for i = 1:n
-        source = sum(F_moca(:, :, i).^2, 2); % only a single source for now
-        f_name = [DIROUT '/F' int2str(i) '_' int2str(isub) '_'];
-        allplots_cortex_nyhead(cortex75k, source(cortex2k.in_to_cortex75K_geod), [min(source, [], 'all') max(source, [], 'all')], cm17, 'demixed sources', 1, f_name)
-    end
 
 end
