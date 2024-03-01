@@ -70,9 +70,8 @@ function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats
     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
 
     % run decomposition on the original sensor cross-bispectrum 
-%     [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
-%     para.a = randi([-100, 100], 90, 5);
-    [A_hat, D_hat, ~, ~, ~] = bsfit_freqbands(bs_orig, n);
+    [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
+%     [A_hat, D_hat, ~, ~, ~] = bsfit_freqbands(bs_orig, n);
 
     % fit surrogate source cross-bispectra with fixed mixing matrix 
     disp('Start calculating surrogate source cross-bispectra...')
@@ -89,9 +88,10 @@ function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats
             fprintf('.');
         end
 
-        [~, D_ishuf, ~, ~, ~] = bsfit_freqbands(bs_all(:, :, :, ishuf), n, para);
+        [~, D_ishuf, ~, ~, ~] = bsfit(bs_all(:, :, :, ishuf), n, para);
+%         [~, D_ishuf, ~, ~, ~] = bsfit_freqbands(bs_all(:, :, :, ishuf), n, para);
         D_shuf(:, :, :, ishuf) = D_ishuf;
-    end
+        ends
     fprintf('\n');
 
     % demix the source interactions using MOCA

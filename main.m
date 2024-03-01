@@ -44,8 +44,8 @@ function main(nshuf, isub, varargin)
     if ischar(g), error(g); end
 
     % load data
-    sub = 
-    f_name = ['sub-032' isub '_EC.set']; % load LEMON eyes-closed data
+    sub = ['sub-032' num2str(isub)];
+    f_name = [sub '/' sub '_EC.set']; % load LEMON eyes-closed data
     
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
