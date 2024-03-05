@@ -1,15 +1,13 @@
-% Reduce the leadfield to match the EEG channels of the data.
+% Create matrix containing the 2D positions of sensors in a plane for later isualization.
 % Please make sure to download the leadfield beforehand: https://www.parralab.org/nyhead/
 %
 % Input:
 %   EEG  - EEG struct
 %
 % Output:
-%   L_3D            - (n_chans x n_voxels x dip_dir) leadfield tensor, dipole directions are typically 3
-%   cortex75k       - cortex structure from the NYhead for later plotting
-%   cortex2k        - 2k subset of the cortex structure
+%   locs_2D - positions of sensors in a plan (for visualization of topographies using Guido's routines)
 
-function [L_3D, cortex75k, cortex2k] = reduce_leadfield(EEG)
+function locs_2D = create_locs_2D(EEG)
 
     % load the leadfield
     try
@@ -28,10 +26,7 @@ function [L_3D, cortex75k, cortex2k] = reduce_leadfield(EEG)
         warning('Not enough channels, use a larger leadfield matrix.')
     end
     
-    % 3D leadfield for the selected subset of channels
-    L_3D = sa.cortex75K.V_fem(idx_chans, sa.cortex2K.in_from_cortex75K, :);
-
-    % save cortex structures for later plotting
-    cortex75k = sa.cortex75K;
-    cortex2k = sa.cortex2K;
+    % locs_2D structure for the selected subset of channels
+    locs_2D = sa.locs_2D(idx_chans,:);
+    locs_2D(:, 1) = 1:length(idx_chans); 
 end

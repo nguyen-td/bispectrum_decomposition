@@ -1,5 +1,5 @@
 % addpath(genpath('d:/nolte/meth'));
-addpath /Volumes/data/data/Schizophrenie
+addpath(genpath('/Volumes/PortableSSD/Schizophrenie/'))
 load sa_eeg
 load mri
 load allnames
@@ -16,8 +16,8 @@ maxfreq=51;
 % save A A 
 load A 
 %%
-    igroup=1; %healthy group
-    isub=12; %subject 12
+igroup=1; %healthy group
+isub=12; %subject 12
     
 fig_dir = '../figures/';
 results_dir = '../results/';

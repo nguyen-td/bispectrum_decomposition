@@ -58,14 +58,13 @@ if nep<10
 end
 
 if nrun>0
-    bsall = zeros(nchan,nf,nf,nrun); % bispectrum stat
+    bsall = zeros(nchan,nf,nf,nrun+1); 
 else
     bsall = [];
 end
 
-bsori = zeros(nchan,nf,nf); % bispectrum
-bsallnr = zeros(nchan,nf,nf); % NEW
-nave = 0; % NEW
+bsallnr = zeros(nchan,nf,nf,nrun+1); 
+nave = 0; 
 
 fprintf('Progress of %d:', nrun);
 % for irun = 1:nrun+1
@@ -112,7 +111,7 @@ parfor irun = 1:nrun+1
                 end
             end
         end
-        bsall(:,:,:,irun) = cs; bsallnr = csnr;
+        bsall(:,:,:,irun) = cs; bsallnr(:,:,:,irun) = csnr;
 %         bsall(:,:,:,irun) = cs; bsallnr(:,:,:) = csnr;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     else % Added JDVDV on 05.07.23 to generate surrogate data for stat analysis
@@ -153,3 +152,5 @@ parfor irun = 1:nrun+1
         bsall(:,:,:,irun) = cs; %bsallnr(:,:,:,irun) = csnr;
     end
 end
+bsallnr = bsallnr(:,:,:,1); % normalized bispectrum, only for the true shuffle
+fprintf('\n');

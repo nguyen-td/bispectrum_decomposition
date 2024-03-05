@@ -1,24 +1,18 @@
 % Find the peaks (fundametal frequency and its first harmonic) of the power spectrum using FOOOF.
 %
 % Input:
-%   isub  - index of subject (the pipeline works for a single subject)
+%   EEG - EEG struct containing the sensor-level dataset
+%
+% Optional inputs:
+%   alpha     - significance level, default is 0.05.
+%   poolsize  - number of workers in the parellel pool (check parpool documentation) for parallel computing
 %
 % Output:
 %   first_peak  - mean (over channels) of the first peaks in the power spectrum (fundamental frequency)
 %   second_peak - mean (over channels) of the first peaks in the power spectrum (first harmonic)
+%   fooof_results 
 
-function [mean_first_peak, mean_second_peak] = find_peak_fooof(isub)
-
-    % add paths and set directory
-    addpath(genpath('/Users/nguyentiendung/GitHub/fooof_mat/'))
-    addpath('/Users/nguyentiendung/GitHub/eeglab')
-    f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
-
-    % load data
-    eeglab
-    sub = ['sub-032' num2str(isub)];
-    f_name = [sub '/' sub '_EC.set']; % load LEMON eyes-closed data
-    EEG = pop_loadset(f_name, f_path);
+function [mean_first_peak, mean_second_peak, fooof_results] = find_peak_fooof(EEG)
 
     % compute power spectrum
     [psd, freqs] = pwelch(EEG.data', 100, 50, [], EEG.srate);
