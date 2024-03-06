@@ -19,8 +19,6 @@ function main_preanalysis(nshuf, isub, varargin)
     f_path = '/data/tdnguyen/data/lemon/data/';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/MotorImag/data/';
-    addpath('/Users/nguyentiendung/GitHub/eeglab')
-    addpath(genpath('/Users/nguyentiendung/GitHub/fooof_mat/'))
     
     if ~exist(DIROUT, 'dir')
         mkdir(DIROUT)
