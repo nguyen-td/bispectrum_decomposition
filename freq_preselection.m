@@ -30,7 +30,7 @@ function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, nshuf,
     
     % compute univariate sensor bispectrum
     clear para
-    ara.nrun = nshuf;
+    para.nrun = nshuf;
     
     disp('Start calculating surrogate univariate sensor bispectra for frequency selection...')
     parpool(poolsize)
