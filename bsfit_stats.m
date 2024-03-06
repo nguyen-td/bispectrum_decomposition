@@ -91,7 +91,7 @@ function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats
         [~, D_ishuf, ~, ~, ~] = bsfit(bs_all(:, :, :, ishuf), n, para);
 %         [~, D_ishuf, ~, ~, ~] = bsfit_freqbands(bs_all(:, :, :, ishuf), n, para);
         D_shuf(:, :, :, ishuf) = D_ishuf;
-        ends
+    end
     fprintf('\n');
 
     % demix the source interactions using MOCA

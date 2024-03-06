@@ -29,7 +29,7 @@ function [bsall,bsallnr,nave]=data2bs_univar_stat(data,segleng,segshift,epleng,m
 %  cs(i,f1,f2)=<x(f1)_i*x(f2)_i*conj(x(f1+f2-1)_i)>
 %  where  x is the Fourier-transform of the data of each segment
 %
-% csn:  corresponding normalization factor defined by
+% bsallnr: corresponding normalization factor defined by
 %       csn(i,f1,f2)=N_i(f1) N_i(f2) N_i(f1+f2-1);
 %       where N_p(f) is defined as (<abs(x(f)_p)^3>)^(1/3)
 %       Bicoherence can be calculated as cs./csn

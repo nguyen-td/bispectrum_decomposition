@@ -23,8 +23,8 @@ for isub = 1:length(listing)
         EEG_EO = pop_loadset([f_name, listing(isub).name, '_EO.set']);
 
         % plot PSDs and save them as .png files
-        plot_spectra(EEG_EC, 'EC', listing, result_dir, isub)
-        plot_spectra(EEG_EO, 'EO', listing, result_dir, isub)
+        plot_spectra(EEG_EC, 'EC', listing(isub).name, result_dir)
+        plot_spectra(EEG_EO, 'EO', listing(isub).name, result_dir)
     end
 end
 
