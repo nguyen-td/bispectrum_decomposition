@@ -14,11 +14,11 @@
 function main_preanalysis(nshuf, isub, varargin)
 
     % set and add paths
-%     DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
-    DIROUT = '/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/';
-    f_path = '/data/tdnguyen/data/lemon/data/';
+    DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
+%     DIROUT = '/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/';
+%     f_path = '/data/tdnguyen/data/lemon/data/';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
-%     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/MotorImag/data/';
+    f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/MotorImag/data/';
     
     if ~exist(DIROUT, 'dir')
         mkdir(DIROUT)
@@ -33,10 +33,10 @@ function main_preanalysis(nshuf, isub, varargin)
     if ischar(g), error(g); end
 
     % load data
-    sub = ['sub-032' num2str(isub)];
-    f_name = [sub '/' sub '_EC.set']; % load LEMON eyes-closed data
-%     sub = ['prep_vp' num2str(isub)];
-%     f_name = [sub '.set']; % load motor imagery data
+%     sub = ['sub-032' num2str(isub)];
+%     f_name = [sub '/' sub '_EC.set']; % load LEMON eyes-closed data
+    sub = ['prep_vp' num2str(isub)];
+    f_name = [sub '.set']; % load motor imagery data
     
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
