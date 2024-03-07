@@ -23,6 +23,7 @@ function [mean_first_peak, mean_second_peak, fooof_results] = find_peak_fooof(EE
     f_range = [1, 40];
 
     % Run FOOOF
+    py.importlib.import_module('fooof')
     n_chan = size(psd, 2);
     first_peak = zeros(1, n_chan);
     second_peak = zeros(1, n_chan);
