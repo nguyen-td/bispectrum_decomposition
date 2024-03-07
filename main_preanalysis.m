@@ -9,7 +9,9 @@
 %   isub  - index of subject (the pipeline works for a single subject)
 %
 % Optional inputs:
+%   alpha    - significance level, default is 0.05.
 %   poolsize - number of workers in the parellel pool (check parpool documentation) for parallel computing
+%   f1       - fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
 
 function main_preanalysis(nshuf, isub, varargin)
 
@@ -29,6 +31,7 @@ function main_preanalysis(nshuf, isub, varargin)
     g = finputcheck(varargin, { ...
         'alpha'          'float'         { }              0.05;
         'poolsize'       'integer'       { }              1;
+        'f1'             'integer'       { }              0;
         });
     if ischar(g), error(g); end
 
@@ -75,10 +78,15 @@ function main_preanalysis(nshuf, isub, varargin)
     figure; showtfinhead(abs(bicoh(:, freq_inds, freq_inds)), locs_2D, para); 
         exportgraphics(gcf, [DIROUT 'B_sensor_head_normalized_' int2str(isub) '.png'])
         
-    % find peaks using FOOOF and plot last fit
-    [first_peak, second_peak, fooof_results] = find_peak_fooof(EEG);
-    fooof_plot(fooof_results); xlabel('Frequency (Hz)'); ylabel('Power');
-        exportgraphics(gcf, [DIROUT 'fooof_' lower(int2str(isub)) '.png'])
+    % find peaks using FOOOF and plot last fit if no f1 is passed
+    if g.f1 == 0 % 
+        [first_peak, second_peak, fooof_results] = find_peak_fooof(EEG);
+        fooof_plot(fooof_results); xlabel('Frequency (Hz)'); ylabel('Power');
+            exportgraphics(gcf, [DIROUT 'fooof_' lower(int2str(isub)) '.png'])
+    else
+        first_peak = g.f1;
+        second_peak = 2 * g.f1;
+    end
     
     % plot PSD and indicate the FOOOF peaks
     plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(second_peak) ' Hz'], DIROUT, ...
