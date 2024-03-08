@@ -33,13 +33,13 @@ function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, nshuf,
     para.nrun = nshuf;
     
     disp('Start calculating surrogate univariate sensor bispectra for frequency selection...')
-    parpool(poolsize)
+%     parpool(poolsize)
     [bsall, bsallnr] = data2bs_univar_stat(data(:, :)', segleng, segshift, epleng, length(frqs) - 1, para);
     
 %     % shut down current parallel pool
-    poolobj = gcp('nocreate');
-    delete(poolobj);
-    
+%     poolobj = gcp('nocreate');
+%     delete(poolobj);
+%     
     % compute bicoherence
     bispec_orig = squeeze(bsall(:, :, :, 1)); % original bispectral tensor
     bicoh = bispec_orig ./ bsallnr;

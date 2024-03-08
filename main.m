@@ -50,6 +50,11 @@ function main(nshuf, isub, varargin)
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
 
+%     % epoching
+%     epoch = [1 3]; % from 1 second after stimulus onset to 3 seconds after stimulus onset
+%     EEG = eeg_checkset(EEG);
+%     EEG = pop_epoch(EEG, { }, epoch, 'epochinfo', 'yes');
+
     % compute and plot ICA components (optional)
     if strcmpi(g.run_ica, 'on')
         run_ica(EEG, g.n, isub, DIROUT)

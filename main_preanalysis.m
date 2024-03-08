@@ -12,6 +12,7 @@
 %   alpha    - significance level, default is 0.05.
 %   poolsize - number of workers in the parellel pool (check parpool documentation) for parallel computing
 %   f1       - fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
+%   epleng   - length of epochs in seconds, default is 20 seconds
 
 function main_preanalysis(nshuf, isub, varargin)
 
@@ -32,6 +33,7 @@ function main_preanalysis(nshuf, isub, varargin)
         'alpha'          'float'         { }              0.05;
         'poolsize'       'integer'       { }              1;
         'f1'             'integer'       { }              0;
+        'epleng'         'integer'       { }              10;
         });
     if ischar(g), error(g); end
 
@@ -46,9 +48,9 @@ function main_preanalysis(nshuf, isub, varargin)
 
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
-    segleng = EEG.pnts;
+    segleng = EEG.srate * g.epleng; 
     segshift = floor(segleng/2);
-    epleng = EEG.pnts; 
+    epleng = EEG.srate * g.epleng; % create epochs of [e.epleng] seconds 
     fres = EEG.srate;
     
     % compute univariate bicoherence and get the p-values
