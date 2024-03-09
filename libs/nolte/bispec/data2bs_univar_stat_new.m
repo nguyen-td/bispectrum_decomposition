@@ -75,6 +75,7 @@ end
 
 csnr=zeros(nchan,nf,nf);
 csn=zeros(nchan,2*nf-1);
+fprintf('Progress of %d:', nrun);
 for irun = 1:nrun+1
     if mod(irun, 10) == 0
         fprintf('%d', irun);
@@ -125,4 +126,4 @@ for irun = 1:nrun+1
     bsall(:,:,:,irun) = cs; 
 end
 fprintf('\n');
-end
+fpring('Done \n')
