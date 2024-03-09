@@ -34,7 +34,7 @@ function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, nshuf,
     
     disp('Start calculating surrogate univariat sensor bispectra for frequency selection...')
 %     parpool(poolsize)
-    [bsall, bsallnr] = data2bs_univar_stat(data(:, :)', segleng, segshift, epleng, length(frqs) - 1, para);
+    [bsall, bsallnr] = data2bs_univar_stat_new(data(:, :)', segleng, segshift, epleng, length(frqs) - 1, para);
     
 %     % shut down current parallel pool
 %     poolobj = gcp('nocreate');

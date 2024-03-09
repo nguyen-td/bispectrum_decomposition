@@ -12,7 +12,7 @@
 %   alpha    - significance level, default is 0.05.
 %   poolsize - number of workers in the parellel pool (check parpool documentation) for parallel computing
 %   f1       - fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
-%   epleng   - length of epochs in seconds, default is 20 seconds
+%   epleng   - length of epochs in seconds, default is 10 seconds
 
 function main_preanalysis(nshuf, isub, varargin)
 
@@ -110,6 +110,12 @@ function main_preanalysis(nshuf, isub, varargin)
     rtp2 = data2bs_threenorm(data(:, :)', segleng, segshift, epleng, freqpairs2);
     bicoh1 = bs_orig1 ./ rtp1;
     bicoh2 = bs_orig2 ./ rtp2;
+    
+    % plot single matrices of net bispectra (collapsed over one channel dimension)
+    plot_bispectra_univ(frqs, bs_orig1, isub, 'Unnormalized net cross-bispectrum (f1, f1, f1+f1)', DIROUT, 'bispec_type', '', 'label_x', 'channel', 'label_y', 'channel') 
+    plot_bispectra_univ(frqs, bicoh1, isub, 'Normalized net cross-bispectrum (f1, f1, f1+f1)', DIROUT, 'bispec_type', '', 'label_x', 'channel', 'label_y', 'channel')
+    plot_bispectra_univ(frqs, bs_orig2, isub, 'Unnormalized net cross-bispectrum (f1, f2, f1+f2)', DIROUT, 'bispec_type', '', 'label_x', 'channel', 'label_y', 'channel') 
+    plot_bispectra_univ(frqs, bicoh2, isub, 'Normalized net cross-bispectrum (f1, f2, f1+f2)', DIROUT, 'bispec_type', '', 'label_x', 'channel', 'label_y', 'channel')
     
     % plot matrices over head
     clear plt_bispec_para

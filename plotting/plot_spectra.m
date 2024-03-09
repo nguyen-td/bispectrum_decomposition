@@ -26,7 +26,7 @@ function plot_spectra(EEG, condition, subject, result_dir, varargin)
     if strcmpi(g.title_str, [])
         exportgraphics(gcf, [result_dir, subject, '_', condition, '_psd.png']);
     else
-        exportgraphics(gcf, [g.title_str '.png']);
+        exportgraphics(gcf, [result_dir, g.title_str '.png']);
     end
 
 end
