@@ -12,7 +12,7 @@
 %   alpha    - significance level, default is 0.05.
 %   poolsize - number of workers in the parellel pool (check parpool documentation) for parallel computing
 %   f1       - fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
-%   epleng   - length of epochs in seconds, default is 1 second
+%   epleng   - length of epochs in seconds, default is 2 seconds
 
 function main_preanalysis(nshuf, isub, varargin)
 
@@ -33,7 +33,7 @@ function main_preanalysis(nshuf, isub, varargin)
         'alpha'          'float'         { }              0.05;
         'poolsize'       'integer'       { }              1;
         'f1'             'integer'       { }              0;
-        'epleng'         'integer'       { }              1;
+        'epleng'         'integer'       { }              2;
         });
     if ischar(g), error(g); end
 
