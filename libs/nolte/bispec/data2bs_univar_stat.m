@@ -154,4 +154,4 @@ parfor irun = 1:nrun+1
 end
 bsallnr = bsallnr(:,:,:,1); % normalized bispectrum, only for the true shuffle
 fprintf('\n');
-fpring('Done \n')
+fprintf('Done \n')

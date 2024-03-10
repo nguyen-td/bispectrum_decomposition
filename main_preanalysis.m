@@ -12,7 +12,7 @@
 %   alpha    - significance level, default is 0.05.
 %   poolsize - number of workers in the parellel pool (check parpool documentation) for parallel computing
 %   f1       - fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
-%   epleng   - length of epochs in seconds, default is 10 seconds
+%   epleng   - length of epochs in seconds, default is 1 second
 
 function main_preanalysis(nshuf, isub, varargin)
 
@@ -33,7 +33,7 @@ function main_preanalysis(nshuf, isub, varargin)
         'alpha'          'float'         { }              0.05;
         'poolsize'       'integer'       { }              1;
         'f1'             'integer'       { }              0;
-        'epleng'         'integer'       { }              10;
+        'epleng'         'integer'       { }              1;
         });
     if ischar(g), error(g); end
 
@@ -45,6 +45,23 @@ function main_preanalysis(nshuf, isub, varargin)
     
     % load preprocessed EEG
     EEG = pop_loadset(f_name, f_path);
+
+    % find peaks using FOOOF and plot last fit if no f1 is passed
+    if g.f1 == 0 % 
+        [first_peak, second_peak, fooof_results] = find_peak_fooof(EEG);
+        fooof_plot(fooof_results); xlabel('Frequency (Hz)'); ylabel('Power');
+            exportgraphics(gcf, [DIROUT 'fooof_' lower(int2str(isub)) '.png'])
+    else
+        first_peak = g.f1;
+        second_peak = 2 * g.f1;
+    end
+
+    % plot PSD and indicate the FOOOF peaks
+    plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(second_peak) ' Hz'], DIROUT, ...
+        'title_str', ['psd_' int2str(isub)], 'f1', first_peak)
+
+    % downsample data to 100 Hz
+    EEG = downsampling(EEG, 100);
 
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
@@ -59,40 +76,33 @@ function main_preanalysis(nshuf, isub, varargin)
 
     % get 2D positions of sensors and set up plotting
     locs_2D = create_locs_2D(EEG);
-    max_freq = 60; % in Hz
-    freq_res = frqs(2) - frqs(1);
-    freq_inds = 1:max_freq * 1/freq_res;
+%     max_freq = 60; % in Hz
+%     freq_res = frqs(2) - frqs(1);
+%     freq_inds = 1:max_freq * 1/freq_res;
     
     % plot single matrices
     plot_pvalues_univ(frqs, isub, DIROUT, P_sens_fdr)
-    plot_bispectra_univ(frqs, bispec(:, freq_inds, freq_inds), isub, 'Unnormalized mean', DIROUT) % plot bispectra/bicoherence between 0 - 60 Hz
-    plot_bispectra_univ(frqs, bicoh(:, freq_inds, freq_inds), isub, 'Normalized mean', DIROUT)
+%     plot_bispectra_univ(frqs, bispec(:, freq_inds, freq_inds), isub, 'Unnormalized mean', DIROUT) % plot bispectra/bicoherence between 0 - 60 Hz
+%     plot_bispectra_univ(frqs, bicoh(:, freq_inds, freq_inds), isub, 'Normalized mean', DIROUT)
+    plot_bispectra_univ(frqs, bispec, isub, 'Unnormalized mean', DIROUT) % plot bispectra/bicoherence between 0 - 60 Hz
+    plot_bispectra_univ(frqs, bicoh, isub, 'Normalized mean', DIROUT)
+    
     
     % plot matrices over the head
     clear para;
     para.tunit = 'Hz';
     para.funit = 'Hz';
-    para.timeaxis = frqs(freq_inds);
-    para.freqaxis = frqs(freq_inds);
+%     para.timeaxis = frqs(freq_inds);
+%     para.freqaxis = frqs(freq_inds);
 
-    figure; showtfinhead(abs(bispec(:, freq_inds, freq_inds)), locs_2D, para); 
+%     figure; showtfinhead(abs(bispec(:, freq_inds, freq_inds)), locs_2D, para); 
+%         exportgraphics(gcf, [DIROUT 'B_sensor_head_unnormalized_' int2str(isub) '.png'])
+%     figure; showtfinhead(abs(bicoh(:, freq_inds, freq_inds)), locs_2D, para); 
+%         exportgraphics(gcf, [DIROUT 'B_sensor_head_normalized_' int2str(isub) '.png'])
+    figure; showtfinhead(abs(bispec), locs_2D, para); 
         exportgraphics(gcf, [DIROUT 'B_sensor_head_unnormalized_' int2str(isub) '.png'])
-    figure; showtfinhead(abs(bicoh(:, freq_inds, freq_inds)), locs_2D, para); 
+    figure; showtfinhead(abs(bicoh), locs_2D, para); 
         exportgraphics(gcf, [DIROUT 'B_sensor_head_normalized_' int2str(isub) '.png'])
-        
-    % find peaks using FOOOF and plot last fit if no f1 is passed
-    if g.f1 == 0 % 
-        [first_peak, second_peak, fooof_results] = find_peak_fooof(EEG);
-        fooof_plot(fooof_results); xlabel('Frequency (Hz)'); ylabel('Power');
-            exportgraphics(gcf, [DIROUT 'fooof_' lower(int2str(isub)) '.png'])
-    else
-        first_peak = g.f1;
-        second_peak = 2 * g.f1;
-    end
-    
-    % plot PSD and indicate the FOOOF peaks
-    plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(second_peak) ' Hz'], DIROUT, ...
-        'title_str', ['psd_' int2str(isub)], 'f1', first_peak)
 
     % set up computation of sensor cross-bispectra for (f1, f1, f1+f1) and (f1, f2, f1+f2)
     freqpairs1 = get_freqindices(round(first_peak), round(first_peak), frqs); % (f1, f1)
