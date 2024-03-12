@@ -48,20 +48,22 @@ function main_preanalysis(nshuf, isub, varargin)
 
     % find peaks using FOOOF and plot last fit if no f1 is passed
     if g.f1 == 0 % 
-        [first_peak, second_peak, fooof_results] = find_peak_fooof(EEG);
+        [first_peak, ~, fooof_results] = find_peak_fooof(EEG);
         fooof_plot(fooof_results); xlabel('Frequency (Hz)'); ylabel('Power');
             exportgraphics(gcf, [DIROUT 'fooof_' lower(int2str(isub)) '.png'])
     else
         first_peak = g.f1;
-        second_peak = 2 * g.f1;
+%         second_peak = 2 * g.f1;
     end
 
     % plot PSD and indicate the FOOOF peaks
-    plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(second_peak) ' Hz'], DIROUT, ...
+    plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
         'title_str', ['psd_' int2str(isub)], 'f1', first_peak)
 
-    % downsample data to 100 Hz
+    % downsample data to 100 Hz and plot
     EEG = downsampling(EEG, 100);
+    plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
+        'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
 
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
@@ -94,6 +96,8 @@ function main_preanalysis(nshuf, isub, varargin)
     para.funit = 'Hz';
 %     para.timeaxis = frqs(freq_inds);
 %     para.freqaxis = frqs(freq_inds);
+    para.timeaxis = frqs(1:end-1);
+    para.freqaxis = frqs(1:end-1);
 
 %     figure; showtfinhead(abs(bispec(:, freq_inds, freq_inds)), locs_2D, para); 
 %         exportgraphics(gcf, [DIROUT 'B_sensor_head_unnormalized_' int2str(isub) '.png'])

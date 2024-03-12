@@ -34,6 +34,9 @@ function [mean_first_peak, mean_second_peak, fooof_results] = find_peak_fooof(EE
         % save peaks
         first_peak(ichan) = fooof_results.peak_params(1);
         second_peak(ichan) = fooof_results.peak_params(2);
+
+        % correct spectrum
+        ps_corrected = fooof_results.power_spectrum;
     end
 
     % output mean values of peaks over channels
