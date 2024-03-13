@@ -14,8 +14,14 @@ function plot_pvalues_univ(frqs, isub, DIROUT, P_sens_fdr)
     c = colorbar();
     c.Label.String = '-log10(p)';
     title(sprintf('p-value (univariate sensor bispectrum), subject %d', isub))
-    axis([frqs(2) frqs(end-1) frqs(2) frqs(end-1)]) % set axis limit
     set(gca, 'YDir','normal')
+
+    label_idx = 1:20:size(P_sens_fdr, 2); % show only every 20th label
+    custom_label = 1:size(P_sens_fdr, 2);
+    set(gca, 'XTick', custom_label(label_idx));
+    set(gca, 'XTickLabel', frqs(label_idx));
+    set(gca, 'YTick', custom_label(label_idx));
+    set(gca, 'YTickLabel', frqs(label_idx));
     xlabel('$f_1$ (Hz)', 'Interpreter', 'latex');
     ylabel('$f_2$ (Hz)', 'Interpreter', 'latex');
     save_P_sensor = [DIROUT 'P_sensor_' int2str(isub) '.png'];

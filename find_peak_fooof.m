@@ -22,7 +22,7 @@ function [mean_first_peak, mean_second_peak, fooof_results] = find_peak_fooof(EE
     settings.max_n_peaks = 2; % find fundamental frequency and its first harmonic
     f_range = [1, 40];
 
-    % Run FOOOF
+    % run FOOOF
     py.importlib.import_module('fooof')
     n_chan = size(psd, 2);
     first_peak = zeros(1, n_chan);

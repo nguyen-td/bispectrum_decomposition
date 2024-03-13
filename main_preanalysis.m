@@ -75,6 +75,7 @@ function main_preanalysis(nshuf, isub, varargin)
     % compute univariate bicoherence and get the p-values
     frqs = sfreqs(fres, EEG.srate);
     [~, ~, P_sens_fdr, ~, bispec, bicoh] = freq_preselection(data, nshuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
+    save('P_sens.mat', 'P_sens_fdr')
 
     % get 2D positions of sensors and set up plotting
     locs_2D = create_locs_2D(EEG);
