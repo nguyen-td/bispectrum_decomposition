@@ -18,6 +18,8 @@
 
 function main_preanalysis(n_shuf, isub, varargin)
 
+    %% Prepare dataset, including downsampling to 100 Hz
+
     % set and add paths
 %     DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
     DIROUT = '/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/';
@@ -71,6 +73,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
         'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
 
+    %% Compute univariate sensor bispectra
+
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
     segleng = EEG.srate * g.epleng; 
@@ -102,6 +106,8 @@ function main_preanalysis(n_shuf, isub, varargin)
         exportgraphics(gcf, [DIROUT 'B_sensor_head_unnormalized_' int2str(isub) '.png'])
     figure; showtfinhead(abs(bicoh), locs_2D, para); 
         exportgraphics(gcf, [DIROUT 'B_sensor_head_normalized_' int2str(isub) '.png'])
+
+    %% Compute sensor cross-bispectra
 
     % set up computation of sensor cross-bispectra for (f1, f1, f1+f1) and (f1, f2, f1+f2)
     freqpairs1 = get_freqindices(round(first_peak), round(first_peak), frqs); % (f1, f1)
@@ -154,6 +160,27 @@ function main_preanalysis(n_shuf, isub, varargin)
     [seed2, seed2_idx] = max(max(net_bicoh1, [], 2), [], 'all'); % get max. value in the row (1st dimension)
     plot_topomaps_seed(net_bicoh2, seed2_idx, EEG.chanlocs, '2', 'Seed net cross-bicoherence (f1, f2, f1+f2)', DIROUT)
 
-    % do we see between-site coupling? if yes, no non-sinusoids?
+    %% Compute antisymmetrized cross-bispectra
+
+    % compute antisymmetrized cross-bispectra
+    bs_orig1_anti = bs_orig1 - permute(bs_orig1, [3, 2, 1]); % B_ijk - B_kji
+    bicoh1_anti = bicoh1 - permute(bicoh1, [3, 2, 1]); % B_ijk - B_kji
+    bs_orig2_tacb = bs_orig2 + permute(bs_orig2, [3, 1, 2]) + permute(bs_orig2, [2, 3, 1]) - permute(bs_orig2, [3, 2, 1]) - permute(bs_orig2, [2, 1, 3]) - permute(bs_orig2, [1, 3, 2]);
+    bicoh2_tacb = bicoh2 + permute(bicoh2, [3, 1, 2]) + permute(bicoh2, [2, 3, 1]) - permute(bicoh2, [3, 2, 1]) - permute(bicoh2, [2, 1, 3]) - permute(bicoh2, [1, 3, 2]);
+
+    % plot matrices of net antisymmetrized bispectra (collapsed over one channel dimension)
+    plot_bispectra_univ(bs_orig1_anti, frqs, isub, DIROUT, 'bispec_type', '1_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)') 
+    plot_bispectra_univ(bicoh1_anti, frqs, isub, DIROUT, 'bispec_type', '1_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)') 
+    plot_bispectra_univ(bs_orig2_tacb, frqs, isub, DIROUT, 'bispec_type', '2_cross_unnorm_tacb', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)')
+    plot_bispectra_univ(bicoh2_tacb, frqs, isub, DIROUT, 'bispec_type', '2_cross_norm_tacb', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)') 
+% 
+%     % plot cross-bispectra as topomaps with a seed
+%     net_bicoh1 = squeeze(mean(abs(bicoh1), 1));
+%     [seed1, seed1_idx] = max(max(net_bicoh1, [], 2), [], 'all'); % get max. value in the row (1st dimension)
+%     plot_topomaps_seed(net_bicoh1, seed1_idx, EEG.chanlocs, '1', 'Seed net cross-bicoherence (f1, f1, f1+f1)', DIROUT)
+% 
+%     net_bicoh2 = squeeze(mean(abs(bicoh2), 1));
+%     [seed2, seed2_idx] = max(max(net_bicoh1, [], 2), [], 'all'); % get max. value in the row (1st dimension)
+%     plot_topomaps_seed(net_bicoh2, seed2_idx, EEG.chanlocs, '2', 'Seed net cross-bicoherence (f1, f2, f1+f2)', DIROUT)
 
 end
