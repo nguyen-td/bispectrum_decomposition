@@ -3,7 +3,7 @@
 % subject.
 %
 % Inputs:
-%   nshuf - number of shuffles
+%   n_shuf - number of shuffles
 %   isub  - index of subject (the pipeline works for a single subject)
 %
 % Optional inputs:
@@ -15,7 +15,7 @@
 %   run_ica     - run ICA decomposition and save the first n components, default is 'off'
 %   poolsize    - number of workers in the parellel pool (check parpool documentation) for parallel computing
 
-function main(nshuf, isub, varargin)
+function main(n_shuf, isub, varargin)
     
     % set directory paths
 %     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
@@ -70,7 +70,7 @@ function main(nshuf, isub, varargin)
     % make frequency pre-selection by assessing the significance of frequency pairs of the univariate sensor bispectrum if 'freq_manual' = 'off'
     frqs = sfreqs(fres, EEG.srate);
     if strcmpi(g.freq_manual, 'off')
-        [f1, f2, P_sens_fdr, P_sens] = freq_preselection(data, nshuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
+        [f1, f2, P_sens_fdr, P_sens] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
     else
         f1 = g.f1;
         f2 = g.f2;
@@ -78,7 +78,7 @@ function main(nshuf, isub, varargin)
         
     % test significance of the fitted source cross-bispectrum within subjects
     [L_3D, cortex75k, cortex2k] = reduce_leadfield(EEG); 
-    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats(data, f1, f2, g.n, nshuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);    
+    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);    
 
     % plot p-values
     if strcmpi(g.freq_manual, 'off')
@@ -88,8 +88,8 @@ function main(nshuf, isub, varargin)
     end
 
     % plot estimated and demixed spatial patterns
-    plot_topomaps(A_hat, g.n, EEG.chanlocs, isub, 'estimated', DIROUT) 
-    plot_topomaps(A_demixed, g.n, EEG.chanlocs, isub, 'demixed', DIROUT)
+    plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, isub, 'estimated', DIROUT) 
+    plot_topomaps_patterns(A_demixed, g.n, EEG.chanlocs, isub, 'demixed', DIROUT)
 
     % plot sources
     load cm17

@@ -8,7 +8,7 @@
 %   name     - [string] name for plot, for example, "mixed", "demixed" etc.
 %   DIROUT   - output directory to save images
 
-function plot_topomaps(A, n, chanlocs, isub, name, DIROUT)
+function plot_topomaps_patterns(A, n, chanlocs, isub, name, DIROUT)
 
     % topoplots of mixing matrix
     figure('Position', [600 100 1500 300]);

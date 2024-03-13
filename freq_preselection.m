@@ -26,11 +26,11 @@
 %   bispec_orig  - (n_chans x n_freqs x n_freqs) surrogate univariate bispectral tensors (without normalization)
 %   bicoh        - (n_chans x n_freqs x n_freqs) univariate bicoherence tensor
 
-function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, nshuf, frqs, segleng, segshift, epleng, alpha, poolsize)
+function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, alpha, poolsize)
     
     % compute univariate sensor bispectrum
     clear para
-    para.nrun = nshuf;
+    para.nrun = n_shuf;
     
     disp('Start calculating surrogate univariate sensor bispectra for frequency selection...')
     parpool(poolsize)
@@ -45,22 +45,27 @@ function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, nshuf,
     % compute bicoherence
     bispec_orig = squeeze(bsall(:, :, :, 1)); % original bispectral tensor
     bicoh = bispec_orig ./ bsallnr;
+
+    % compute p-values
+    [P, P_fdr] = compute_pvalues(mean(bsall(:, :, :, 1), 1), mean(bsall(:, :, :, 2:end), 1), n_shuf, alpha);
     
-    % compute p-values, take mean over regions
-    P = squeeze(sum(abs(mean(bsall(:, :, :, 1), 1)) < abs(mean(bsall(:, :, :, 2:end), 1)), 4) ./ nshuf);
-    P(P==0) = 1 / nshuf;
-    [maxval, ~] = max(-log10(P(:)));
-    argmaxs = find(-log10(P(:)) == maxval);
+%     % compute p-values, take mean over regions
+%     P = squeeze(sum(abs(mean(bsall(:, :, :, 1), 1)) < abs(mean(bsall(:, :, :, 2:end), 1)), 4) ./ nshuf);
+%     P(P==0) = 1 / nshuf;
+% 
+%     % correct for multiple comparisons
+%     [p_fdr, ~] = fdr(P, alpha);
+%     P_fdr = P;
+%     P_fdr(P > p_fdr) = 1;
+%     
+    % extract frequencies
+    [maxval, ~] = max(-log10(P_fdr(:)));
+    argmaxs = find(-log10(P_fdr(:)) == maxval);
     argmax = argmaxs(randi(length(argmaxs), 1));
-    [f1_bin, f2_bin] = ind2sub(size(P), argmax); 
+    [f1_bin, f2_bin] = ind2sub(size(P_fdr), argmax); 
 
     % convert to Hz
     f1 = frqs(f1_bin);
     f2 = frqs(f2_bin);
-
-    % correct for multiple comparisons
-    [p_fdr, ~] = fdr(P, alpha);
-    P_fdr = P;
-    P_fdr(P > p_fdr) = 1;
 
 end

@@ -1,11 +1,13 @@
-% Script to run a pre-analysis before the actual analysis. Here, we first
-% determine the alpha frequency and its first higher harmonic. Then, we
-% compute the univariate sensor bispectrum and see if we find genuine 
-% between-site interactions or within-site interactions (potentially spurious interactions, 
-% possibly arising from non-sinusoidal signals, leading to coupling of higher harmonics). 
+% Script to run a pre-analysis before the actual analysis involving the following steps:
+%   1. Find peaks using FOOOF, first peak will be used as the f1 frequency.
+%   2. Downsampling to 100 Hz.
+%   3. Computation of univariate (surrogate) sensor bispectra and its p-values.
+%   4. Computation of (surrogate) sensor cross-bispectra for (f1, f1, f1+f1) and (f1, f2, f1+f2).
+% 
+% Each compuational step is followed by various plotting steps. 
 % 
 % Inputs:
-%   nshuf - number of shuffles
+%   n_shuf - number of shuffles
 %   isub  - index of subject (the pipeline works for a single subject)
 %
 % Optional inputs:
@@ -14,7 +16,7 @@
 %   f1       - fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
 %   epleng   - length of epochs in seconds, default is 2 seconds
 
-function main_preanalysis(nshuf, isub, varargin)
+function main_preanalysis(n_shuf, isub, varargin)
 
     % set and add paths
 %     DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
@@ -56,6 +58,10 @@ function main_preanalysis(nshuf, isub, varargin)
 %         second_peak = 2 * g.f1;
     end
 
+    % plot channel locations
+    figure; topoplot([], EEG.chanlocs, 'style', 'blank',  'electrodes', 'labelpoint', 'chaninfo', EEG.chaninfo); 
+    exportgraphics(gcf, [DIROUT, 'chanlocs_' num2str(isub) '.png']);
+
     % plot PSD and indicate the FOOOF peaks
     plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
         'title_str', ['psd_' int2str(isub)], 'f1', first_peak)
@@ -74,36 +80,24 @@ function main_preanalysis(nshuf, isub, varargin)
     
     % compute univariate bicoherence and get the p-values
     frqs = sfreqs(fres, EEG.srate);
-    [~, ~, P_sens_fdr, ~, bispec, bicoh] = freq_preselection(data, nshuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
-    save('P_sens.mat', 'P_sens_fdr')
+    [~, ~, P_sens_fdr_uni, ~, bispec, bicoh] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
+%     save('P_sens.mat', 'P_sens_fdr')
 
     % get 2D positions of sensors and set up plotting
     locs_2D = create_locs_2D(EEG);
-%     max_freq = 60; % in Hz
-%     freq_res = frqs(2) - frqs(1);
-%     freq_inds = 1:max_freq * 1/freq_res;
     
     % plot single matrices
-    plot_pvalues_univ(frqs, isub, DIROUT, P_sens_fdr)
-%     plot_bispectra_univ(frqs, bispec(:, freq_inds, freq_inds), isub, 'Unnormalized mean', DIROUT) % plot bispectra/bicoherence between 0 - 60 Hz
-%     plot_bispectra_univ(frqs, bicoh(:, freq_inds, freq_inds), isub, 'Normalized mean', DIROUT)
-    plot_bispectra_univ(frqs, bispec, isub, 'Unnormalized mean', DIROUT) % plot bispectra/bicoherence between 0 - 60 Hz
-    plot_bispectra_univ(frqs, bicoh, isub, 'Normalized mean', DIROUT)
-    
+    plot_pvalues_univ(P_sens_fdr_uni, frqs, isub, DIROUT)
+    plot_bispectra_univ(bispec, frqs, isub, DIROUT, 'bispec_type', '_univ_unnorm', 'title_str', 'Unnormalized mean univariate sensor bispectrum') 
+    plot_bispectra_univ(bicoh, frqs, isub, DIROUT, 'bispec_type', '_univ_norm', 'title_str', 'Normalized mean univariate sensor bispectrum')
     
     % plot matrices over the head
     clear para;
     para.tunit = 'Hz';
     para.funit = 'Hz';
-%     para.timeaxis = frqs(freq_inds);
-%     para.freqaxis = frqs(freq_inds);
     para.timeaxis = frqs(1:end-1);
     para.freqaxis = frqs(1:end-1);
 
-%     figure; showtfinhead(abs(bispec(:, freq_inds, freq_inds)), locs_2D, para); 
-%         exportgraphics(gcf, [DIROUT 'B_sensor_head_unnormalized_' int2str(isub) '.png'])
-%     figure; showtfinhead(abs(bicoh(:, freq_inds, freq_inds)), locs_2D, para); 
-%         exportgraphics(gcf, [DIROUT 'B_sensor_head_normalized_' int2str(isub) '.png'])
     figure; showtfinhead(abs(bispec), locs_2D, para); 
         exportgraphics(gcf, [DIROUT 'B_sensor_head_unnormalized_' int2str(isub) '.png'])
     figure; showtfinhead(abs(bicoh), locs_2D, para); 
@@ -115,7 +109,7 @@ function main_preanalysis(nshuf, isub, varargin)
 
     % estimate sensor cross-bispectrum
     clear bispec_para
-    bispec_para.nrun = nshuf;
+    bispec_para.nrun = n_shuf;
     disp('Start calculating surrogate sensor cross-bispectra...')
     [bs_all1, bs_orig1, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs1, bispec_para);
     [bs_all2, bs_orig2, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs2, bispec_para);
@@ -125,25 +119,41 @@ function main_preanalysis(nshuf, isub, varargin)
     rtp2 = data2bs_threenorm(data(:, :)', segleng, segshift, epleng, freqpairs2);
     bicoh1 = bs_orig1 ./ rtp1;
     bicoh2 = bs_orig2 ./ rtp2;
+
+    % compute and plot p-values for cross-bispectra
+    [~, P_sens_fdr1] = compute_pvalues(mean(bs_all1(:, :, :, 1), 1), mean(bs_all1(:, :, :, 2:end), 1), n_shuf, g.alpha);
+    [~, P_sens_fdr2] = compute_pvalues(mean(bs_all2(:, :, :, 1), 1), mean(bs_all2(:, :, :, 2:end), 1), n_shuf, g.alpha);
+    plot_pvalues_univ(P_sens_fdr1, frqs, isub, DIROUT, 'bispec_type', '1_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (cross-bispectrum)')
+    plot_pvalues_univ(P_sens_fdr2, frqs, isub, DIROUT, 'bispec_type', '2_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (cross-bispectrum)')
     
     % plot single matrices of net bispectra (collapsed over one channel dimension)
-    plot_bispectra_univ(frqs, bs_orig1, isub, 'Unnormalized net cross-bispectrum (f1, f1, f1+f1)', DIROUT, 'bispec_type', '', 'label_x', 'channel', 'label_y', 'channel') 
-    plot_bispectra_univ(frqs, bicoh1, isub, 'Normalized net cross-bispectrum (f1, f1, f1+f1)', DIROUT, 'bispec_type', '', 'label_x', 'channel', 'label_y', 'channel')
-    plot_bispectra_univ(frqs, bs_orig2, isub, 'Unnormalized net cross-bispectrum (f1, f2, f1+f2)', DIROUT, 'bispec_type', '', 'label_x', 'channel', 'label_y', 'channel') 
-    plot_bispectra_univ(frqs, bicoh2, isub, 'Normalized net cross-bispectrum (f1, f2, f1+f2)', DIROUT, 'bispec_type', '', 'label_x', 'channel', 'label_y', 'channel')
+    plot_bispectra_univ(bs_orig1, frqs, isub, DIROUT, 'bispec_type', '1_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f1, f1+f1)') 
+    plot_bispectra_univ(bicoh1, frqs, isub, DIROUT, 'bispec_type', '1_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f1, f1+f1)')
+    plot_bispectra_univ(bs_orig2, frqs, isub, DIROUT, 'bispec_type', '2_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f2, f1+f2)') 
+    plot_bispectra_univ(bicoh2, frqs, isub, DIROUT, 'bispec_type', '2_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f2, f1+f2)')
     
     % plot matrices over head
     clear plt_bispec_para
     plt_bispec_para.tunit = 'channel';
     plt_bispec_para.funit = 'channel';
     figure; showtfinhead(abs(bs_orig1), locs_2D, plt_bispec_para); 
-        exportgraphics(gcf, [DIROUT 'B1_cross_sensor_head_unnormalized_' int2str(isub) '.png'])
-    figure; showtfinhead(abs(bs_orig2), locs_2D, plt_bispec_para); 
-        exportgraphics(gcf, [DIROUT 'B2_cross_sensor_head_unnormalized_' int2str(isub) '.png'])
+        exportgraphics(gcf, [DIROUT 'B1_cross_unnorm_sensor_head_' int2str(isub) '.png'])
     figure; showtfinhead(abs(bicoh1), locs_2D, plt_bispec_para); 
-        exportgraphics(gcf, [DIROUT 'B1_cross_sensor_head_normalized_' int2str(isub) '.png'])
+        exportgraphics(gcf, [DIROUT 'B1_cross_norm_sensor_head_' int2str(isub) '.png'])
+    figure; showtfinhead(abs(bs_orig2), locs_2D, plt_bispec_para); 
+        exportgraphics(gcf, [DIROUT 'B2_cross_unnorm_sensor_head_' int2str(isub) '.png'])
     figure; showtfinhead(abs(bicoh2), locs_2D, plt_bispec_para); 
-        exportgraphics(gcf, [DIROUT 'B2_cross_sensor_head_normalized_' int2str(isub) '.png'])
+        exportgraphics(gcf, [DIROUT 'B2_cross_norm_sensor_head_' int2str(isub) '.png'])
+
+    % plot cross-bispectra as topomaps with a seed
+    net_bicoh1 = squeeze(mean(abs(bicoh1), 1));
+    [seed1, seed1_idx] = max(max(net_bicoh1, [], 2), [], 'all'); % get max. value in the row (1st dimension)
+    plot_topomaps_seed(net_bicoh1, seed1_idx, EEG.chanlocs, '1', 'Seed net cross-bicoherence (f1, f1, f1+f1)', DIROUT)
+
+    net_bicoh2 = squeeze(mean(abs(bicoh2), 1));
+    [seed2, seed2_idx] = max(max(net_bicoh1, [], 2), [], 'all'); % get max. value in the row (1st dimension)
+    plot_topomaps_seed(net_bicoh2, seed2_idx, EEG.chanlocs, '2', 'Seed net cross-bicoherence (f1, f2, f1+f2)', DIROUT)
+
     % do we see between-site coupling? if yes, no non-sinusoids?
 
 end
