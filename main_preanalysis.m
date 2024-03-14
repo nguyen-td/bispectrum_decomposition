@@ -127,8 +127,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     bicoh2 = bs_orig2 ./ rtp2;
 
     % compute and plot p-values for cross-bispectra
-    [~, P_sens_fdr1] = compute_pvalues(mean(bs_all1(:, :, :, 1), 1), mean(bs_all1(:, :, :, 2:end), 1), n_shuf, g.alpha);
-    [~, P_sens_fdr2] = compute_pvalues(mean(bs_all2(:, :, :, 1), 1), mean(bs_all2(:, :, :, 2:end), 1), n_shuf, g.alpha);
+    [~, P_sens_fdr1] = compute_pvalues(mean(bs_orig1, 1), mean(bs_all1, 1), n_shuf, g.alpha);
+    [~, P_sens_fdr2] = compute_pvalues(mean(bs_orig2, 1), mean(bs_all2, 1), n_shuf, g.alpha);
     plot_pvalues_univ(P_sens_fdr1, frqs, isub, DIROUT, 'bispec_type', '1_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (cross-bispectrum)')
     plot_pvalues_univ(P_sens_fdr2, frqs, isub, DIROUT, 'bispec_type', '2_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (cross-bispectrum)')
     
