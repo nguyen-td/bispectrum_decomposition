@@ -82,7 +82,7 @@ end
 
 bsori = zeros(nchan, nchan, nchan, nf);
 fprintf('Progress of %d:', nrun);
-for kk=1:nrun+1; 
+for kk=1:nrun+1
     if mod(kk, 10) == 0
         fprintf('%d', kk);
     elseif mod(kk, 2) == 0
@@ -119,7 +119,7 @@ for kk=1:nrun+1;
        bsall(:,:,:,:,kk)=cs; % nchan, nchan, nchan, nfreq, ishuf
   end
 end
-bsall = squeeze(bsall(:,:,:,:,2:end));
+bsall = squeeze(bsall(:,:,:,:,1:end-1));
 fprintf('\n');
   
 
