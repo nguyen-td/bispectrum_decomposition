@@ -24,7 +24,7 @@ function main(n_shuf, isub, varargin)
 %     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
 %     f_path = '/data/tdnguyen/git_repos/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
-%     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
+    f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
 
     if ~exist(DIROUT, 'dir')
         mkdir(DIROUT)
@@ -60,15 +60,18 @@ function main(n_shuf, isub, varargin)
         run_ica(EEG, g.n, isub, DIROUT)
     end
     
+    % downsample data to 100 Hz
+    EEG = downsampling(EEG, 100);
+    fres = EEG.srate;
+    frqs = sfreqs(fres, EEG.srate);
+
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
     segleng = EEG.pnts;
     segshift = floor(segleng/2);
     epleng = EEG.pnts; 
-    fres = EEG.srate;
     
     % make frequency pre-selection by assessing the significance of frequency pairs of the univariate sensor bispectrum if 'freq_manual' = 'off'
-    frqs = sfreqs(fres, EEG.srate);
     if strcmpi(g.freq_manual, 'off')
         [f1, f2, P_sens_fdr, P_sens] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
     else

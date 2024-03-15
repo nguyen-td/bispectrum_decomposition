@@ -50,7 +50,7 @@ if nargin>5
 end
 
 if nrun > 0
-bsall = zeros(nchan, nchan, nchan, nf, nrun); 
+bsall = zeros(nchan, nchan, nchan, nf, nrun+1); 
 else
     bsall = [];
 end
@@ -119,7 +119,7 @@ for kk=1:nrun+1
        bsall(:,:,:,:,kk)=cs; % nchan, nchan, nchan, nfreq, ishuf
   end
 end
-bsall = squeeze(bsall(:,:,:,:,1:end-1));
+bsall = squeeze(bsall(:,:,:,:,2:end));
 fprintf('\n');
   
 
