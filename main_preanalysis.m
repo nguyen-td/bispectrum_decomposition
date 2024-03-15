@@ -7,14 +7,15 @@
 % Each compuational step is followed by various plotting steps. 
 % 
 % Inputs:
-%   n_shuf - number of shuffles
-%   isub  - index of subject (the pipeline works for a single subject)
+%   n_shuf - [integer] number of shuffles
+%   isub   - [integer] index of subject (the pipeline works for a single subject)
 %
 % Optional inputs:
-%   alpha    - significance level, default is 0.05.
-%   poolsize - number of workers in the parellel pool (check parpool documentation) for parallel computing
-%   f1       - fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
-%   epleng   - length of epochs in seconds, default is 2 seconds
+%   alpha      - [float] significance level, default is 0.05.
+%   poolsize   - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing
+%   f1         - [integer] fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
+%   epleng     - [integer] length of epochs in seconds, default is 2 seconds
+%   downsample - [string] check whether to downsample data to 100 Hz, default is 'on'
 
 function main_preanalysis(n_shuf, isub, varargin)
 
@@ -38,6 +39,7 @@ function main_preanalysis(n_shuf, isub, varargin)
         'poolsize'       'integer'       { }              1;
         'f1'             'integer'       { }              0;
         'epleng'         'integer'       { }              2;
+        'downsample'   'string'        {'on' 'off'}     'on';
         });
     if ischar(g), error(g); end
 
@@ -69,9 +71,11 @@ function main_preanalysis(n_shuf, isub, varargin)
         'title_str', ['psd_' int2str(isub)], 'f1', first_peak)
 
     % downsample data to 100 Hz and plot
-    EEG = downsampling(EEG, 100);
-    plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
-        'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
+    if strcmpi(g.isdownsample, 'on')
+        EEG = downsampling(EEG, 100);
+        plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
+            'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
+    end
 
     %% Compute univariate sensor bispectra
 
@@ -127,8 +131,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     bicoh2 = bs_orig2 ./ rtp2;
 
     % compute and plot p-values for cross-bispectra
-    [~, P_sens_fdr1] = compute_pvalues(mean(abs(bs_orig1), 1), mean(abs(bs_all1), 1), n_shuf, g.alpha);
-    [~, P_sens_fdr2] = compute_pvalues(mean(abs(bs_orig2), 1), mean(abs(bs_all2), 1), n_shuf, g.alpha);
+    [~, P_sens_fdr1] = compute_pvalues(mean(bs_orig1, 1), mean(abs(bs_all1), 1), n_shuf, g.alpha);
+    [~, P_sens_fdr2] = compute_pvalues(mean(bs_orig2, 1), mean(abs(bs_all2), 1), n_shuf, g.alpha);
     plot_pvalues_univ(P_sens_fdr1, frqs, isub, DIROUT, 'bispec_type', '1_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
     plot_pvalues_univ(P_sens_fdr2, frqs, isub, DIROUT, 'bispec_type', '2_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
     

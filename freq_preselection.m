@@ -1,5 +1,6 @@
-% Make a frequency pre-selection by evaluating the frequency pairs of the
-% univariate sensor bispectrum. 
+% Make a frequency pre-selection for the main pipeline by evaluating the frequency pairs of the
+% univariate sensor bispectrum. Also serves as a wrapper function to compute univariate bispectra 
+% and the corresponding p-values.
 %
 % Notations:
 %   n_chans  - number of EEG channels (sensors)

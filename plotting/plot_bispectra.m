@@ -6,8 +6,16 @@
 %   isub     - subject ID, used for title
 %   name     - [string] name for plot, for example, "mixed", "demixed" etc.
 %   DIROUT   - output directory to save images
+%
+% Optional input:
+%   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
 
-function plot_bispectra(D, f1, f2, isub, name, DIROUT)
+function plot_bispectra(D, f1, f2, isub, name, DIROUT, varargin)
+
+    g = finputcheck(varargin, { ...
+        'bispec_type'    'string'     { }     '';
+        });
+    if ischar(g), error(g); end
     
     D_abs = abs(D);
     n = size(D, 1);
@@ -24,6 +32,6 @@ function plot_bispectra(D, f1, f2, isub, name, DIROUT)
         set(gca, 'YDir','normal')
     end
     title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))
-    save_D = [DIROUT 'D_' name '_' int2str(isub) '.png'];
+    save_D = [DIROUT 'D' g.bispec_type '_source_' name '_' int2str(isub) '.png'];
     exportgraphics(gcf, save_D)
 end

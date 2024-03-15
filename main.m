@@ -1,19 +1,20 @@
 % Wrapper method to run the pipeline that estimates the statistical significance of the
-% bispectrum decomposition method on motor imagery data for a single
-% subject.
+% bispectrum decomposition method for a single subject. Check bsfit_stats.m for the whole pipeline.
 %
 % Inputs:
-%   n_shuf - number of shuffles
-%   isub  - index of subject (the pipeline works for a single subject)
+%   n_shuf - [integer] number of shuffles
+%   isub   - [integer] index of subject (the pipeline works for a single subject)
 %
 % Optional inputs:
-%   n           - model order/number of fitted sources, default is 5.
-%   alpha       - significance level, default is 0.05.
-%   freq_manual - manual frequency selection, default is 'off', i.e., frequencies will be selected automatically.
-%   f1          - phase frequency, single frequency in Hz or frequencyband, e.g., [9 11]. Default is 11.
-%   f2          - amplitude frequency single frequency in Hz or frequency band, e.g., [20 22]. Default is 22.
-%   run_ica     - run ICA decomposition and save the first n components, default is 'off'
-%   poolsize    - number of workers in the parellel pool (check parpool documentation) for parallel computing
+%   n            - [integer] model order/number of fitted sources, default is 5.
+%   alpha        - [float] significance level, default is 0.05.
+%   freq_manual  - [string] manual frequency selection, default is 'ib', i.e., frequencies will not be selected automatically and have to be passed (see f1, f2).
+%   f1           - [integer] phase frequency, single frequency in Hz or frequencyband, e.g., [9 11], default is 11.
+%   f2           - [integer] amplitude frequency single frequency in Hz or frequency band, e.g., [20 22], default is 22.
+%   run_ica      - [string] run ICA decomposition and save the first n components, default is 'off'.
+%   poolsize     - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing, default is 2.
+%   downsample   - [string] check whether to downsample data to 100 Hz, default is 'on'.
+%   bispec_type  - [string] type of bispectrum (for file name), default is '_cross'.
 
 function main(n_shuf, isub, varargin)
     
@@ -40,6 +41,8 @@ function main(n_shuf, isub, varargin)
         'f2'             'integer'       { }              22; 
         'run_ica'        'string'        { 'on' 'off' }   'off';
         'poolsize'       'integer'       { }              1;
+        'downsample'     'string'        { 'on' 'off'}    'on';
+        'bispec_type'    'string'        { }              '_cross'; 
         });
     if ischar(g), error(g); end
 
@@ -60,8 +63,10 @@ function main(n_shuf, isub, varargin)
         run_ica(EEG, g.n, isub, DIROUT)
     end
     
-    % downsample data to 100 Hz
-    EEG = downsampling(EEG, 100);
+    % downsample data to 100 Hz and plot
+    if g.downsample
+        EEG = downsampling(EEG, 100);
+    end
     fres = EEG.srate;
     frqs = sfreqs(fres, EEG.srate);
 
@@ -85,21 +90,21 @@ function main(n_shuf, isub, varargin)
 
     % plot p-values
     if strcmpi(g.freq_manual, 'off')
-        plot_pvalues(f1, f2, frqs, isub, DIROUT, P_source_fdr, P_source, P_sens_fdr, P_sens)
+        plot_pvalues_univ(P_sens_fdr, frqs, isub, DIROUT, 'bispec_type', g.bispec_type)
     else
-        plot_pvalues(f1, f2, frqs, isub, DIROUT, P_source_fdr, P_source)
+        plot_pvalues_cross(f1, f2, isub, DIROUT, P_source_fdr, P_source, 'bispec_type', g.bispec_type)
     end
 
     % plot estimated and demixed spatial patterns
-    plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, isub, 'estimated', DIROUT) 
-    plot_topomaps_patterns(A_demixed, g.n, EEG.chanlocs, isub, 'demixed', DIROUT)
+    plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type) 
+    plot_topomaps_patterns(A_demixed, g.n, EEG.chanlocs, isub, 'demixed', DIROUT, 'bispec_type', g.bispec_type)
 
     % plot sources
     load cm17
-    plot_sources(F_moca, F, g.n, cortex75k, cortex2k, [], cm17, isub, DIROUT)
+    plot_sources(F_moca, F, g.n, cortex75k, cortex2k, [], cm17, isub, DIROUT, 'bispec_type', g.bispec_type)
     
     % plot D_hat and D_demixed
-    plot_bispectra(D_hat, f1, f2, isub, 'estimated', DIROUT)
-    plot_bispectra(D_demixed, f1, f2, isub, 'demixed', DIROUT)
+    plot_bispectra(D_hat, f1, f2, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type)
+    plot_bispectra(D_demixed, f1, f2, isub, 'demixed', DIROUT, 'bispec_type', g.bispec_type)
 
 end

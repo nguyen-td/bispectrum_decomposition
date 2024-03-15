@@ -1,4 +1,4 @@
-function allplots_cortex(cortex, data_in, colorlimits, cm, unit, smooth, printfolder, varargin)
+function allplots_cortex_nyhead_v2(cortex, data_in, colorlimits, cm, unit, smooth, printfolder, varargin)
 
 if length(data_in) == size(cortex.vc, 1)
   data = data_in;
