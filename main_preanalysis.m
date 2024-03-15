@@ -71,7 +71,7 @@ function main_preanalysis(n_shuf, isub, varargin)
         'title_str', ['psd_' int2str(isub)], 'f1', first_peak)
 
     % downsample data to 100 Hz and plot
-    if strcmpi(g.isdownsample, 'on')
+    if strcmpi(g.downsample, 'on')
         EEG = downsampling(EEG, 100);
         plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
             'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
