@@ -15,7 +15,8 @@
 %   poolsize   - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing
 %   f1         - [integer] fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
 %   epleng     - [integer] length of epochs in seconds, default is 2 seconds
-%   downsample - [string] check whether to downsample data to 100 Hz, default is 'on'
+%   freq_down  - [integer] if 'downsample' is activated, the data will be downsampled to <freq_down> Hz. Default is 125 Hz.
+%   downsample - [string] check whether to downsample data to <freq_down> Hz, default is 'on'
 
 function main_preanalysis(n_shuf, isub, varargin)
 
@@ -39,7 +40,8 @@ function main_preanalysis(n_shuf, isub, varargin)
         'poolsize'       'integer'       { }              1;
         'f1'             'integer'       { }              0;
         'epleng'         'integer'       { }              2;
-        'downsample'   'string'        {'on' 'off'}     'on';
+        'downsample'     'string'        {'on' 'off'}     'on';
+        'freq_down'      'integer'       { }              125;
         });
     if ischar(g), error(g); end
 
@@ -72,7 +74,7 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     % downsample data to 100 Hz and plot
     if strcmpi(g.downsample, 'on')
-        EEG = downsampling(EEG, 125);
+        EEG = downsampling(EEG, g.freq_downn);
         plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
             'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
     end

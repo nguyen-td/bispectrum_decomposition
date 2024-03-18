@@ -13,6 +13,7 @@
 %   f2           - [integer] amplitude frequency single frequency in Hz or frequency band, e.g., [20 22], default is 22.
 %   run_ica      - [string] run ICA decomposition and save the first n components, default is 'off'.
 %   poolsize     - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing, default is 2.
+%   freq_down    - [integer] if 'downsample' is activated, the data will be downsampled to <freq_down> Hz. Default is 125 Hz.
 %   downsample   - [string] check whether to downsample data to 100 Hz, default is 'on'.
 %   bispec_type  - [string] type of bispectrum (for file name), default is '_cross'.
 
@@ -44,6 +45,7 @@ function main(n_shuf, isub, varargin)
         'run_ica'        'string'        { 'on' 'off' }   'off';
         'poolsize'       'integer'       { }              1;
         'downsample'     'string'        { 'on' 'off'}    'on';
+        'freq_down'      'integer'       { }              125;
         'bispec_type'    'string'        { }              '_cross'; 
         });
     if ischar(g), error(g); end
@@ -67,7 +69,7 @@ function main(n_shuf, isub, varargin)
     
     % downsample data to 100 Hz and plot
     if g.downsample
-        EEG = downsampling(EEG, 100);
+        EEG = downsampling(EEG, g.freq_down);
     end
     fres = EEG.srate;
     frqs = sfreqs(fres, EEG.srate);
