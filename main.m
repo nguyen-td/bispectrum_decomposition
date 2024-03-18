@@ -21,11 +21,13 @@ function main(n_shuf, isub, varargin)
     % set directory paths
 %     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
 %     DIROUT = '/data/tdnguyen/data/p_carracer'; % save directory
-    DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
+%     DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
 %     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
 %     f_path = '/data/tdnguyen/git_repos/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
-    f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
+%     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
+    DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
+    f_path = '/data/tdnguyen/data/lemon/data/';
 
     if ~exist(DIROUT, 'dir')
         mkdir(DIROUT)

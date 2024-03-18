@@ -23,7 +23,7 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     % set and add paths
 %     DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
-    DIROUT = '/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/';
+    DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
     f_path = '/data/tdnguyen/data/lemon/data/';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/MotorImag/data/';
