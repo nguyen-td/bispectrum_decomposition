@@ -19,7 +19,7 @@
 
 function main_preanalysis(n_shuf, isub, varargin)
 
-    %% Prepare dataset, including downsampling to 100 Hz
+    %% Prepare dataset, including downsampling to 125 Hz
 
     % set and add paths
 %     DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
@@ -72,7 +72,7 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     % downsample data to 100 Hz and plot
     if strcmpi(g.downsample, 'on')
-        EEG = downsampling(EEG, 100);
+        EEG = downsampling(EEG, 125);
         plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
             'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
     end
@@ -131,8 +131,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     bicoh2 = bs_orig2 ./ rtp2;
 
     % compute and plot p-values for cross-bispectra
-    [~, P_sens_fdr1] = compute_pvalues(mean(bs_orig1, 1), mean(abs(bs_all1), 1), n_shuf, g.alpha);
-    [~, P_sens_fdr2] = compute_pvalues(mean(bs_orig2, 1), mean(abs(bs_all2), 1), n_shuf, g.alpha);
+    [~, P_sens_fdr1] = compute_pvalues(mean(abs(bs_orig1), 1), mean(abs(bs_all1), 1), n_shuf, g.alpha);
+    [~, P_sens_fdr2] = compute_pvalues(mean(abs(bs_orig2), 1), mean(abs(bs_all2), 1), n_shuf, g.alpha);
     plot_pvalues_univ(P_sens_fdr1, frqs, isub, DIROUT, 'bispec_type', '1_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
     plot_pvalues_univ(P_sens_fdr2, frqs, isub, DIROUT, 'bispec_type', '2_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
     
