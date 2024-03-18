@@ -8,7 +8,7 @@
 % Optional inputs:
 %   n            - [integer] model order/number of fitted sources, default is 5.
 %   alpha        - [float] significance level, default is 0.05.
-%   freq_manual  - [string] manual frequency selection, default is 'ib', i.e., frequencies will not be selected automatically and have to be passed (see f1, f2).
+%   freq_manual  - [string] manual frequency selection, default is 'on', i.e., frequencies will not be selected automatically and have to be passed (see f1, f2).
 %   f1           - [integer] phase frequency, single frequency in Hz or frequencyband, e.g., [9 11], default is 11.
 %   f2           - [integer] amplitude frequency single frequency in Hz or frequency band, e.g., [20 22], default is 22.
 %   run_ica      - [string] run ICA decomposition and save the first n components, default is 'off'.
