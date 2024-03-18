@@ -23,7 +23,7 @@ function main_preanalysis(n_shuf, isub, varargin)
     %% Prepare dataset, including downsampling to 125 Hz
 
     % set and add paths
-%     DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/';
+%     DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
     DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
     f_path = '/data/tdnguyen/data/lemon/data/';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
