@@ -14,7 +14,7 @@
 %   run_ica      - [string] run ICA decomposition and save the first n components, default is 'off'.
 %   poolsize     - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing, default is 2.
 %   freq_down    - [integer] if 'downsample' is activated, the data will be downsampled to <freq_down> Hz. Default is 125 Hz.
-%   downsample   - [string] check whether to downsample data to 100 Hz, default is 'on'.
+%   downsample   - [string] check whether to downsample data to <freq_down> Hz, default is 'on'.
 %   bispec_type  - [string] type of bispectrum (for file name), default is '_cross'.
 
 function main(n_shuf, isub, varargin)
