@@ -1,7 +1,7 @@
 % Extract frequency indices (bins) from inputs in Hz.
 %
 % Inputs:
-%   f1, f2 - frequency in Hz, can be either single integers or an array, i.e., either f1 = 11 or f1 = [9 11];
+%   f1, f2 - frequency in Hz, can either be single integers or an array, i.e., either f1 = 11 or f1 = [9 11];
 %   frqs   - (n_freqs x 1) vector of frequencies, spaced according to the frequency resolution 
 %
 % Outputs:

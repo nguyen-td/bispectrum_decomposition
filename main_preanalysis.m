@@ -74,7 +74,7 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     % downsample data to 100 Hz and plot
     if strcmpi(g.downsample, 'on')
-        EEG = downsampling(EEG, g.freq_downn);
+        EEG = downsampling(EEG, g.freq_down);
         plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
             'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
     end
@@ -182,7 +182,7 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     % plot cross-bispectra as topomaps with a seed
     net_bicoh1_anti = squeeze(mean(abs(bicoh1_anti), 1));
-    [~, seed1_anti_idx] = max(max(net_bicoh1_anti, [], 2), [], 'all'); % get max. value in the row (1st dimension)
+    [~, seed1_anti_idx] = max(max(net_bicoh1_anti, [], 2), [], 'all'); % get max. value in the row (1st dimension), TODO: DO IT EXPLICITELY OVER ONE DIMENSION
     plot_topomaps_seed(net_bicoh1_anti, seed1_anti_idx, EEG.chanlocs, '1_anti', 'Seed net antisymmetrized cross-bicoherence (f1, f1, f1+f1)', DIROUT)
 
     net_bicoh2_anti = squeeze(mean(abs(bicoh2_anti), 1));
