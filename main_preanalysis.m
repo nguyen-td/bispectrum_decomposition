@@ -159,12 +159,10 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     % plot cross-bispectra as topomaps with a seed
     net_bicoh1 = squeeze(mean(abs(bicoh1), 1));
-    [~, seed1_idx] = max(max(net_bicoh1, [], 2), [], 'all'); % get max. value in the row (1st dimension)
-    plot_topomaps_seed(net_bicoh1, seed1_idx, EEG.chanlocs, '1', 'Seed net cross-bicoherence (f1, f1, f1+f1)', DIROUT)
+    plot_topomaps_seed(net_bicoh1, EEG.chanlocs, '1', 'Seed net cross-bicoherence (f1, f1, f1+f1)', DIROUT)
 
     net_bicoh2 = squeeze(mean(abs(bicoh2), 1));
-    [~, seed2_idx] = max(max(net_bicoh1, [], 2), [], 'all'); % get max. value in the row (1st dimension)
-    plot_topomaps_seed(net_bicoh2, seed2_idx, EEG.chanlocs, '2', 'Seed net cross-bicoherence (f1, f2, f1+f2)', DIROUT)
+    plot_topomaps_seed(net_bicoh2, EEG.chanlocs, '2', 'Seed net cross-bicoherence (f1, f2, f1+f2)', DIROUT)
 
     %% Compute antisymmetrized cross-bispectra
 
@@ -182,11 +180,9 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     % plot cross-bispectra as topomaps with a seed
     net_bicoh1_anti = squeeze(mean(abs(bicoh1_anti), 1));
-    [~, seed1_anti_idx] = max(max(net_bicoh1_anti, [], 2), [], 'all'); % get max. value in the row (1st dimension), TODO: DO IT EXPLICITELY OVER ONE DIMENSION
-    plot_topomaps_seed(net_bicoh1_anti, seed1_anti_idx, EEG.chanlocs, '1_anti', 'Seed net antisymmetrized cross-bicoherence (f1, f1, f1+f1)', DIROUT)
+    plot_topomaps_seed(net_bicoh1_anti, EEG.chanlocs, '1_anti', 'Seed net antisymmetrized cross-bicoherence (f1, f1, f1+f1)', DIROUT)
 
     net_bicoh2_anti = squeeze(mean(abs(bicoh2_anti), 1));
-    [~, seed2_anti_idx] = max(max(net_bicoh2_anti, [], 2), [], 'all'); % get max. value in the row (1st dimension)
-    plot_topomaps_seed(net_bicoh2_anti, seed2_anti_idx, EEG.chanlocs, '2_anti', 'Seed net antisymmetrized cross-bicoherence (f1, f2, f1+f2)', DIROUT)
+    plot_topomaps_seed(net_bicoh2_anti, EEG.chanlocs, '2_anti', 'Seed net antisymmetrized cross-bicoherence (f1, f2, f1+f2)', DIROUT)
 
 end
