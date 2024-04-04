@@ -28,7 +28,7 @@ function [L_3D, cortex75k, cortex2k] = reduce_leadfield(EEG)
         warning('Not enough channels, use a larger leadfield matrix.')
     end
     
-    % 3D leadfield for the selected subset of channels
+    % user lower-resolution cortex
     L_3D = sa.cortex75K.V_fem(idx_chans, sa.cortex2K.in_from_cortex75K, :);
 
     % save cortex structures for later plotting
