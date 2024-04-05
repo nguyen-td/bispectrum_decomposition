@@ -20,13 +20,15 @@ function plot_spectra(EEG, condition, subject, result_dir, varargin)
     if ischar(g), error(g); end
 
     EEG = eeg_checkset( EEG );
-    figure; pop_spectopo(EEG, 1, [0 EEG.xmax * 1000], 'EEG' , 'percent', 80, 'freq', [g.f1 g.f1*2 g.f1*3], 'freqrange',[0 EEG.srate/2], ...
-        'electrodes', 'on', 'overlap', 50, 'title', [condition, ' ', subject]);
+    f = figure; 
+    pop_spectopo(EEG, 1, [0 EEG.xmax * 1000], 'EEG' , 'percent', 80, 'freq', [g.f1 g.f1*2 g.f1*3], 'freqrange',[0 EEG.srate/2], ...
+        'electrodes', 'on', 'overlap', 50, 'title', [condition, ' ', subject]); 
 
-    if strcmpi(g.title_str, [])
+    if isempty(g.title_str)
         exportgraphics(gcf, [result_dir, subject, '_', condition, '_psd.png']);
     else
         exportgraphics(gcf, [result_dir, g.title_str '.png']);
     end
+    close(f)
 
 end

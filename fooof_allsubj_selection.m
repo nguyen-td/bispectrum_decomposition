@@ -9,20 +9,22 @@ function fooof_allsubj_selection
     
     snrs = [];
     diffs = [];
+    inds = [];
     eeglab
     for isub = sbjs
-        disp(isub)
         try
-            [snr, diff] = fooof_subj_selection(isub, f_path);
             disp(['Subject: ' int2str(isub)])
+            [snr, diff] = fooof_subj_selection(isub, f_path);
 
             % store values for all subjects
             snrs(end+1) = snr;
             diffs(end+1) = diff;
+            inds(end+1) = isub;
         catch
-            continue 
+            continue % skip if subject ID cannot be found
         end
     end
 
-
+    results = vertcat(inds, snrs, diffs)';
+    writematrix(results, 'subjects_snr.xlsx')
 end
