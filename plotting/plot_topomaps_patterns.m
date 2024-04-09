@@ -4,6 +4,7 @@
 %   A        - (n_chan x n) mixing matrix
 %   n        - number of estimated sources
 %   chanlocs - EEG channel locations from the EEG struct
+%   cmap     - (n, 3) colormap 
 %   isub     - subject ID, used for title
 %   name     - [string] name for plot, for example, "mixed", "demixed" etc.
 %   DIROUT   - output directory to save images
@@ -11,7 +12,7 @@
 % Optional input:
 %   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
 
-function plot_topomaps_patterns(A, n, chanlocs, isub, name, DIROUT, varargin)
+function plot_topomaps_patterns(A, n, chanlocs, cmap, isub, name, DIROUT, varargin)
 
     g = finputcheck(varargin, { ...
         'bispec_type'    'string'     { }     '';
@@ -26,9 +27,9 @@ function plot_topomaps_patterns(A, n, chanlocs, isub, name, DIROUT, varargin)
         t = title(i);
         t.FontSize = 20;
         if i == n
-            topoplot(A(:, i), chanlocs, 'electrodes', 'on'); colorbar; clim([min(A, [], 'all') max(A, [], 'all')])
+            topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); colorbar; clim([min(A, [], 'all') max(A, [], 'all')])
         else
-            topoplot(A(:, i), chanlocs, 'electrodes', 'on'); clim([min(A, [], 'all') max(A, [], 'all')])
+            topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); clim([min(A, [], 'all') max(A, [], 'all')])
         end
     end
     save_A = [DIROUT 'A' g.bispec_type '_' name '_' int2str(isub) '.png'];

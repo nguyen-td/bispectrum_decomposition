@@ -6,6 +6,7 @@
 %   P_sens_fdr    - (n_freq x n_freq) matrix of FDR-corrected p-values of the sensor bispectrum
 %   frqs          - (n_frqs x 1) array of frequencies, used for labels
 %   isub          - subject ID, used for title
+%   cmap          - (n, 3) colormap 
 %   DIROUT        - output directory to save images
 %
 % Optional input:
@@ -16,7 +17,7 @@
 %                   both axes correspond to frequencies
 %   title_str     - [string] title, default is "p-values (univariate sensor bispectrum)"
 
-function plot_pvalues_univ(P_sens_fdr, frqs, isub, DIROUT, varargin)
+function plot_pvalues_univ(P_sens_fdr, frqs, isub, cmap, DIROUT, varargin)
 
     g = finputcheck(varargin, { ...
         'bispec_type'    'string'     { }     '_univ';
@@ -28,7 +29,8 @@ function plot_pvalues_univ(P_sens_fdr, frqs, isub, DIROUT, varargin)
     if ischar(g), error(g); end
 
     figure;
-    imagesc(-log10(P_sens_fdr)); 
+    imagesc(-log10(P_sens_fdr));
+    colormap(cmap)
     c = colorbar();
     c.Label.String = '-log10(p)';
     title(g.title_str)

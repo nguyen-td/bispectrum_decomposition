@@ -89,7 +89,7 @@ function main(n_shuf, isub, varargin)
     end
         
     % test significance of the fitted source cross-bispectrum within subjects
-    [L_3D, cortex75k, cortex2k] = reduce_leadfield(EEG); 
+    [L_3D, cortex75k, cortex2k] = reduce_leadfield_nyhead(EEG); 
     [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);    
 
     % plot p-values
@@ -100,11 +100,11 @@ function main(n_shuf, isub, varargin)
     end
 
     % plot estimated and demixed spatial patterns
-    plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type) 
-    plot_topomaps_patterns(A_demixed, g.n, EEG.chanlocs, isub, 'demixed', DIROUT, 'bispec_type', g.bispec_type)
+    load cm17
+    plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, cm17, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type) 
+    plot_topomaps_patterns(A_demixed, g.n, EEG.chanlocs, cm17, isub, 'demixed', DIROUT, 'bispec_type', g.bispec_type)
 
     % plot sources
-    load cm17
     plot_sources(F_moca, F, g.n, cortex75k, cortex2k, [], cm17, isub, DIROUT, 'bispec_type', g.bispec_type)
     
     % plot D_hat and D_demixed
