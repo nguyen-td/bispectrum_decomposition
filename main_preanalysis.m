@@ -13,7 +13,8 @@
 % Optional inputs:
 %   alpha      - [float] significance level, default is 0.05.
 %   poolsize   - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing
-%   f1         - [integer] fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF
+%   f1         - [integer] fundamental frequency, used to compute
+%   cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF. Default is 0 (f1 will be estimated)
 %   epleng     - [integer] length of epochs in seconds, default is 2 seconds
 %   freq_down  - [integer] if 'downsample' is activated, the data will be downsampled to <freq_down> Hz. Default is 125 Hz.
 %   downsample - [string] check whether to downsample data to <freq_down> Hz, default is 'on'
