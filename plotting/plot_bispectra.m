@@ -6,11 +6,12 @@
 %   isub     - subject ID, used for title
 %   name     - [string] name for plot, for example, "mixed", "demixed" etc.
 %   DIROUT   - output directory to save images
+%   cmap     - (n, 3) colormap 
 %
 % Optional input:
 %   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
 
-function plot_bispectra(D, f1, f2, isub, name, DIROUT, varargin)
+function plot_bispectra(D, f1, f2, isub, name, DIROUT, cmap, varargin)
 
     g = finputcheck(varargin, { ...
         'bispec_type'    'string'     { }     '';
@@ -19,17 +20,22 @@ function plot_bispectra(D, f1, f2, isub, name, DIROUT, varargin)
     
     D_abs = abs(D);
     n = size(D, 1);
-    figure('Position', [600 100 1500 300]);
+    if n == 3
+        figure('Position', [600 100 1000 300]);
+    else
+        figure('Position', [600 100 1500 300]);
+    end
     tl1 = tiledlayout(1, n);
     for i = 1:n 
         nexttile;
         imagesc(squeeze(D_abs(i, :, :)));
         clim([min(D_abs, [], 'all') max(D_abs, [], 'all')])
-        if i == 5
+        if i == n
             c = colorbar;
 %             c.Label.String = '-log10(p)';
         end
         set(gca, 'YDir','normal')
+        colormap(cmap)
     end
     title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))
     save_D = [DIROUT 'D' g.bispec_type '_source_' name '_' int2str(isub) '.png'];

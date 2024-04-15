@@ -99,8 +99,8 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     % plot single matrices
     plot_pvalues_univ(P_sens_fdr_uni, frqs, isub, cm17, DIROUT)
-    plot_bispectra_univ(bispec, frqs, isub, cm17, DIROUT, 'bispec_type', '_univ_unnorm', 'title_str', 'Unnormalized mean univariate sensor bispectrum') 
-    plot_bispectra_univ(bicoh, frqs, isub, cm17, DIROUT, 'bispec_type', '_univ_norm', 'title_str', 'Normalized mean univariate sensor bispectrum')
+    plot_bispectra_univ(bispec, frqs, isub, cm17a, DIROUT, 'bispec_type', '_univ_unnorm', 'title_str', 'Unnormalized mean univariate sensor bispectrum') 
+    plot_bispectra_univ(bicoh, frqs, isub, cm17a, DIROUT, 'bispec_type', '_univ_norm', 'title_str', 'Normalized mean univariate sensor bispectrum')
     
     % plot matrices over the head
     clear para;
@@ -140,10 +140,10 @@ function main_preanalysis(n_shuf, isub, varargin)
     plot_pvalues_univ(P_sens_fdr2, frqs, isub, cm17, DIROUT, 'bispec_type', '2_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
     
     % plot single matrices of net bispectra (collapsed over one channel dimension)
-    plot_bispectra_univ(bs_orig1, frqs, isub, cm17, DIROUT, 'bispec_type', '1_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
-    plot_bispectra_univ(bicoh1, frqs, isub, cm17, DIROUT, 'bispec_type', '1_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2)
-    plot_bispectra_univ(bs_orig2, frqs, isub, cm17, DIROUT, 'bispec_type', '2_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2) 
-    plot_bispectra_univ(bicoh2, frqs, isub, cm17, DIROUT, 'bispec_type', '2_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2)
+    plot_bispectra_univ(bs_orig1, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
+    plot_bispectra_univ(bicoh1, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2)
+    plot_bispectra_univ(bs_orig2, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2) 
+    plot_bispectra_univ(bicoh2, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2)
     
     % plot matrices over head
     clear plt_bispec_para
@@ -175,10 +175,10 @@ function main_preanalysis(n_shuf, isub, varargin)
     bicoh2_anti = bicoh2 + permute(bicoh2, [3, 1, 2]) + permute(bicoh2, [2, 3, 1]) - permute(bicoh2, [3, 2, 1]) - permute(bicoh2, [2, 1, 3]) - permute(bicoh2, [1, 3, 2]);
 
     % plot matrices of net antisymmetrized bispectra (collapsed over one channel dimension)
-    plot_bispectra_univ(bs_orig1_anti, frqs, isub, cm17, DIROUT, 'bispec_type', '1_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
-    plot_bispectra_univ(bicoh1_anti, frqs, isub, cm17, DIROUT, 'bispec_type', '1_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
-    plot_bispectra_univ(bs_orig2_anti, frqs, isub, cm17, DIROUT, 'bispec_type', '2_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2)
-    plot_bispectra_univ(bicoh2_anti, frqs, isub, cm17, DIROUT, 'bispec_type', '2_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2) 
+    plot_bispectra_univ(bs_orig1_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
+    plot_bispectra_univ(bicoh1_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
+    plot_bispectra_univ(bs_orig2_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2)
+    plot_bispectra_univ(bicoh2_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2) 
 
     % plot cross-bispectra as topomaps with a seed
     net_bicoh1_anti = squeeze(mean(abs(bicoh1_anti), 2));

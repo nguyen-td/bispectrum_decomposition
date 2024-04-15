@@ -4,6 +4,7 @@
 %   f1, f2        - frequencies in Hz, used for title
 %   isub          - subject ID, used for title
 %   DIROUT        - output directory to save images
+%   cmap          - (n, 3) colormap 
 %   P_source_fdr  - (n x n x n) matrix of FDR-corrected p-values of the source cross-bispectrum
 %   P_source      - (x x n x n) matrix of p-values of the source cross-bispectrum
 %
@@ -11,7 +12,7 @@
 %   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
 
 
-function plot_pvalues_cross(f1, f2, isub, DIROUT, P_source_fdr, P_source, varargin)
+function plot_pvalues_cross(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_source, varargin)
     
     g = finputcheck(varargin, { ...
         'bispec_type'    'string'     { }     '';
@@ -20,7 +21,11 @@ function plot_pvalues_cross(f1, f2, isub, DIROUT, P_source_fdr, P_source, vararg
     n = size(P_source_fdr, 1);
 
     % p-values of source cross-bispectrum
-    figure('Position', [600 100 1500 300]);
+    if size(P_source_fdr) == 3
+        figure('Position', [600 100 1000 300]);
+    else
+        figure('Position', [600 100 1500 300]);
+    end
     tl1 = tiledlayout(1, n);
     for i = 1:n 
         nexttile;
@@ -30,10 +35,11 @@ function plot_pvalues_cross(f1, f2, isub, DIROUT, P_source_fdr, P_source, vararg
         try
             clim([min(-log10(P_source_fdr), [], 'all') max(-log10(P_source_fdr), [], 'all')])
         end
-        if i == 5
+        if i == n
             c = colorbar;
             c.Label.String = '-log10(p)';
         end
+        colormap(cmap)
         set(gca, 'YDir','normal')
     end
     title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))

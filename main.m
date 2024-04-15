@@ -93,14 +93,14 @@ function main(n_shuf, isub, varargin)
     [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);    
 
     % plot p-values
+    load cm17.mat 
     if strcmpi(g.freq_manual, 'off')
-        plot_pvalues_univ(P_sens_fdr, frqs, isub, DIROUT, 'bispec_type', g.bispec_type)
+        plot_pvalues_univ(P_sens_fdr, frqs, isub, cm17, DIROUT, 'bispec_type', g.bispec_type)
     else
-        plot_pvalues_cross(f1, f2, isub, DIROUT, P_source_fdr, P_source, 'bispec_type', g.bispec_type)
+        plot_pvalues_cross(f1, f2, isub, DIROUT, cm17, P_source_fdr, P_source, 'bispec_type', g.bispec_type)
     end
 
     % plot estimated and demixed spatial patterns
-    load cm17
     plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, cm17, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type) 
     plot_topomaps_patterns(A_demixed, g.n, EEG.chanlocs, cm17, isub, 'demixed', DIROUT, 'bispec_type', g.bispec_type)
 
@@ -108,7 +108,7 @@ function main(n_shuf, isub, varargin)
     plot_sources(F_moca, F, g.n, cortex75k, cortex2k, [], cm17, isub, DIROUT, 'bispec_type', g.bispec_type)
     
     % plot D_hat and D_demixed
-    plot_bispectra(D_hat, f1, f2, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type)
-    plot_bispectra(D_demixed, f1, f2, isub, 'demixed', DIROUT, 'bispec_type', g.bispec_type)
+    plot_bispectra(D_hat, f1, f2, isub, 'estimated', DIROUT, cm17a, 'bispec_type', g.bispec_type)
+    plot_bispectra(D_demixed, f1, f2, isub, 'demixed', DIROUT, cm17a, 'bispec_type', g.bispec_type)
 
 end
