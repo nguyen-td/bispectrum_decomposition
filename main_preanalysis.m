@@ -27,6 +27,7 @@ function main_preanalysis(n_shuf, isub, varargin)
 %     DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
     DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
     f_path = '/data/tdnguyen/data/lemon/data/';
+%     f_path = '/Volumes/PortableSSD/LEMON/';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/MotorImag/data/';
     
@@ -118,8 +119,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     %% Compute sensor cross-bispectra
 
     % set up computation of sensor cross-bispectra for (f1, f1, f1+f1) and (f1, f2, f1+f2)
-    freqpairs1 = get_freqindices(round(first_peak), round(first_peak), frqs); % (f1, f1)
-    freqpairs2 = get_freqindices(round(first_peak), 2 * round(first_peak), frqs); % (f1, f2)
+    freqpairs1 = get_freqindices(round_to_05(first_peak), round_to_05(first_peak), frqs); % (f1, f1)
+    freqpairs2 = get_freqindices(round_to_05(first_peak), 2 * round_to_05(first_peak), frqs); % (f1, f2)
 
     % estimate sensor cross-bispectrum
     clear bispec_para
