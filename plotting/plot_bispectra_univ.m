@@ -47,7 +47,7 @@ function plot_bispectra_univ(B, frqs, isub, cmap, DIROUT, varargin)
     end
     xlabel(g.label_x, 'Interpreter', 'latex');
     ylabel(g.label_y, 'Interpreter', 'latex');
-    save_B_sensor = [DIROUT 'B' g.bispec_type '_sensor_' int2str(isub) '.png'];
+    save_B_sensor = [DIROUT 'B' g.bispec_type '_chan' int2str(g.mean_chan) '_sensor_' int2str(isub) '.png'];
     exportgraphics(gcf, save_B_sensor)
 
 end

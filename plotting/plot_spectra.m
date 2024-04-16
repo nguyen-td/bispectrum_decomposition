@@ -15,7 +15,7 @@ function plot_spectra(EEG, condition, subject, result_dir, varargin)
 
     g = finputcheck(varargin, { ...
         'title_str'      'string'        []              [];
-        'f1'             'double'       { }             10;
+        'f1'             'float'       { }             10;
         });
     if ischar(g), error(g); end
 

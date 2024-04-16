@@ -34,6 +34,7 @@ function showtfinhead(data,locs,pars);
 %                  corrsponds to the x-axis in the plots (default is 's')
 %      pars.funit string to label the second index of the input data, which
 %                  corrsponds to the y-axis in the plots ((default is 'Hz') 
+%      pars.cmap (n, 3) colormap (default is 'jet')
 %     
 
 mytext='';
@@ -45,6 +46,7 @@ yf=(1:nf)';
 tunit='s';
 funit='Hz';
 kplot=0;
+cmap = 'jet';
       scal=[min(min(min(abs(data)))),max(max(max(abs(data))))];
  %     dr=reshape(data,[],1);drs=sort(dr);nnd=length(dr);
  %       scal=[drs(ceil(.01*nnd)),drs(ceil(.99*nnd))]; 
@@ -95,15 +97,18 @@ if nargin>2
     if isfield(pars,'timeaxis')
         xf=pars.timeaxis;
     end
-     if isfield(pars,'tunit');
+    if isfield(pars,'tunit');
         tunit=pars.tunit;
-     end
-      if isfield(pars,'funit');
+    end
+    if isfield(pars,'funit');
         funit=pars.funit;
-     end
+    end
     if isfield(pars,'plot');
         kplot=pars.plot;
-     end
+    end
+    if isfield(pars, 'cmap')
+        cmap = pars.cmap;
+    end
 else
    
 end
@@ -249,7 +254,7 @@ set(gca,'visible','off');
 %get(h1)
 %h=colorbar; 
 %set(h,'yticklabel',
-colormap jet
+colormap(cmap)
 return;
 
 function plot_elec_empty_lowres(z,loc,skal,chan,resolution); 

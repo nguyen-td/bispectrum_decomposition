@@ -71,14 +71,14 @@ function main_preanalysis(n_shuf, isub, varargin)
     exportgraphics(gcf, [DIROUT, 'chanlocs_' num2str(isub) '.png']);
 
     % plot PSD and indicate the FOOOF peaks
-    plot_spectra(EEG, 'EC', ['First peak: ' double2str(first_peak), 'Hz, Second peak: ' double2str(2 * first_peak) ' Hz'], DIROUT, ...
-        'title_str', ['psd_' double2str(isub)], 'f1', first_peak)
+    plot_spectra(EEG, 'EC', ['First peak: ' num2str(first_peak), 'Hz, Second peak: ' num2str(2 * first_peak) ' Hz'], DIROUT, ...
+        'title_str', ['psd_' num2str(isub)], 'f1', first_peak)
 
     % downsample data to 100 Hz and plot
     if strcmpi(g.downsample, 'on')
         EEG = downsampling(EEG, g.freq_down);
-        plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
-            'title_str', ['psd_downsampled' int2str(isub)], 'f1', first_peak)
+        plot_spectra(EEG, 'EC', ['First peak: ' num2str(first_peak), 'Hz, Second peak: ' num2str(2 * first_peak) ' Hz'], DIROUT, ...
+            'title_str', ['psd_downsampled' num2str(isub)], 'f1', first_peak)
     end
 
     %% Compute univariate sensor bispectra
@@ -103,13 +103,14 @@ function main_preanalysis(n_shuf, isub, varargin)
     plot_pvalues_univ(P_sens_fdr_uni, frqs, isub, cm17, DIROUT)
     plot_bispectra_univ(bispec, frqs, isub, cm17a, DIROUT, 'bispec_type', '_univ_unnorm', 'title_str', 'Unnormalized mean univariate sensor bispectrum') 
     plot_bispectra_univ(bicoh, frqs, isub, cm17a, DIROUT, 'bispec_type', '_univ_norm', 'title_str', 'Normalized mean univariate sensor bispectrum')
-    
+
     % plot matrices over the head
     clear para;
     para.tunit = 'Hz';
     para.funit = 'Hz';
     para.timeaxis = frqs(1:end-1);
     para.freqaxis = frqs(1:end-1);
+    para.cmap = cm17a;
 
     figure; showtfinhead(abs(bispec), locs_2D, para); 
         exportgraphics(gcf, [DIROUT 'B_sensor_head_unnormalized_' int2str(isub) '.png'])
@@ -135,22 +136,25 @@ function main_preanalysis(n_shuf, isub, varargin)
     bicoh1 = bs_orig1 ./ rtp1;
     bicoh2 = bs_orig2 ./ rtp2;
 
-    % compute and plot p-values for cross-bispectra
-    [~, P_sens_fdr1] = compute_pvalues(mean(abs(bs_orig1), 2), mean(abs(bs_all1), 2), n_shuf, g.alpha);
-    [~, P_sens_fdr2] = compute_pvalues(mean(abs(bs_orig2), 2), mean(abs(bs_all2), 2), n_shuf, g.alpha);
-    plot_pvalues_univ(P_sens_fdr1, frqs, isub, cm17, DIROUT, 'bispec_type', '1_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
-    plot_pvalues_univ(P_sens_fdr2, frqs, isub, cm17, DIROUT, 'bispec_type', '2_cross', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
-    
-    % plot single matrices of net bispectra (collapsed over one channel dimension)
-    plot_bispectra_univ(bs_orig1, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
-    plot_bispectra_univ(bicoh1, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2)
-    plot_bispectra_univ(bs_orig2, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2) 
-    plot_bispectra_univ(bicoh2, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2)
-    
+    for ichan = 1:3
+        % compute and plot p-values for cross-bispectra
+        [~, P_sens_fdr1] = compute_pvalues(mean(abs(bs_orig1), 2), mean(abs(bs_all1), 2), n_shuf, g.alpha);
+        [~, P_sens_fdr2] = compute_pvalues(mean(abs(bs_orig2), 2), mean(abs(bs_all2), 2), n_shuf, g.alpha);
+        plot_pvalues_univ(P_sens_fdr1, frqs, isub, cm17, DIROUT, 'bispec_type', ['1_cross_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
+        plot_pvalues_univ(P_sens_fdr2, frqs, isub, cm17, DIROUT, 'bispec_type', ['2_cross_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
+
+        % plot single matrices of net bispectra (collapsed over one channel dimension)
+        plot_bispectra_univ(bs_orig1, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', ichan) 
+        plot_bispectra_univ(bicoh1, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2)
+        plot_bispectra_univ(bs_orig2, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', ichan) 
+        plot_bispectra_univ(bicoh2, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_norm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', ichan)
+    end
+
     % plot matrices over head
     clear plt_bispec_para
     plt_bispec_para.tunit = 'channel';
     plt_bispec_para.funit = 'channel';
+    plt_bispec_para.cmap = cm17a;
     figure; showtfinhead(abs(bs_orig1), locs_2D, plt_bispec_para); 
         exportgraphics(gcf, [DIROUT 'B1_cross_unnorm_sensor_head_' int2str(isub) '.png'])
     figure; showtfinhead(abs(bicoh1), locs_2D, plt_bispec_para); 
@@ -161,12 +165,14 @@ function main_preanalysis(n_shuf, isub, varargin)
         exportgraphics(gcf, [DIROUT 'B2_cross_norm_sensor_head_' int2str(isub) '.png'])
 
     % plot cross-bispectra as topomaps with a seed
-    net_bicoh1 = squeeze(mean(abs(bicoh1), 2));
-    net_bicoh2 = squeeze(mean(abs(bicoh2), 2));
-    max_val = max([net_bicoh1, net_bicoh2], [], 'all');
-    
-    plot_topomaps_seed(net_bicoh1, EEG.chanlocs, max_val, cm17a, '1', 'Seed net cross-bicoherence (f1, f1, f1+f1)', DIROUT)
-    plot_topomaps_seed(net_bicoh2, EEG.chanlocs, max_val, cm17a, '2', 'Seed net cross-bicoherence (f1, f2, f1+f2)', DIROUT)
+    for ichan = 1:3
+        net_bicoh1 = squeeze(mean(abs(bicoh1), ichan));
+        net_bicoh2 = squeeze(mean(abs(bicoh2), ichan));
+        max_val = max([net_bicoh1, net_bicoh2], [], 'all');
+        
+        plot_topomaps_seed(net_bicoh1, EEG.chanlocs, max_val, cm17a, ['1_chan' int2str(ichan)], 'Seed net cross-bicoherence (f1, f1, f1+f1)', DIROUT)
+        plot_topomaps_seed(net_bicoh2, EEG.chanlocs, max_val, cm17a, ['2_chan' int2str(ichan)], 'Seed net cross-bicoherence (f1, f2, f1+f2)', DIROUT)
+    end
 
     %% Compute antisymmetrized cross-bispectra
 
@@ -175,19 +181,20 @@ function main_preanalysis(n_shuf, isub, varargin)
     bicoh1_anti = bicoh1 - permute(bicoh1, [3, 2, 1]); % B_ijk - B_kji
     bs_orig2_anti = bs_orig2 + permute(bs_orig2, [3, 1, 2]) + permute(bs_orig2, [2, 3, 1]) - permute(bs_orig2, [3, 2, 1]) - permute(bs_orig2, [2, 1, 3]) - permute(bs_orig2, [1, 3, 2]); % TACB
     bicoh2_anti = bicoh2 + permute(bicoh2, [3, 1, 2]) + permute(bicoh2, [2, 3, 1]) - permute(bicoh2, [3, 2, 1]) - permute(bicoh2, [2, 1, 3]) - permute(bicoh2, [1, 3, 2]);
-
-    % plot matrices of net antisymmetrized bispectra (collapsed over one channel dimension)
-    plot_bispectra_univ(bs_orig1_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
-    plot_bispectra_univ(bicoh1_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', 2) 
-    plot_bispectra_univ(bs_orig2_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2)
-    plot_bispectra_univ(bicoh2_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', 2) 
-
-    % plot cross-bispectra as topomaps with a seed
-    net_bicoh1_anti = squeeze(mean(abs(bicoh1_anti), 2));
-    net_bicoh2_anti = squeeze(mean(abs(bicoh2_anti), 2));
-    max_val_anti = max([net_bicoh1_anti, net_bicoh2_anti], [], 'all');
-
-    plot_topomaps_seed(net_bicoh1_anti, EEG.chanlocs, max_val_anti, cm17a, '1_anti', 'Seed net antisymmetrized cross-bicoherence (f1, f1, f1+f1)', DIROUT)
-    plot_topomaps_seed(net_bicoh2_anti, EEG.chanlocs, max_val_anti, cm17a, '2_anti', 'Seed net antisymmetrized cross-bicoherence (f1, f2, f1+f2)', DIROUT)
-
+    
+    for ichan = 1:3
+        % plot matrices of net antisymmetrized bispectra (collapsed over one channel dimension)
+        plot_bispectra_univ(bs_orig1_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', ichan) 
+        plot_bispectra_univ(bicoh1_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', ichan) 
+        plot_bispectra_univ(bs_orig2_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', ichan)
+        plot_bispectra_univ(bicoh2_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '2_cross_norm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Normalized net totally antisymmetrized cross-bispectrum (f1, f2, f1+f2)', 'mean_chan', ichan) 
+    
+        % plot cross-bispectra as topomaps with a seed
+        net_bicoh1_anti = squeeze(mean(abs(bicoh1_anti), ichan));
+        net_bicoh2_anti = squeeze(mean(abs(bicoh2_anti), ichan));
+        max_val_anti = max([net_bicoh1_anti, net_bicoh2_anti], [], 'all');
+    
+        plot_topomaps_seed(net_bicoh1_anti, EEG.chanlocs, max_val_anti, cm17a, ['1_anti_chan' int2str(ichan)], 'Seed net antisymmetrized cross-bicoherence (f1, f1, f1+f1)', DIROUT)
+        plot_topomaps_seed(net_bicoh2_anti, EEG.chanlocs, max_val_anti, cm17a, ['2_anti_chan' int2str(ichan)], 'Seed net antisymmetrized cross-bicoherence (f1, f2, f1+f2)', DIROUT)
+    end
 end
