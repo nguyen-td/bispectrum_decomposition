@@ -71,8 +71,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     exportgraphics(gcf, [DIROUT, 'chanlocs_' num2str(isub) '.png']);
 
     % plot PSD and indicate the FOOOF peaks
-    plot_spectra(EEG, 'EC', ['First peak: ' int2str(first_peak), 'Hz, Second peak: ' int2str(2 * first_peak) ' Hz'], DIROUT, ...
-        'title_str', ['psd_' int2str(isub)], 'f1', first_peak)
+    plot_spectra(EEG, 'EC', ['First peak: ' double2str(first_peak), 'Hz, Second peak: ' double2str(2 * first_peak) ' Hz'], DIROUT, ...
+        'title_str', ['psd_' double2str(isub)], 'f1', first_peak)
 
     % downsample data to 100 Hz and plot
     if strcmpi(g.downsample, 'on')

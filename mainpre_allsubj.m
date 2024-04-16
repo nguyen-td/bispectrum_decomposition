@@ -14,8 +14,8 @@ function mainpre_allsubj(n_shuf, varargin)
         });
     if ischar(g), error(g); end
     
-    subjects = [317, 511, 306, 429, 318, 363, 327, 455, 385, 388];
-    f1 = [11.2, 9.4, 9.1, 9.4, 9.6, 10.4, 11.2, 9.7, 9.4, 9.3];
+    subjects = [317, 511, 429, 306, 355, 360, 441, 330, 385, 413];
+    f1 = [9.6, 9.4, 9.4, 9.1, 9.8, 10.4, 10.4, 9.9, 9.4, 9.2];
 
     for ind_sub = 1:length(subjects)
         g.f1 = f1(ind_sub);
