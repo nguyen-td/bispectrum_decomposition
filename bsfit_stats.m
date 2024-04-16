@@ -42,36 +42,19 @@
 %   D_demixed - (n x n x n) demixed source cross-bispectrum
 
 function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D)
-
-    % extract all individual frequencies in the selected bands
-    size_low = size(f1, 2);
-    size_high = size(f2, 2);
-    mask_inds_low = frqs >= f1(1) & frqs <= f1(size_low);
-    mask_inds_high = frqs >= f2(1) & frqs <= f2(size_high);
-    frqs_low = frqs(mask_inds_low); 
-    frqs_high = frqs(mask_inds_high);
-
-    % determine all frequency combinations
-    [k, j] = ndgrid(frqs_low, frqs_high);
-    frqs_combs = [k(:), j(:)]; 
-    n_combs = size(frqs_combs, 1);
-    freqpairs = zeros(n_combs, 2);
-    warning('The surrogate bispectra are going to be estimated on %d frequency pair(s).', n_combs);
-    for i = 1:n_combs
-        low = frqs_combs(i, 1);
-        high = frqs_combs(i, 2);
-        freqpairs(i, :) = [find(frqs == low), find(frqs == high)];
-    end
+    
+    % get frequency pairs (in bins)
+    freqpairs = get_freqindices(round_to_05(f1), round_to_05(f2), frqs); 
 
     % estimate sensor cross-bispectrum
     clear para
     para.nrun = nshuf;
     disp('Start calculating surrogate sensor cross-bispectra...')
-    [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
+    [bs_all, bs_orig] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
 
     % run decomposition on the original sensor cross-bispectrum 
-    [A_hat, D_hat, ~, ~, ~] = bsfit(bs_orig, n);
-%     [A_hat, D_hat, ~, ~, ~] = bsfit_freqbands(bs_orig, n);
+    [A_hat, D_hat] = bsfit(bs_orig, n);
+%     [A_hat, D_hat] = bsfit_freqbands(bs_orig, n);
 
     % fit surrogate source cross-bispectra with fixed mixing matrix 
     disp('Start calculating surrogate source cross-bispectra...')
@@ -88,8 +71,8 @@ function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats
             fprintf('.');
         end
 
-        [~, D_ishuf, ~, ~, ~] = bsfit(bs_all(:, :, :, ishuf), n, para);
-%         [~, D_ishuf, ~, ~, ~] = bsfit_freqbands(bs_all(:, :, :, ishuf), n, para);
+        [~, D_ishuf] = bsfit(bs_all(:, :, :, ishuf), n, para);
+%         [~, D_ishuf] = bsfit_freqbands(bs_all(:, :, :, ishuf), n, para);
         D_shuf(:, :, :, ishuf) = D_ishuf;
     end
     fprintf('\n');

@@ -26,10 +26,11 @@
 % d: source cross-bispectrum is size nxnxn
 % err: relative model error, i.e. norm(bs-bsmodel)/norm(bs) with norm
 %        meaning Frobenius norm
-% errall: errors for all iteration steps (just to check the progress)
+% err_all: errors for all iteration steps (just to check the progress)
+% err_news: errors for all iteration steps without overwriting (to check the progress)
 % bsmodel: the model  cross-bispectrum 
 
-function [a,d,err,err_all,bsmodel] = bsfit_freqbands(bs,n,para)
+function [a,d,err,err_all,err_news,bsmodel] = bsfit_freqbands(bs,n,para)
     % defaults
     alpha = .01; % starting value for regularation of LM procedure
     kmax = 50;   % maximum number of iterations 
