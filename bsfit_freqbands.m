@@ -29,7 +29,7 @@
 % errall: errors for all iteration steps (just to check the progress)
 % bsmodel: the model  cross-bispectrum 
 
-function [a,d,err,err_all,bsmodel] = bsfit(bs,n,para)
+function [a,d,err,err_all,bsmodel] = bsfit_freqbands(bs,n,para)
     % defaults
     alpha = .01; % starting value for regularation of LM procedure
     kmax = 50;   % maximum number of iterations 
