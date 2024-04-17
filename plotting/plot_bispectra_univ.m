@@ -26,11 +26,16 @@ function plot_bispectra_univ(B, frqs, isub, cmap, DIROUT, varargin)
         'custom_label'   'boolean'    { }     1;
         'title_str'      'string'     { }     'p-values (univariate sensor bispectrum)';
         'mean_chan'      'integer'    { 1, 2, 3 }  1;
+        'isnorm'         'boolean'    { }      false;
         });
     if ischar(g), error(g); end
 
     figure;
-    imagesc(squeeze(mean(abs(B), g.mean_chan)))
+    if g.isnorm
+        imagesc(squeeze(mean(abs(B), g.mean_chan)), [0 1])
+    else
+        imagesc(squeeze(mean(abs(B), g.mean_chan)))
+    end
     colormap(cmap)
     c = colorbar();
     c.Label.String = '|Bispectrum|';

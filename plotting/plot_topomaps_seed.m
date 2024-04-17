@@ -11,7 +11,12 @@
 %   title_str - [string] full title
 %   DIROUT    - output directory to save images
 
-function plot_topomaps_seed(B, chanlocs, max_val, cmap, name, title_str, DIROUT)
+function plot_topomaps_seed(B, chanlocs, max_val, cmap, name, title_str, DIROUT, varargin)
+
+    g = finputcheck(varargin, { ...
+        'isnorm'         'boolean'    { }      false;
+        });
+    if ischar(g), error(g); end
 
     % get seed
     [~, max_idx] = max(B, [], 'all'); % get max. value in the row (1st dimension)
@@ -22,7 +27,11 @@ function plot_topomaps_seed(B, chanlocs, max_val, cmap, name, title_str, DIROUT)
     figure;
     t = title(title_str);
     t.FontSize = 20;
-    topoplot(squeeze(B(row, :)), chanlocs, 'electrodes', 'on', 'emarker2', {row, 'o', 'black'}, 'colormap', cmap); colorbar; clim([0 max_val])
+    if g.isnorm
+        topoplot(squeeze(B(row, :)), chanlocs, 'electrodes', 'on', 'emarker2', {row, 'o', 'black'}, 'colormap', cmap); colorbar; clim([0 1])
+    else
+        topoplot(squeeze(B(row, :)), chanlocs, 'electrodes', 'on', 'emarker2', {row, 'o', 'black'}, 'colormap', cmap); colorbar; clim([0 max_val])
+    end
     save_B = [DIROUT 'B' name '_seed.png'];
     exportgraphics(gcf, save_B)
     
