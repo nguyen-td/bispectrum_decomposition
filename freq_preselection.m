@@ -30,12 +30,7 @@
 %   bispec_orig  - (n_chans x n_freqs x n_freqs) surrogate univariate bispectral tensors (without normalization)
 %   bicoh        - (n_chans x n_freqs x n_freqs) univariate bicoherence tensor
 
-function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, alpha, poolsize, varargin)
-
-    g = finputcheck(varargin, { ...
-        'freq_selection'    'string'     { 'on', 'off' }     'off';
-        });
-    if ischar(g), error(g); end
+function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, alpha, poolsize)
     
     % compute univariate sensor bispectrum
     clear para
@@ -69,16 +64,14 @@ function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, n_shuf
 %     P_fdr(P > p_fdr) = 1;
 %     
     
-    if strcmpi(g.freq_selection, 'on')
-        % extract frequencies
-        [maxval, ~] = max(-log10(P_fdr(:)));
-        argmaxs = find(-log10(P_fdr(:)) == maxval);
-        argmax = argmaxs(randi(length(argmaxs), 1));
-        [f1_bin, f2_bin] = ind2sub(size(P_fdr), argmax); 
-    
-        % convert to Hz
-        f1 = frqs(f1_bin);
-        f2 = frqs(f2_bin);
-    end
+    % extract frequencies
+    [maxval, ~] = max(-log10(P_fdr(:)));
+    argmaxs = find(-log10(P_fdr(:)) == maxval);
+    argmax = argmaxs(randi(length(argmaxs), 1));
+    [f1_bin, f2_bin] = ind2sub(size(P_fdr), argmax); 
+
+    % convert to Hz
+    f1 = frqs(f1_bin);
+    f2 = frqs(f2_bin);
 
 end

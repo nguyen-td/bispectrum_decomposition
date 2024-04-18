@@ -85,7 +85,7 @@ function main(n_shuf, isub, varargin)
     
     % make frequency pre-selection by assessing the significance of frequency pairs of the univariate sensor bispectrum if 'freq_manual' = 'off'
     if strcmpi(g.freq_manual, 'off')
-        [f1, f2, P_sens_fdr, P_sens] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize, 'freq_selection', 'on');
+        [f1, f2, P_sens_fdr, P_sens] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
     else
         f1 = g.f1;
         f2 = g.f2;
