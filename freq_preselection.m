@@ -49,7 +49,7 @@ function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, n_shuf
     bicoh = bispec_orig ./ bsallnr;
 
     % compute p-values
-    [P, P_fdr] = compute_pvalues(mean(abs(bsall(:, :, :, 1)), 1), mean(abs(bsall(:, :, :, 2:end)), 1), n_shuf, alpha);
+    [P, P_fdr] = compute_pvalues(squeeze(mean(abs(bsall(:, :, :, 1)), 1)), squeeze(mean(abs(bsall(:, :, :, 2:end)), 1)), n_shuf, alpha);
     
 %     % compute p-values, take mean over regions
 %     P = squeeze(sum(abs(mean(bsall(:, :, :, 1), 1)) < abs(mean(bsall(:, :, :, 2:end), 1)), 4) ./ nshuf);
