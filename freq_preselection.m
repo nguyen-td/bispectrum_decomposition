@@ -79,9 +79,6 @@ function [f1, f2, P_fdr, P, bispec_orig, bicoh] = freq_preselection(data, n_shuf
         % convert to Hz
         f1 = frqs(f1_bin);
         f2 = frqs(f2_bin);
-    else
-        f1 = 0;
-        f2 = 0;
     end
 
 end

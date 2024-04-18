@@ -15,7 +15,7 @@
 function [P, P_fdr] = compute_pvalues(true_val, shuf_vals, n_shuf, alpha)
 
     % compute p-values, take mean over regions
-    P = squeeze(sum(true_val < shuf_vals, 4) ./ n_shuf);
+    P = squeeze(sum(true_val < shuf_vals, 3) ./ n_shuf);
     P(P==0) = 1 / n_shuf;
     
     % correct for multiple comparisons
