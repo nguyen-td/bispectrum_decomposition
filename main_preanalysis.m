@@ -13,8 +13,7 @@
 % Optional inputs:
 %   alpha      - [float] significance level, default is 0.05.
 %   poolsize   - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing
-%   f1         - [integer] fundamental frequency, used to compute
-%   cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF. Default is 0 (f1 will be estimated)
+%   f1         - [integer] fundamental frequency, used to compute cross-bispectra; if not passed, the fundamental frequency will be estimated via FOOOF. Default is 0 (f1 will be estimated)
 %   epleng     - [integer] length of epochs in seconds, default is 2 seconds
 %   freq_down  - [integer] if 'downsample' is activated, the data will be downsampled to <freq_down> Hz. Default is 125 Hz.
 %   downsample - [string] check whether to downsample data to <freq_down> Hz, default is 'on'
@@ -89,9 +88,9 @@ function main_preanalysis(n_shuf, isub, varargin)
     segshift = floor(segleng/2);
     epleng = EEG.srate * g.epleng; % create epochs of [e.epleng] seconds 
     fres = EEG.srate;
+    frqs = sfreqs(fres, EEG.srate);
     
     % compute univariate bicoherence and get the p-values
-    frqs = sfreqs(fres, EEG.srate);
     [~, ~, P_sens_fdr_uni, ~, bispec, bicoh] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
 %     save('P_sens.mat', 'P_sens_fdr')
 
@@ -100,7 +99,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     load cm17.mat
 
     % plot single matrices
-    plot_pvalues_univ(P_sens_fdr_uni, frqs, isub, cm17a, DIROUT)
+    p_cmap = cmap_pvalues(P_sens_fdr_uni, cm17, cm17a);
+    plot_pvalues_univ(P_sens_fdr_uni, frqs, isub, p_cmap, DIROUT)
     plot_bispectra_univ(bispec, frqs, isub, cm17a, DIROUT, 'bispec_type', '_univ_unnorm', 'title_str', 'Unnormalized mean univariate sensor bispectrum') 
     plot_bispectra_univ(bicoh, frqs, isub, cm17a, DIROUT, 'bispec_type', '_univ_norm', 'title_str', 'Normalized mean univariate sensor bispectrum', 'isnorm', true)
 
@@ -138,10 +138,12 @@ function main_preanalysis(n_shuf, isub, varargin)
 
     for ichan = 1:3
         % compute and plot p-values for cross-bispectra
-        [~, P_sens_fdr1] = compute_pvalues(mean(abs(bs_orig1), ichan), mean(abs(bs_all1), ichan), n_shuf, g.alpha);
-        [~, P_sens_fdr2] = compute_pvalues(mean(abs(bs_orig2), ichan), mean(abs(bs_all2), ichan), n_shuf, g.alpha);
-        plot_pvalues_univ(P_sens_fdr1, frqs, isub, cm17a, DIROUT, 'bispec_type', ['1_cross_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
-        plot_pvalues_univ(P_sens_fdr2, frqs, isub, cm17a, DIROUT, 'bispec_type', ['2_cross_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
+        [~, P_sens_fdr1] = compute_pvalues(squeeze(mean(abs(bs_orig1), ichan)), squeeze(mean(abs(bs_all1), ichan)), n_shuf, g.alpha);
+        [~, P_sens_fdr2] = compute_pvalues(squeeze(mean(abs(bs_orig2), ichan)), squeeze(mean(abs(bs_all2), ichan)), n_shuf, g.alpha);
+        p_cmap1 = cmap_pvalues(P_sens_fdr1, cm17, cm17a);
+        p_cmap2 = cmap_pvalues(P_sens_fdr2, cm17, cm17a);
+        plot_pvalues_univ(P_sens_fdr1, frqs, isub, p_cmap1, DIROUT, 'bispec_type', ['1_cross_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
+        plot_pvalues_univ(P_sens_fdr2, frqs, isub, p_cmap2, DIROUT, 'bispec_type', ['2_cross_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
 
         % plot single matrices of net bispectra (collapsed over one channel dimension)
         plot_bispectra_univ(bs_orig1, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_unnorm', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', ichan) 
@@ -186,10 +188,12 @@ function main_preanalysis(n_shuf, isub, varargin)
     
     for ichan = 1:3
         % compute and plot p-values for antisymmetrized cross-bispectra
-        [~, P_sens_anti_fdr1] = compute_pvalues(mean(abs(bs_orig1_anti), ichan), mean(abs(bs_all1_anti), ichan), n_shuf, g.alpha);
-        [~, P_sens_anti_fdr2] = compute_pvalues(mean(abs(bs_orig2_anti), ichan), mean(abs(bs_all2_anti), ichan), n_shuf, g.alpha);
-        plot_pvalues_univ(P_sens_anti_fdr1, frqs, isub, cm17a, DIROUT, 'bispec_type', ['1_cross_anti_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
-        plot_pvalues_univ(P_sens_anti_fdr2, frqs, isub, cm17a, DIROUT, 'bispec_type', ['2_cross_anti_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
+        [~, P_sens_anti_fdr1] = compute_pvalues(squeeze(mean(abs(bs_orig1_anti), ichan)), squeeze(mean(abs(bs_all1_anti), ichan)), n_shuf, g.alpha);
+        [~, P_sens_anti_fdr2] = compute_pvalues(squeeze(mean(abs(bs_orig2_anti), ichan)), squeeze(mean(abs(bs_all2_anti), ichan)), n_shuf, g.alpha);
+        p_cmap1 = cmap_pvalues(P_sens_fdr1, cm17, cm17a);
+        p_cmap2 = cmap_pvalues(P_sens_fdr2, cm17, cm17a);
+        plot_pvalues_univ(P_sens_anti_fdr1, frqs, isub, p_cmap1, DIROUT, 'bispec_type', ['1_cross_anti_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
+        plot_pvalues_univ(P_sens_anti_fdr2, frqs, isub, p_cmap2, DIROUT, 'bispec_type', ['2_cross_anti_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
         
         % plot matrices of net antisymmetrized bispectra (collapsed over one channel dimension)
         plot_bispectra_univ(bs_orig1_anti, frqs, isub, cm17a, DIROUT, 'bispec_type', '1_cross_unnorm_anti', 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'Unnormalized net antisymmetrized cross-bispectrum (f1, f1, f1+f1)', 'mean_chan', ichan) 

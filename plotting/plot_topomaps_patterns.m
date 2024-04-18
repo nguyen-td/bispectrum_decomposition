@@ -18,6 +18,9 @@ function plot_topomaps_patterns(A, n, chanlocs, cmap, isub, name, DIROUT, vararg
         'bispec_type'    'string'     { }     '';
         });
     if ischar(g), error(g); end
+    
+    % get max. absolute value
+    max_val = max(abs(A), [], 'all');
 
     % topoplots of mixing matrix
     figure('Position', [600 100 1500 300]);
@@ -27,9 +30,9 @@ function plot_topomaps_patterns(A, n, chanlocs, cmap, isub, name, DIROUT, vararg
         t = title(i);
         t.FontSize = 20;
         if i == n
-            topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); colorbar; clim([min(A, [], 'all') max(A, [], 'all')])
+            topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); colorbar; clim([-max_val max_val])
         else
-            topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); clim([min(A, [], 'all') max(A, [], 'all')])
+            topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); clim([-max_val max_val])
         end
     end
     save_A = [DIROUT 'A' g.bispec_type '_' name '_' int2str(isub) '.png'];

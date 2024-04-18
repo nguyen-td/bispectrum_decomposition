@@ -13,6 +13,7 @@
 %   f2           - [integer] amplitude frequency single frequency in Hz or frequency band, e.g., [20 22], default is 22.
 %   run_ica      - [string] run ICA decomposition and save the first n components, default is 'off'.
 %   poolsize     - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing, default is 2.
+%   epleng       - [integer] length of epochs in seconds, default is 2 seconds
 %   freq_down    - [integer] if 'downsample' is activated, the data will be downsampled to <freq_down> Hz. Default is 125 Hz.
 %   downsample   - [string] check whether to downsample data to <freq_down> Hz, default is 'on'.
 %   bispec_type  - [string] type of bispectrum (for file name), default is '_cross'.
@@ -25,7 +26,6 @@ function main(n_shuf, isub, varargin)
 %     DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
 %     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
-%     f_path = '/data/tdnguyen/git_repos/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
     DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
     f_path = '/data/tdnguyen/data/lemon/data/';
@@ -44,6 +44,7 @@ function main(n_shuf, isub, varargin)
         'f2'             'integer'       { }              22; 
         'run_ica'        'string'        { 'on' 'off' }   'off';
         'poolsize'       'integer'       { }              1;
+        'epleng'         'integer'       { }              2;
         'downsample'     'string'        { 'on' 'off'}    'on';
         'freq_down'      'integer'       { }              125;
         'bispec_type'    'string'        { }              '_cross'; 
@@ -68,17 +69,19 @@ function main(n_shuf, isub, varargin)
     end
     
     % downsample data to 100 Hz and plot
-    if g.downsample
+    if strcmpi(g.downsample, 'on')
         EEG = downsampling(EEG, g.freq_down);
+        plot_spectra(EEG, 'EC', ['First peak: ' num2str(g.f1), 'Hz, Second peak: ' num2str(g.f2) ' Hz'], DIROUT, ...
+            'title_str', ['psd_downsampled' num2str(isub)], 'f1', g.f1)
     end
-    fres = EEG.srate;
-    frqs = sfreqs(fres, EEG.srate);
 
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
-    segleng = EEG.pnts;
+    segleng = EEG.srate * g.epleng; 
     segshift = floor(segleng/2);
-    epleng = EEG.pnts; 
+    epleng = EEG.srate * g.epleng; % create epochs of [e.epleng] seconds 
+    fres = EEG.srate;
+    frqs = sfreqs(fres, EEG.srate);
     
     % make frequency pre-selection by assessing the significance of frequency pairs of the univariate sensor bispectrum if 'freq_manual' = 'off'
     if strcmpi(g.freq_manual, 'off')
@@ -95,17 +98,16 @@ function main(n_shuf, isub, varargin)
     % plot p-values
     load cm17.mat 
     if strcmpi(g.freq_manual, 'off')
-        plot_pvalues_univ(P_sens_fdr, frqs, isub, cm17, DIROUT, 'bispec_type', g.bispec_type)
-    else
-        plot_pvalues_cross(f1, f2, isub, DIROUT, cm17, P_source_fdr, P_source, 'bispec_type', g.bispec_type)
+        plot_pvalues_univ(P_sens_fdr, frqs, isub, cm17a, DIROUT, 'bispec_type', g.bispec_type)
     end
+    plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cm17a, P_source_fdr, P_source, 'bispec_type', g.bispec_type)
 
     % plot estimated and demixed spatial patterns
     plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, cm17, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type) 
     plot_topomaps_patterns(A_demixed, g.n, EEG.chanlocs, cm17, isub, 'demixed', DIROUT, 'bispec_type', g.bispec_type)
 
     % plot sources
-    plot_sources(F_moca, F, g.n, cortex75k, cortex2k, [], cm17, isub, DIROUT, 'bispec_type', g.bispec_type)
+    plot_sources(F_moca, F, g.n, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', g.bispec_type)
     
     % plot D_hat and D_demixed
     plot_bispectra(D_hat, f1, f2, isub, 'estimated', DIROUT, cm17a, 'bispec_type', g.bispec_type)

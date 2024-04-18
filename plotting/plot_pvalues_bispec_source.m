@@ -12,7 +12,7 @@
 %   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
 
 
-function plot_pvalues_cross(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_source, varargin)
+function plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_source, varargin)
     
     g = finputcheck(varargin, { ...
         'bispec_type'    'string'     { }     '';

@@ -29,7 +29,7 @@ function plot_bispectra(D, f1, f2, isub, name, DIROUT, cmap, varargin)
     for i = 1:n 
         nexttile;
         imagesc(squeeze(D_abs(i, :, :)));
-        clim([min(D_abs, [], 'all') max(D_abs, [], 'all')])
+        clim([0 max(D_abs, [], 'all')])
         if i == n
             c = colorbar;
 %             c.Label.String = '-log10(p)';
