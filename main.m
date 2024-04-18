@@ -27,7 +27,7 @@ function main(n_shuf, isub, varargin)
 %     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
 %     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
-    DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
+    DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/main_' num2str(isub) '/'];
     f_path = '/data/tdnguyen/data/lemon/data/';
 
     if ~exist(DIROUT, 'dir')
