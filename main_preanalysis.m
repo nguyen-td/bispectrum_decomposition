@@ -39,7 +39,7 @@ function main_preanalysis(n_shuf, isub, varargin)
     g = finputcheck(varargin, { ...
         'alpha'          'float'         { }              0.05;
         'poolsize'       'integer'       { }              1;
-        'f1'             'integer'       { }              0;
+        'f1'             'float'       { }                0;
         'epleng'         'integer'       { }              2;
         'downsample'     'string'        {'on' 'off'}     'on';
         'freq_down'      'integer'       { }              125;
