@@ -128,6 +128,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     bispec_para.nrun = n_shuf;
     disp('Start calculating surrogate sensor cross-bispectra...')
     [bs_all1, bs_orig1, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs1, bispec_para);
+    save([DIROUT 'bs_all1.mat'], 'bs_all1')
+    save([DIROUT 'bs_orig1.mat'], 'bs_orig1')
     [bs_all2, bs_orig2, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs2, bispec_para);
     
     % compute normalization factor (threenorm)
@@ -190,8 +192,8 @@ function main_preanalysis(n_shuf, isub, varargin)
         % compute and plot p-values for antisymmetrized cross-bispectra
         [~, P_sens_anti_fdr1] = compute_pvalues(squeeze(mean(abs(bs_orig1_anti), ichan)), squeeze(mean(abs(bs_all1_anti), ichan)), n_shuf, g.alpha);
         [~, P_sens_anti_fdr2] = compute_pvalues(squeeze(mean(abs(bs_orig2_anti), ichan)), squeeze(mean(abs(bs_all2_anti), ichan)), n_shuf, g.alpha);
-        p_cmap1 = cmap_pvalues(P_sens_fdr1, cm17, cm17a);
-        p_cmap2 = cmap_pvalues(P_sens_fdr2, cm17, cm17a);
+        p_cmap1 = cmap_pvalues(P_sens_anti_fdr1, cm17, cm17a);
+        p_cmap2 = cmap_pvalues(P_sens_anti_fdr2, cm17, cm17a);
         plot_pvalues_univ(P_sens_anti_fdr1, frqs, isub, p_cmap1, DIROUT, 'bispec_type', ['1_cross_anti_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1, f1,  f1+f1)')
         plot_pvalues_univ(P_sens_anti_fdr2, frqs, isub, p_cmap2, DIROUT, 'bispec_type', ['2_cross_anti_chan' int2str(ichan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'title_str', 'p-values (f1,  f2, f1+f2)')
         
