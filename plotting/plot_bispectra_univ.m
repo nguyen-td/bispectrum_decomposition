@@ -2,7 +2,7 @@
 % Can also be used for cross-bispectra as long as the dimensions coincide. Check optional inputs for adjusting axis labels.
 %
 % Inputs:
-%   B        - (n_chan x n_freq x n_freq) univariate bispectrum
+%   B        - (n_freq x n_freq) univariate bispectrum, n_freq can be any unit, e.g., n_chan would also work
 %   frqs     - (n_frqs x 1) array of frequencies, used for labels
 %   isub     - subject ID, used for title
 %   cmap     - (n, 3) colormap 
