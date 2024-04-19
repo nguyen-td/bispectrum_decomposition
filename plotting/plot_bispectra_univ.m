@@ -15,7 +15,7 @@
 %   custom_label  - [boolean] whether to show custom labels, only activate when plotting univariate bispectra where 
 %                   both axes correspond to frequencies
 %   title_str     - [string] title, default is "Univariate sensor bispectrum)"
-%   mean_chan     - [1, 2, 3] channel along which the mean will be computed, default is 1 (channel 1)
+%   mean_chan     - [1, 2, 3] channel along which the mean will be computed (for the title), default is 1 (channel 1)
 
 function plot_bispectra_univ(B, frqs, isub, cmap, DIROUT, varargin)
 
@@ -32,9 +32,9 @@ function plot_bispectra_univ(B, frqs, isub, cmap, DIROUT, varargin)
 
     figure;
     if g.isnorm
-        imagesc(squeeze(mean(abs(B), g.mean_chan)), [0 1])
+        imagesc(B, [0 1])
     else
-        imagesc(squeeze(mean(abs(B), g.mean_chan)))
+        imagesc(B)
     end
     colormap(cmap)
     c = colorbar();
