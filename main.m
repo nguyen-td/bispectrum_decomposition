@@ -21,11 +21,7 @@
 function main(n_shuf, isub, varargin)
     
     % set directory paths
-%     DIROUT = '/data/tdnguyen/data/p_imag'; % save directory
-%     DIROUT = '/data/tdnguyen/data/p_carracer'; % save directory
 %     DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
-%     f_path = '/data/tdnguyen/data/imag_data'; % change if necessary
-%     f_path = '/Users/nguyentiendung/Desktop/Studium/Charite/Research/Project 1/bispectrum_decomposition/EmergencyBreaking/preprocessing/analysis_output/preprocessing/data';
 %     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
     DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/main_' num2str(isub) '/'];
     f_path = '/data/tdnguyen/data/lemon/data/';
@@ -98,9 +94,11 @@ function main(n_shuf, isub, varargin)
     % plot p-values
     load cm17.mat 
     if strcmpi(g.freq_manual, 'off')
-        plot_pvalues_univ(P_sens_fdr, frqs, isub, cm17a, DIROUT, 'bispec_type', g.bispec_type)
+        p_cmap = cmap_pvalues(P_sens_fdr, cm17, cm17a);
+        plot_pvalues_univ(P_sens_fdr, frqs, isub, p_cmap, DIROUT, 'bispec_type', g.bispec_type)
     end
-    plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cm17a, P_source_fdr, P_source, 'bispec_type', g.bispec_type)
+    p_cmap = cmap_pvalues(P_source_fdr, cm17, cm17a);
+    plot_pvalues_bispec_source(f1, f2, isub, DIROUT, p_cmap, P_source_fdr, P_source, 'bispec_type', g.bispec_type)
 
     % plot estimated and demixed spatial patterns
     plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, cm17, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type) 
