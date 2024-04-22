@@ -127,8 +127,8 @@ function main_preanalysis(n_shuf, isub, varargin)
     bispec_para.nrun = n_shuf;
     disp('Start calculating surrogate sensor cross-bispectra...')
     [bs_all1, bs_orig1, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs1, bispec_para);
-    save([DIROUT 'bs_all1.mat'], 'bs_all1', '-v7.3')
-    save([DIROUT 'bs_orig1.mat'], 'bs_orig1')
+%     save([DIROUT 'bs_all1.mat'], 'bs_all1', '-v7.3')
+%     save([DIROUT 'bs_orig1.mat'], 'bs_orig1')
     [bs_all2, bs_orig2, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs2, bispec_para);
     
     % compute normalization factor (threenorm)

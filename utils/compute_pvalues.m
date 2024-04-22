@@ -16,10 +16,13 @@ function [P, P_fdr] = compute_pvalues(true_val, shuf_vals, n_shuf, alpha)
 
     % compute p-values, take mean over regions
     P = squeeze(sum(true_val < shuf_vals, 3) ./ n_shuf);
-    P(P==0) = 1 / n_shuf;
     
     % correct for multiple comparisons
     [p_fdr, ~] = fdr(P, alpha);
     P_fdr = P;
     P_fdr(P > p_fdr) = 1;
+    
+    % p-value cannot be zero, so they are replaced by the smallest possible value
+    P(P==0) = 1 / n_shuf;
+    P_fdr(P_fdr==0) = 1 / n_shuf;
 end
