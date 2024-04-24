@@ -9,7 +9,7 @@ function main_allsubjects(nshuf, varargin)
     g = finputcheck(varargin, { ...
         'n'              'integer'       { }                5;
         'alpha'          'float'         { }              0.05;
-        'freq_manual'    'string'        { 'on' 'off' }   'off';
+        'freq_manual'    'string'        { 'on' 'off' }   'on';
         'run_ica'        'string'        { 'on' 'off' }   'off';
         'poolsize'       'integer'       { }              1;
         });
