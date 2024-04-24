@@ -6,29 +6,21 @@
 %   isub   - [integer] index of subject (the pipeline works for a single subject)
 %
 % Optional inputs:
-%   n            - [integer] model order/number of fitted sources, default is 5.
-%   alpha        - [float] significance level, default is 0.05.
-%   freq_manual  - [string] manual frequency selection, default is 'on', i.e., frequencies will not be selected automatically and have to be passed (see f1, f2).
-%   f1           - [integer] phase frequency, single frequency in Hz or frequencyband, e.g., [9 11], default is 11.
-%   f2           - [integer] amplitude frequency single frequency in Hz or frequency band, e.g., [20 22], default is 22.
-%   run_ica      - [string] run ICA decomposition and save the first n components, default is 'off'.
-%   poolsize     - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing, default is 2.
-%   epleng       - [integer] length of epochs in seconds, default is 2 seconds
-%   freq_down    - [integer] if 'downsample' is activated, the data will be downsampled to <freq_down> Hz. Default is 125 Hz.
-%   downsample   - [string] check whether to downsample data to <freq_down> Hz, default is 'on'.
-%   bispec_type  - [string] type of bispectrum (for file name), default is '_cross'.
+%   n              - [integer] model order/number of fitted sources, default is 5. Can also be an array of n's, e.g., [3 4 5]
+%   alpha          - [float] significance level, default is 0.05.
+%   freq_manual    - [string] manual frequency selection, default is 'on', i.e., frequencies will not be selected automatically and have to be passed (see f1, f2).
+%   f1             - [integer] phase frequency, single frequency in Hz or frequencyband, e.g., [9 11], default is 11.
+%   f2             - [integer] amplitude frequency single frequency in Hz or frequency band, e.g., [20 22], default is 22.
+%   run_ica        - [string] run ICA decomposition and save the first n components, default is 'off'.
+%   poolsize       - [integer] number of workers in the parellel pool (check parpool documentation) for parallel computing, default is 2.
+%   epleng         - [integer] length of epochs in seconds, default is 2 seconds
+%   freq_down      - [integer] if 'downsample' is activated, the data will be downsampled to <freq_down> Hz. Default is 125 Hz.
+%   downsample     - [string] check whether to downsample data to <freq_down> Hz, default is 'on'.
+%   bispec_type    - [string] type of bispectrum (for file name), default is '_cross'.
+%   antisymm       - [int, int, int] array of integer combinations to antisymmetrize, e.g. [1 3 2] would compute B_xyz - B_xzy. Default is [1 2 3] (no antisymmetrization).
+%   total_antisymm - [string] perform total antisymmetrization Bartz et al. (2020), default is 'off'.
 
 function main(n_shuf, isub, varargin)
-    
-    % set directory paths
-%     DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/' num2str(isub) '/'];
-%     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
-    DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/main_' num2str(isub) '/'];
-    f_path = '/data/tdnguyen/data/lemon/data/';
-
-    if ~exist(DIROUT, 'dir')
-        mkdir(DIROUT)
-    end
 
     % setup
     eeglab
@@ -44,8 +36,29 @@ function main(n_shuf, isub, varargin)
         'downsample'     'string'        { 'on' 'off'}    'on';
         'freq_down'      'integer'       { }              125;
         'bispec_type'    'string'        { }              '_cross'; 
+        'antisymm'       'integer'       { }              [1 2 3];
+        'total_antisymm' 'string'        { }              'off';
         });
     if ischar(g), error(g); end
+
+    if strcmpi(g.total_antisymm, 'on')
+        anti_label = 'anti_total';
+    elseif ~isequal(g.antisymm, [1, 2, 3])
+        anti_label = ['anti_' strrep(num2str(g.antisymm), ' ', '')];
+    else
+        anti_label = '';
+    end
+
+    % set directory paths
+    dict_name = [anti_label 'fa' int2str(g.f1) '_fb' int2str(g.f2) '_' num2str(isub) '/'];
+%     DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/main_' dict_name];
+%     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
+    DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/main_' dict_name];
+    f_path = '/data/tdnguyen/data/lemon/data/';
+
+    if ~exist(DIROUT, 'dir')
+        mkdir(DIROUT)
+    end
 
     % load data
     sub = ['sub-032' num2str(isub)];
@@ -89,26 +102,48 @@ function main(n_shuf, isub, varargin)
         
     % test significance of the fitted source cross-bispectrum within subjects
     [L_3D, cortex75k, cortex2k] = reduce_leadfield_nyhead(EEG); 
-    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D);    
+    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, errors] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, g.antisymm, g.total_antisymm);    
 
-    % plot p-values
+    % plotting
     load cm17.mat 
-    if strcmpi(g.freq_manual, 'off')
-        p_cmap = cmap_pvalues(P_sens_fdr, cm17, cm17a);
-        plot_pvalues_univ(P_sens_fdr, frqs, isub, p_cmap, DIROUT, 'bispec_type', g.bispec_type)
+    err_colors = ['r', 'b', 'k', 'g', 'o'];
+    if max(g.n) > length(err_colors)
+        err_colors = 0;
     end
-    p_cmap = cmap_pvalues(P_source_fdr, cm17, cm17a);
-    plot_pvalues_bispec_source(f1, f2, isub, DIROUT, p_cmap, P_source_fdr, P_source, 'bispec_type', g.bispec_type)
+        
+    for n_idx = 1:g.n
+        m_order = g.n(n_idx);
+        file_name = ['_n' num2str(m_order) g.bispec_type];
 
-    % plot estimated and demixed spatial patterns
-    plot_topomaps_patterns(A_hat, g.n, EEG.chanlocs, cm17, isub, 'estimated', DIROUT, 'bispec_type', g.bispec_type) 
-    plot_topomaps_patterns(A_demixed, g.n, EEG.chanlocs, cm17, isub, 'demixed', DIROUT, 'bispec_type', g.bispec_type)
-
-    % plot sources
-    plot_sources(F_moca, F, g.n, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', g.bispec_type)
+        if strcmpi(g.freq_manual, 'off')
+            p_cmap = cmap_pvalues(P_sens_fdr, cm17, cm17a);
+            plot_pvalues_univ(P_sens_fdr, frqs, isub, p_cmap, DIROUT, 'bispec_type', g.bispec_type)
+        end
+        p_cmap = cmap_pvalues(P_source_fdr{n_idx}, cm17, cm17a);
+        plot_pvalues_bispec_source(f1, f2, isub, DIROUT, p_cmap, P_source_fdr{n_idx}, P_source{n_idx}, 'bispec_type', file_name)
     
-    % plot D_hat and D_demixed
-    plot_bispectra(D_hat, f1, f2, isub, 'estimated', DIROUT, cm17a, 'bispec_type', g.bispec_type)
-    plot_bispectra(D_demixed, f1, f2, isub, 'demixed', DIROUT, cm17a, 'bispec_type', g.bispec_type)
+        % plot estimated and demixed spatial patterns
+        plot_topomaps_patterns(A_hat{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'estimated', DIROUT, 'bispec_type', file_name) 
+        plot_topomaps_patterns(A_demixed{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'demixed', DIROUT, 'bispec_type', file_name)
+    
+        % plot sources
+        plot_sources(F_moca{n_idx}, F{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', file_name)
+        
+        % plot D_hat and D_demixed
+        plot_bispectra(D_hat{n_idx}, f1, f2, isub, 'estimated', DIROUT, cm17a, 'bispec_type', file_name)
+        plot_bispectra(D_demixed{n_idx}, f1, f2, isub, 'demixed', DIROUT, cm17a, 'bispec_type', file_name)
+    end
+    % plot fitting error
+    plot_error(errors, 1, g.n, err_colors, '', isub, DIROUT)
+    plot_error(errors, 1, g.n, err_colors, '', isub, DIROUT, 'f_name', '_log', 'islog', true)
+
+    % store metrics
+    Errors = cellfun(@(x) x(end), errors);
+    Errors = Errors(:);
+    ModelOrder = g.n(:);
+    T = table(ModelOrder, Errors);
+    
+    t_name = [DIROUT 'metrics_' num2str(isub) '.xlsx']; % name
+    writetable(T, t_name, 'Sheet', 1)
 
 end

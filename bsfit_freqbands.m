@@ -83,7 +83,7 @@ function [a,d,err,err_all,err_news,bsmodel] = bsfit_freqbands(bs,n,para)
             d_new(:,:,:,ifreq) = d_new_real + 1i * d_new_imag;
 
             if isfit_a
-                a = a + reshape(par_new(1:nchan * n),nchan,n); % test later if A really stayed the same
+                a = a + reshape(par_new(1:nchan * n),nchan,n); 
             end
         end
         a_new = a;

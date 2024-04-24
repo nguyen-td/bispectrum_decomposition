@@ -12,7 +12,7 @@
 %   DIROUT      - output directory to save images
 %
 % Optional input:
-%   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
+%   bispec_type   - [string] type of bispectrum (for file name), default is '' (empty string)
 
 function plot_sources(F_moca, F, n, cortex75k, cortex2k, source_inds, cm, isub, DIROUT, varargin)
 

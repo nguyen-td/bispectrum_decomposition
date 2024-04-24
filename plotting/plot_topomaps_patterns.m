@@ -10,7 +10,7 @@
 %   DIROUT   - output directory to save images
 %
 % Optional input:
-%   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
+%   bispec_type   - [string] type of bispectrum (for file name), default is '' (empty string)
 
 function plot_topomaps_patterns(A, n, chanlocs, cmap, isub, name, DIROUT, varargin)
 

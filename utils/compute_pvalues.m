@@ -8,14 +8,22 @@
 %   nshuf     - number of shuffles
 %   alpha     - significance level, default is 0.05.
 %
+% Optional input:
+%   shuf_dim  - shuffling dimension, default is 3
+%
 % Outputs:
 %   P    - array containing p-values, has the same dimension as true_val
 %   P_fdr - array containing FDR-corrected values, has the same dimension as P
 
-function [P, P_fdr] = compute_pvalues(true_val, shuf_vals, n_shuf, alpha)
+function [P, P_fdr] = compute_pvalues(true_val, shuf_vals, n_shuf, alpha, varargin)
+
+    g = finputcheck(varargin, { ...
+        'shuf_dim'    'integer'     { }     3;
+        });
+    if ischar(g), error(g); end
 
     % compute p-values, take mean over regions
-    P = squeeze(sum(true_val < shuf_vals, 3) ./ n_shuf);
+    P = squeeze(sum(true_val < shuf_vals, g.shuf_dim) ./ n_shuf);
     
     % correct for multiple comparisons
     [p_fdr, ~] = fdr(P, alpha);

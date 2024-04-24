@@ -9,7 +9,7 @@
 %   cmap     - (n, 3) colormap 
 %
 % Optional input:
-%   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
+%   bispec_type   - [string] type of bispectrum (for file name), default is '' 
 
 function plot_bispectra(D, f1, f2, isub, name, DIROUT, cmap, varargin)
 

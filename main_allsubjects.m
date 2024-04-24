@@ -10,26 +10,27 @@ function main_allsubjects(nshuf, varargin)
         'n'              'integer'       { }                5;
         'alpha'          'float'         { }              0.05;
         'freq_manual'    'string'        { 'on' 'off' }   'off';
-        'f1'             'integer'       { }              11; 
-        'f2'             'integer'       { }              22; 
         'run_ica'        'string'        { 'on' 'off' }   'off';
         'poolsize'       'integer'       { }              1;
         });
     if ischar(g), error(g); end
 
-%     subjects = 1:1:37;
-%     exclude = [1, 2, 6, 7, 10, 13, 20, 24, 26, 32, 36]; % 26 subjects
-    subjects = 1:1:18; % carracer
-    exclude = [];
+    subjects = [317, 511, 429, 306, 355, 360, 441, 330, 385, 413];
+    f1 = [9.6, 9.4, 9.4, 9.1, 9.8, 10.4, 10.4, 9.9, 9.4, 9.2];
+    antisymm = {[1 2 3], [3, 2, 1]}; % no point in TACB, just try one partial antisymmetry for now
+
+    for isub = subjects
+        disp(['Subject ' int2str(isub) '..............................................................................................'])
+        for anti = antisymm
+            % (f1, f1, 2*f1)
+            tic
+            main(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', anti)
+            toc
     
-    for isub = 1:length(subjects)
-        tic
-        if ismember(isub, exclude)
-            continue
-        else
-            fprintf('Subject %d  .............................................................................................. \n', isub)
-            main(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', g.f1, 'f2', g.f2, 'run_ica', g.run_ica, 'poolsize', g.poolsize)
+            % (f1, f2, f1+f2)
+            tic
+            main(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', 2 * f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', anti)
+            toc
         end
-        toc
     end
 end

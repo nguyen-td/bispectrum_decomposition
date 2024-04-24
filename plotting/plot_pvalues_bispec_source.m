@@ -9,7 +9,7 @@
 %   P_source      - (x x n x n) matrix of p-values of the source cross-bispectrum
 %
 % Optional input:
-%   bispec_type   - [string] type of bispectrum (for file name), default is '_cross' (empty string)
+%   bispec_type   - [string] type of bispectrum (for file name), default is '' (empty string)
 
 
 function plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_source, varargin)
