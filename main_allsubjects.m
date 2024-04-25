@@ -18,18 +18,19 @@ function main_allsubjects(nshuf, varargin)
     subjects = [317, 511, 429, 306, 355, 360, 441, 330, 385, 413];
     f1 = [9.6, 9.4, 9.4, 9.1, 9.8, 10.4, 10.4, 9.9, 9.4, 9.2];
     antisymm = {[1 2 3], [3, 2, 1]}; % no point in TACB, just try one partial antisymmetry for now
+    % remove titles from plots
 
-    for isub = subjects
+    for isub = 1:length(subjects)
         disp(['Subject ' int2str(isub) '..............................................................................................'])
         for anti = antisymm
             % (f1, f1, 2*f1)
             tic
-            main(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', anti)
+            main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', anti)
             toc
     
             % (f1, f2, f1+f2)
             tic
-            main(nshuf, isub, 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', 2 * f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', anti)
+            main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', 2 * f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', anti)
             toc
         end
     end
