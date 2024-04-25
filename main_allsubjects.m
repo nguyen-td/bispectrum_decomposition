@@ -22,15 +22,15 @@ function main_allsubjects(nshuf, varargin)
 
     for isub = 1:length(subjects)
         disp(['Subject ' int2str(isub) '..............................................................................................'])
-        for anti = antisymm
+        for ianti = 1:length(antisymm)
             % (f1, f1, 2*f1)
             tic
-            main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', anti)
+            main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', antisymm{ianti})
             toc
     
             % (f1, f2, f1+f2)
             tic
-            main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', 2 * f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', anti)
+            main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', 2 * f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', antisymm{ianti})
             toc
         end
     end
