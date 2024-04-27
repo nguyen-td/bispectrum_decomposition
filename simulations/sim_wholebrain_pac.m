@@ -1,5 +1,8 @@
 % Script to simulate whole-brain signals with one univariate and two bivariate PAC interactions. 
 % Based on Franziska Pellegrini's PAC repository https://github.com/fpellegrini/PAC/blob/master/fp_pac_sim.m.
+%
+% Output:
+%   signal_roi - (n_roi x epleng x n_epochs) simulated ROI data
 
 function signal_roi = sim_wholebrain_pac
 
