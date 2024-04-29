@@ -10,7 +10,7 @@
 % Copyright (c) 2023 Franziska Pellegrini and Stefan Haufe
 % Documentation by Tien Dung Nguyen
 
-function [sig,brain_noise,sensor_noise, L_save,iroi_phase,iroi_amplt,D, fres, n_trials,filt] = fp_pac_signal(params,D)
+function [sig,brain_noise,sensor_noise, L_save,iroi_phase,iroi_amplt,D, fres, n_trials,filt,s1] = fp_pac_signal(params,D)
 
 % set parameters
 
