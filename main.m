@@ -18,26 +18,28 @@
 %   downsample     - [string] check whether to downsample data to <freq_down> Hz, default is 'on'.
 %   bispec_type    - [string] type of bispectrum (for file name), default is '_cross'.
 %   antisymm       - [int, int, int] array of integer combinations to antisymmetrize, e.g. [1 3 2] would compute B_xyz - B_xzy. Default is [1 2 3] (no antisymmetrization).
-%   total_antisymm - [string] perform total antisymmetrization Bartz et al. (2020), default is 'off'.
+%   total_antisymm - ['on' | 'off'] perform total antisymmetrization Bartz et al. (2020), default is 'off'.
+%   train_test     - ['on' | 'off'] whether A should be fitted on train data and D on test data. If yes, the train-test split is 80-20. Default is 'off'.
 
 function main(n_shuf, isub, varargin)
 
     % setup
     eeglab
     g = finputcheck(varargin, { ...
-        'n'              'integer'       { }                5;
-        'alpha'          'float'         { }              0.05;
-        'freq_manual'    'string'        { 'on' 'off' }   'on';
-        'f1'             'integer'       { }              11; 
-        'f2'             'integer'       { }              22; 
-        'run_ica'        'string'        { 'on' 'off' }   'off';
-        'poolsize'       'integer'       { }              1;
-        'epleng'         'integer'       { }              2;
-        'downsample'     'string'        { 'on' 'off'}    'on';
-        'freq_down'      'integer'       { }              125;
-        'bispec_type'    'string'        { }              '_cross'; 
-        'antisymm'       'integer'       { }              [1 2 3];
-        'total_antisymm' 'string'        { }              'off';
+        'n'                'integer'       { }                5;
+        'alpha'            'float'         { }              0.05;
+        'freq_manual'      'string'        { 'on' 'off' }   'on';
+        'f1'               'integer'       { }              11; 
+        'f2'               'integer'       { }              22; 
+        'run_ica'          'string'        { 'on' 'off' }   'off';
+        'poolsize'         'integer'       { }              1;
+        'epleng'           'integer'       { }              2;
+        'downsample'       'string'        { 'on' 'off'}    'on';
+        'freq_down'        'integer'       { }              125;
+        'bispec_type'      'string'        { }              '_cross'; 
+        'antisymm'         'integer'       { }              [1 2 3];
+        'total_antisymm'   'string'        { 'on' 'off'}    'off';
+        'train_test'       'string'        { 'on' 'off'}    'off';
         });
     if ischar(g), error(g); end
 
@@ -102,7 +104,7 @@ function main(n_shuf, isub, varargin)
         
     % test significance of the fitted source cross-bispectrum within subjects
     [L_3D, cortex75k, cortex2k] = reduce_leadfield_nyhead(EEG); 
-    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, errors] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, g.antisymm, g.total_antisymm);    
+    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, errors] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, 'antisymm', g.antisymm, 'total_antisymm', g.total_antisymm, 'train_test', g.train_test);    
 
     % plotting
     load cm17.mat 

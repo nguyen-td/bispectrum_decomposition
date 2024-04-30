@@ -30,8 +30,11 @@
 %   epleng         - epoch length (see METH toolbox documentation)
 %   alpha          - significance level, default is 0.05.
 %   L_3D           - (n_chans x n_voxels x n_dum) leadfield tensor, dipole directions are typically 3 
+%
+% Optional inputs:
 %   antisymm       - [idx, idx, idx] array containing indices to permute, will not perform antisymmetrization if [1, 2, 3]
-%   total_antisymm - {'on' | 'off'} whether TACB should be compuuted
+%   total_antisymm - ['on' | 'off'] whether TACB should be compuuted
+%   train_test     - ['on' | 'off'] whether A should be fitted on train data and D on test data. If yes, the train-test split is 80-20. Default is 'off'.
 %
 % Outputs:
 %   P_fdr     - (1 x n) cell array with (n x n x n) tensors of fdr-corrected p-values
@@ -44,22 +47,42 @@
 %   D_demixed - (1 x n) cell array with (n x n x n) demixed source cross-bispectra
 %   err       - (1 x n) cell array with (n_freqcombs x n) errors over iterations
 
-function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, err] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D, antisymm, total_antisymm)
+function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, err] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D, varargin)
+    
+    g = finputcheck(varargin, { ...
+        'antisymm'         'integer'       { }              [1 2 3];
+        'total_antisymm'   'string'        { 'on' 'off'}    'off';
+        'train_test'       'string'        { 'on' 'off'}    'off';
+        });
+    if ischar(g), error(g); end
     
     % get frequency pairs (in bins)
     freqpairs = get_freqindices(round_to_05(f1), round_to_05(f2), frqs); 
 
     % estimate sensor cross-bispectrum
     clear para
-    para.nrun = nshuf;
     disp('Start calculating surrogate sensor cross-bispectra...')
-    [bs_all, bs_orig] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
+    if strcmpi(g.train_test, 'off')
+        para.nrun = nshuf;
+        [bs_all, bs_orig] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
+    else
+        % fit A_hat and D_hat on bs_orig that is computed using train data, later fit D_shuf on bs_all that is computed using test data
+        cut = round(size(data, 2) * 0.8);
+        train = data(:, 1:cut);
+        test = data(:, cut+1:end);
+
+        para.nrun = 1; % original bispectrum
+        [~, bs_orig] = data2bs_event_surro_final(train', segleng, segshift, epleng, freqpairs, para);
+
+        para.nrun = nshuf; % surrogates
+        [bs_all, ~] = data2bs_event_surro_final(test', segleng, segshift, epleng, freqpairs, para);
+    end
 
     % antisymmetrization
-    if strcmpi(total_antisymm, 'on')
+    if strcmpi(g.total_antisymm, 'on')
         disp('Perform total antisymmetrization')
         bs_orig = bs_orig + permute(bs_orig, [3, 1, 2]) + permute(bs_orig, [2, 3, 1]) - permute(bs_orig, [3, 2, 1]) - permute(bs_orig, [2, 1, 3]) - permute(bs_orig, [1, 3, 2]);
-    elseif ~isequal(antisymm, [1, 2, 3])
+    elseif ~isequal(g.antisymm, [1, 2, 3])
         disp('Perform partial antisymmetrization')
         bs_orig = bs_orig - permute(bs_orig, antisymm); 
     else
