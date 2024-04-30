@@ -1,16 +1,31 @@
-% Generates ground-truth sensor-level time series with ground-truth univariate 
-% (within-region) or bivariate (across-region) interactions.
+% Generates ground-truth source-level time series with ground-truth univariate 
+% (within-region) or bivariate (across-region) interactions and projects
+% them to sensor level.
 %
 % Inputs:
 %   params - parameter list
 %           params.case - [1, 2, 3] univariate, bivariate or univariate + bivariate
 %           params.iInt - [integer] number of interactions
 %           params.iReg - [integer] number of voxels per region
+%   D      - atlas structure, in this case of the Desikan-Killiany atlas
+%
+% Outputs:
+%   sig           - signal on sensor level
+%   brain_noise   - 1/f source level noise projected to sensor level
+%   sensor_noise  - sensor noise (white noise)
+%   L_save        - leadfield matrix
+%   iroi_phase    - ROI indices for phase coupling
+%   iroi_amplt    - ROI indices for amplitude coupling
+%   D             - atlas structure, in this case of the Desikan-Killiany atlas
+%   fres          - sampling frequency
+%   n_trials      - numer of trials/epochs
+%   filt          - filter parameters 
+%   signal_source - source signals
 %
 % Copyright (c) 2023 Franziska Pellegrini and Stefan Haufe
 % Documentation by Tien Dung Nguyen
 
-function [sig,brain_noise,sensor_noise, L_save,iroi_phase,iroi_amplt,D, fres, n_trials,filt,s1] = fp_pac_signal(params,D)
+function [sig,brain_noise,sensor_noise, L_save,iroi_phase,iroi_amplt,D, fres, n_trials,filt,signal_sources] = fp_pac_signal(params,D)
 
 % set parameters
 
