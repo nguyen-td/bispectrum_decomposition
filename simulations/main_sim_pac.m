@@ -5,6 +5,7 @@
 %   n_shuf - [integer] number of shuffles
 %
 % Optional inputs:
+%   n      - [integer] model order/number of fitted sources, default is 5. Can also be an array of n's, e.g., [3 4 5]
 %   n_univ - [integer] number of univariate interactions, default is 1
 %   n_biv  - [integer] number of bivariate interactions, default is 2
 

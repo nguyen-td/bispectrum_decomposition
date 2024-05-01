@@ -5,23 +5,30 @@
 %   sim_case - [1, 2, 3] univariate, bivariate or univariate + bivariate
 %   n_univ   - [integer] number of univariate interactions, default is 1
 %   n_biv    - [integer] number of bivariate interactions, default is 2
+%   isnr     - [float] total SNR
 %
 % Output:
 %   signal_roi - (n_roi x epleng x n_epochs) simulated ROI data
 %   fs         - [integer] sampling frequency
-%   source     - ...
+%   source     - ([epleng * n_epochs] x [n_univ + n_biv]) source data containing source PAC
+%   filt       - filter settings
 
-function [signal_sensor, fs, sources] = sim_wholebrain_pac(sim_case, n_univ, n_biv)
+function [signal_sensor, fs, sources, filt, L] = sim_wholebrain_pac(sim_case, n_univ, n_biv, isnr)
 
     %% Signal generation
 
     % set parameters (see fp_pac_signal.m for documentation)
     params.case = sim_case; % univariate + bivariate case
-    params.iInt = [n_univ n_biv]; % one univariate, two bivariate interactions
     params.iReg = 1; 
     params.iss = 0.9; % brain noise to sensor noise ration (19 dB)
-    params.isnr = 0.5; % total SNR (0 dB)
+    params.isnr = isnr; % total SNR 
     params.t = 0; % [0, 1] true voxel pipeline or not
+    if params.case == 3
+        assert(~any([n_univ n_biv] == 0), 'Indicate the number of uni and bivariate interactions in the mixed case.')
+        params.iInt = [n_univ n_biv]; % one univariate, two bivariate interactions
+    else
+        params.iInt = sum([n_univ n_biv]); 
+    end
 
     % get atlas, voxel and roi indices; active voxel of each region is aleady selected here
     iReg = 1; 

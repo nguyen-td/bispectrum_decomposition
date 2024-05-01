@@ -24,7 +24,6 @@
 %   n              - number of estimated sources
 %   nshuf          - number of shuffles
 %   frqs           - (n_frq x 1) array of frequencies
-%   srate          - sampling rate
 %   segleng        - segment length (see METH toolbox documentation)
 %   segshift       - overlap of segments (see METH toolbox documentation)
 %   epleng         - epoch length (see METH toolbox documentation)
@@ -32,10 +31,10 @@
 %   L_3D           - (n_chans x n_voxels x n_dum) leadfield tensor, dipole directions are typically 3 
 %
 % Optional inputs:
-%   antisymm       - [idx, idx, idx] array containing indices to permute, will not perform antisymmetrization if [1, 2, 3]
-%   total_antisymm - ['on' | 'off'] whether TACB should be compuuted
+%   antisymm       - [idx, idx, idx] array containing indices to permute, will not perform antisymmetrization if [1, 2, 3]. Default is [1, 2, 3].
+%   total_antisymm - ['on' | 'off'] whether TACB should be compuuted. Default is 'off'.
 %   train_test     - ['on' | 'off'] whether A should be fitted on train data and D on test data. If yes, the train-test split is 80-20. Default is 'off'.
-%
+
 % Outputs:
 %   P_fdr     - (1 x n) cell array with (n x n x n) tensors of fdr-corrected p-values
 %   P         - (1 x n) cell array with (n x n x n) tensors of p-values (before fdr correction)
@@ -50,31 +49,31 @@
 function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, err] = bsfit_stats(data, f1, f2, n, nshuf, frqs, segleng, segshift, epleng, alpha, L_3D, varargin)
     
     g = finputcheck(varargin, { ...
-        'antisymm'         'integer'       { }              [1 2 3];
-        'total_antisymm'   'string'        { 'on' 'off'}    'off';
-        'train_test'       'string'        { 'on' 'off'}    'off';
+        'antisymm'         'integer'       { }               [1 2 3];
+        'total_antisymm'   'string'        { 'on' 'off' }    'off';
+        'train_test'       'string'        { 'on' 'off' }    'off';
         });
     if ischar(g), error(g); end
     
     % get frequency pairs (in bins)
     freqpairs = get_freqindices(round_to_05(f1), round_to_05(f2), frqs); 
 
-    % estimate sensor cross-bispectrum
+    % estimate sensor cross-bispectrum, either on full dataset or on train-test splots
     clear para
     disp('Start calculating surrogate sensor cross-bispectra...')
     if strcmpi(g.train_test, 'off')
         para.nrun = nshuf;
         [bs_all, bs_orig] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para);
     else
-        % fit A_hat and D_hat on bs_orig that is computed using train data, later fit D_shuf on bs_all that is computed using test data
+        % fit A_hat and D_hat on bs_orig that is computed using training data, later fit D_shuf on bs_all that is computed using test data
         cut = round(size(data, 2) * 0.8);
         train = data(:, 1:cut);
         test = data(:, cut+1:end);
 
-        para.nrun = 1; % original bispectrum
+        para.nrun = 1; % original bispectrum on training data
         [~, bs_orig] = data2bs_event_surro_final(train', segleng, segshift, epleng, freqpairs, para);
 
-        para.nrun = nshuf; % surrogates
+        para.nrun = nshuf; % surrogates on test data
         [bs_all, ~] = data2bs_event_surro_final(test', segleng, segshift, epleng, freqpairs, para);
     end
 
