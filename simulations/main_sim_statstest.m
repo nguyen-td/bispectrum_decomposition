@@ -74,7 +74,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         P_fdr = bsfit_stats(signal_sensor, freqinds(1), freqinds(2), g.n, n_shuf, frqs, ...
             segleng, segshift, epleng, g.alpha, L);
         for i_source = 1:g.n
-            fpr(i_source, i_iter) = squeeze(sum(P_fdr{i_source} < g.alpha) ./ length(P_fdr{i_source})); 
+            fpr(i_source, i_iter) = squeeze(sum(P_fdr{i_source}(:) < g.alpha) ./ length(P_fdr{i_source}(:))); 
         end
     end
 
