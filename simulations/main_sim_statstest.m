@@ -26,6 +26,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         'n_biv'          'integer'       { }                0;
         'epleng'         'integer'       { }                2;
         'alpha'          'float'         { }              0.05;
+        'poolsize'       'integer'       { }                1;
         });
     if ischar(g), error(g); end
 
@@ -70,20 +71,27 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
 %     plot_bispectra_univ(squeeze(mean(abs(bs_sens), 1)), frqs, 0, jet, DIROUT, 'bispec_type', '_univ_sens')
 
     % run statistics on decomposition and compute FPR
-    fpr = zeros(g.n, n_iter); 
-    for i_iter = 1:n_iter
+    disp(['Start computing FPR ' int2str(n_iter) ' times...'])
+    parpool(g.poolsize)
+    fpr_iter = zeros(length(g.n), n_iter); 
+    tic
+    parfor i_iter = 1:n_iter
         P_fdr = bsfit_stats(signal_sensor, freqinds(1), freqinds(2), g.n, n_shuf, frqs, ...
             segleng, segshift, epleng, g.alpha, L);
-        for i_source = 1:g.n
-            fpr(i_source, i_iter) = squeeze(sum(P_fdr{i_source}(:) < g.alpha) ./ length(P_fdr{i_source}(:))); 
-        end
+        fpr = cellfun(@(x) x < g.alpha, P_fdr, 'UniformOutput', false);
+        fpr_iter(:, i_iter) = cell2mat(cellfun(@(x) sum(x, 'all'), fpr, 'UniformOutput', false)) ./ cellfun(@(x) numel(x), P_fdr);
     end
+    toc
+
+    % shut down current parallel pool
+    poolobj = gcp('nocreate');
+    delete(poolobj);
 
     % raincloud/half-violin plot on linearly scaled y-axis
     for i_source = 1:g.n
         titles = {'Normal', 'Train-Test Split'};
         colors = [[0 0 0.5]; [0.8 0 0.2]];
-        plot_metrics_raincloud(fpr(i_source, :), colors, 1, 0.2, 'ks', titles, DIROUT, 'name', ['_n' int2str(i_source) f_name]);
+        plot_metrics_raincloud(fpr_iter(i_source, :), colors, 1, 0.2, 'ks', titles, DIROUT, 'name', ['_n' int2str(i_source) f_name]);
     end
     
 end
