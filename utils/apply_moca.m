@@ -20,7 +20,9 @@ function [A_moca, F_moca, F] = apply_moca(L_3D, A, n, regu)
 
     % find mixed sources
     [nchan, nvoxel, ndum] = size(P_eloreta);
-    F = zeros(nvoxel, ndum, n); % intitialze distributions for n sources 
+    
+    % intitialze distributions for n sources 
+    F = zeros(nvoxel, ndum, n); 
 
     for i = 1:n 
         for k=1:ndum
@@ -29,5 +31,11 @@ function [A_moca, F_moca, F] = apply_moca(L_3D, A, n, regu)
     end
 
     % now unmix the sources 
-    [F_moca, A_moca] = moca_ncomp(F);
+    if n > 1
+        [F_moca, A_moca] = moca_ncomp(F);
+    else
+        warning('Since there is only a single source, it will not be demixed.')
+        F_moca = F;
+        A_moca = ones(n, n);
+    end
 end

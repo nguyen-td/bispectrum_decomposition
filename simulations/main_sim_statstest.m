@@ -14,8 +14,8 @@
 
 function main_sim_statstest(n_shuf, n_iter, varargin)
     
-%     local_path = '/data/tdnguyen/git_repos/';
-    local_path = '/Users/nguyentiendung/GitHub/';
+    local_path = '/data/tdnguyen/git_repos/';
+%     local_path = '/Users/nguyentiendung/GitHub/';
     DIROUT = [local_path 'bispectrum_decomposition/simulations/figures/stats_test/'];
 
     % setup
@@ -48,12 +48,12 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
     % generate simulated data
     [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, isnr);
 %     psd = pwelch(signal_sensor(:,:)', 100, 50, 2*fs, fs);
-%     psd = pwelch(source', 100, 50, 2*fs, fs);
-%   PLOT THAT TOO
+    psd = pwelch(source', 100, 50, 2*fs, fs);
 
     % sampling frequency
     fres = fs; 
     frqs = sfreqs(fres, fs); % freqs in Hz
+    plot_psd_pac(psd, frqs, DIROUT, 'name', 'source')
 
     % set parameter values for (cross)-bispectrum estimation
     freqinds = [mean(filt.low) mean(filt.high)]; % in Hz
@@ -69,14 +69,20 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
 %     plot_bispectra_univ(squeeze(mean(abs(bs_sens), 1)), frqs, 0, jet, DIROUT, 'bispec_type', '_univ_sens')
 
     % run statistics on decomposition and compute FPR
-    fpr = zeros(1, n_iter); 
-    for i = 1:n_iter
+    fpr = zeros(g.n, n_iter); 
+    for i_iter = 1:n_iter
         P_fdr = bsfit_stats(signal_sensor, freqinds(1), freqinds(2), g.n, n_shuf, frqs, ...
             segleng, segshift, epleng, g.alpha, L);
-        fpr(i) = squeeze(sum(P_fdr < g.alpha) ./ length(P_fdr)); % test that
+        for i_source = 1:g.n
+            fpr(i_source, i_iter) = squeeze(sum(P_fdr{i_source} < g.alpha) ./ length(P_fdr{i_source})); 
+        end
+    end
+
+    % raincloud/half-violin plot on linearly scaled y-axis
+    for i_source = 1:g.n
+        titles = {'Normal', 'Train-Test Split'};
+        colors = [[0 0 0.5]; [0.8 0 0.2]];
+        plot_metrics_raincloud(fpr(i_source, :), colors, 1, 0.2, 'ks', titles, DIROUT, 'name', ['_n' int2str(i_source) '_snr' int2str(20 * log10(isnr / (1 - isnr)))]);
     end
     
-
-
-
 end

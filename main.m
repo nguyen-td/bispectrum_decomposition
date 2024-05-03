@@ -53,10 +53,10 @@ function main(n_shuf, isub, varargin)
 
     % set directory paths
     dict_name = [anti_label 'fa' int2str(g.f1) '_fb' int2str(g.f2) '_' num2str(isub) '/'];
-%     DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/main_' dict_name];
-%     f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
-    DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/main_' dict_name];
-    f_path = '/data/tdnguyen/data/lemon/data/';
+    DIROUT = ['/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/figures/main_' dict_name];
+    f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
+%     DIROUT = ['/data/tdnguyen/git_repos/bispectrum_decomposition/Lemon/figures/main_' dict_name];
+%     f_path = '/data/tdnguyen/data/lemon/data/';
 
     if ~exist(DIROUT, 'dir')
         mkdir(DIROUT)
