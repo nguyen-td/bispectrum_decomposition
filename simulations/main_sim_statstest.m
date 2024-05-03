@@ -44,7 +44,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         sim_case = 3;
         isnr = 0.5;
     end
-    f_name = ['_n' int2str(i_source) '_snr' int2str(20 * log10(isnr / (1 - isnr))) '_case' int2str(sim_case)];
+    f_name = ['_snr' int2str(20 * log10(isnr / (1 - isnr))) '_case' int2str(sim_case)];
 
     % generate simulated data
     [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, isnr);
@@ -83,7 +83,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
     for i_source = 1:g.n
         titles = {'Normal', 'Train-Test Split'};
         colors = [[0 0 0.5]; [0.8 0 0.2]];
-        plot_metrics_raincloud(fpr(i_source, :), colors, 1, 0.2, 'ks', titles, DIROUT, 'name', f_name);
+        plot_metrics_raincloud(fpr(i_source, :), colors, 1, 0.2, 'ks', titles, DIROUT, 'name', ['_n' int2str(i_source) f_name]);
     end
     
 end
