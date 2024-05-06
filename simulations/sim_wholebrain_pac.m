@@ -1,11 +1,11 @@
-% Script to simulate whole-brain signals with one univariate and two bivariate PAC interactions. 
+% Script to simulate whole-brain signals with univariate and bivariate PAC interactions. 
 % Based on Franziska Pellegrini's PAC repository https://github.com/fpellegrini/PAC/blob/master/fp_pac_sim.m.
 %
 % Inputs:
 %   sim_case - [1, 2, 3] univariate, bivariate or univariate + bivariate
 %   n_univ   - [integer] number of univariate interactions, default is 1
 %   n_biv    - [integer] number of bivariate interactions, default is 2
-%   isnr     - [float] total SNR
+%   isnr     - [float] total signal-to-noise ratio
 %
 % Output:
 %   signal_roi - (n_roi x epleng x n_epochs) simulated ROI data
