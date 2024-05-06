@@ -52,7 +52,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
 %     f_name = ['_snr' int2str(20 * log10(g.isnr / (1 - g.isnr))) '_case' int2str(sim_case)];
     
     for snr = g.isnr
-        disp(['Test statistical test for SNR... ' num2str(snr)])
+        disp(['Test statistical test for SNR ' num2str(snr) '...'])
         % generate simulated data
         [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, snr);
     
