@@ -6,6 +6,9 @@
 %   n_univ   - [integer] number of univariate interactions, default is 1
 %   n_biv    - [integer] number of bivariate interactions, default is 2
 %   isnr     - [float] total signal-to-noise ratio
+%   iroi_pac - [integer] array of coupled regions, where the first column corresponds to the phase region and the second column to the amplitude
+%              region. For example, if [30 40], then region 30 will be the phase region and 40 will be the amplitude region. If [[4 5]; [8 9]], 
+%              then [4 8] will be the phase regions and [5 9] the amplitude regions. If left empty, the univariate/bivariate interactions are randomly placed.
 %
 % Output:
 %   signal_roi - (n_roi x epleng x n_epochs) simulated ROI data
@@ -13,9 +16,18 @@
 %   source     - ([epleng * n_epochs] x [n_univ + n_biv]) source data containing source PAC
 %   filt       - filter settings
 
-function [signal_sensor, fs, sources, filt, L] = sim_wholebrain_pac(sim_case, n_univ, n_biv, isnr)
+function [signal_sensor, fs, sources, filt, L] = sim_wholebrain_pac(sim_case, n_univ, n_biv, isnr, iroi_pac)
 
     %% Signal generation
+    
+    if nargin < 5
+        params.iroi_phase = [];
+        params.iroi_amplt = [];
+    else
+        warning('You have manually specified interacting regions. Make sure that the number of interactions, the case, and the number of passed ROIs coincide.')
+        params.iroi_phase = iroi_pac(:, 1);
+        params.iroi_amplt = iroi_pac(:, 2);
+    end
 
     % set parameters (see fp_pac_signal.m for documentation)
     params.case = sim_case; % univariate + bivariate case

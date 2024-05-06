@@ -70,12 +70,21 @@ filt.high = high;
 %% randomly select seed, and in bivariate case also target 
 
 if params.case==1 % in univariate case
-    iroi_phase = randperm(D.nroi,params.iInt)';
-    iroi_amplt = [];
+    if isempty(params.iroi_phase) && isempty(params.iroi_amplt)
+        iroi_phase = randperm(D.nroi,params.iInt)';
+        iroi_amplt = [];
+    else
+        iroi_phase = params.iroi_phase;
+    end
     
 elseif params.case==2 % in bivariate case 
-    iroi_phase = randperm(D.nroi,params.iInt)';
-    iroi_amplt = randperm(D.nroi,params.iInt)';
+    if isempty(params.iroi_phase) && isempty(params.iroi_amplt)
+        iroi_phase = randperm(D.nroi,params.iInt)';
+        iroi_amplt = randperm(D.nroi,params.iInt)';
+    else
+        iroi_phase = params.iroi_phase;
+        iroi_amplt = params.iroi_amplt;
+    end
 
     %be sure that no region is selected twice
     for ii = 1:params.iInt
@@ -88,13 +97,21 @@ elseif params.case==3 % uni + bivariate case (not published)
     assert(length(params.iInt)==2,...
         'Indicate number of uni- and bivariate interactions in mixed case.')
     iroi_amplt=[];
-    iroi_phase = randperm(D.nroi,sum(params.iInt))'; %select regions for both uni and bivariate interactions
+    if isempty(params.iroi_phase)
+        iroi_phase = randperm(D.nroi,sum(params.iInt))'; %select regions for both uni and bivariate interactions
+    else
+        iroi_phase = params.iroi_phase;
+    end
    
     % first entries of iroi_amplt are copies of iroi_phase for uni interactions
     iroi_amplt(1:params.iInt(1)) = iroi_phase(1:params.iInt(1));
     
     % last entries of iroi_amplt are regions for bivar interactions
-    bivar_a = randperm(D.nroi,params.iInt(2));
+    if isempty(params.iroi_amplt)
+        bivar_a = randperm(D.nroi,params.iInt(2));
+    else
+        bivar_a = params.iroi_amplt;
+    end
 
     %be sure that no region is selected twice
     for ii = 1:params.iInt(2)
