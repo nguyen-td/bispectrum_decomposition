@@ -23,6 +23,10 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
 %     local_path = '/Users/nguyentiendung/GitHub/';
     DIROUT = [local_path 'bispectrum_decomposition/simulations/results/'];
 
+    if ~exist(DIROUT, 'dir')
+        mkdir(DIROUT)
+    end
+
     % setup
     eeglab
     g = finputcheck(varargin, { ...
@@ -36,10 +40,6 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         'train_test'     'string'        { 'on' 'off' }    'off';
         });
     if ischar(g), error(g); end
-
-    if ~exist(DIROUT, 'dir')
-        mkdir(DIROUT)
-    end
 
     % check case
     if ~g.n_univ == 0 && g.n_biv == 0
