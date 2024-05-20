@@ -80,10 +80,12 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
                 P_fdr{i_iter} = bsfit_stats(signal_sensor, freqinds(1), freqinds(2), g.n, n_shuf, frqs, ...
                     segleng, segshift, epleng, g.alpha, L, 'train_test', 'on');
             end
-            fpr = cellfun(@(x) x < g.alpha, P_fdr{i_iter}, 'UniformOutput', false);
-            fpr_iter(:, i_iter) = cell2mat(cellfun(@(x) sum(x, 'all'), fpr, 'UniformOutput', false));
+            fpr_iter = cellfun(@(x) x < g.alpha, P_fdr{i_iter}, 'UniformOutput', false);
+            fpr_iter(:, i_iter) = cell2mat(cellfun(@(x) sum(x, 'all'), fpr_iter, 'UniformOutput', false));
         end
         toc
+        fpr = mean(fpr_iter, 2);
+
     
         % shut down current parallel pool
         poolobj = gcp('nocreate');
@@ -91,7 +93,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
     
         % save structs
         save([DIROUT 'P_fdr_traintest_' g.train_test '_snr' num2str(snr) '_case' int2str(sim_case) '.mat'], 'P_fdr', '-v7.3')
-        save([DIROUT 'FPR_traintest_' g.train_test '_snr' num2str(snr) '_case' int2str(sim_case) '.mat'], 'fpr_iter', '-v7.3')
+        save([DIROUT 'FPR_traintest_' g.train_test '_snr' num2str(snr) '_case' int2str(sim_case) '.mat'], 'fpr', '-v7.3')
     end
 
 %     % raincloud/half-violin plot on linearly scaled y-axis
