@@ -83,7 +83,7 @@ function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, err] = bsfit_
         bs_orig = bs_orig + permute(bs_orig, [3, 1, 2]) + permute(bs_orig, [2, 3, 1]) - permute(bs_orig, [3, 2, 1]) - permute(bs_orig, [2, 1, 3]) - permute(bs_orig, [1, 3, 2]);
     elseif ~isequal(g.antisymm, [1, 2, 3])
         disp('Perform partial antisymmetrization')
-        bs_orig = bs_orig - permute(bs_orig, antisymm); 
+        bs_orig = bs_orig - permute(bs_orig, g.antisymm); 
     else
         disp('No antisymmetrization')
     end
