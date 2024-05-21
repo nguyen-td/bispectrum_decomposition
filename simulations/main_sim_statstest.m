@@ -68,12 +68,12 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
     
         % run statistics on decomposition and compute FPR
         disp(['Start computing FPR ' int2str(n_iter) ' times...'])
-        % parpool(g.poolsize)
+        parpool(g.poolsize)
         fpr_iter = zeros(length(g.n), n_iter); 
         P_fdr = {};
         tic
-        % parfor i_iter = 1:n_iter
-        for i_iter = 1:n_iter
+        parfor i_iter = 1:n_iter
+        % for i_iter = 1:n_iter
             if strcmpi(g.train_test, 'off')
                 P_fdr{i_iter} = bsfit_stats(signal_sensor, freqinds(1), freqinds(2), g.n, n_shuf, frqs, ...
                     segleng, segshift, epleng, g.alpha, L);
@@ -88,9 +88,9 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         % fpr = mean(fpr_iter, 2);
 
     
-        % % shut down current parallel pool
-        % poolobj = gcp('nocreate');
-        % delete(poolobj);
+        % shut down current parallel pool
+        poolobj = gcp('nocreate');
+        delete(poolobj);
         % 
         % save structs
         save([DIROUT 'P_fdr_traintest_' g.train_test '_snr' num2str(snr) '_case' int2str(sim_case) '.mat'], 'P_fdr', '-v7.3')
