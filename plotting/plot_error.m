@@ -11,15 +11,17 @@
 %   DIROUT       - output directory to save images
 %
 % Optional input:
-%   f_name   - [string] part of file name after 'err', default is '' (empty string)
-%   islog    - [boolean] whether to plot on log scale or not, default is false
+%   f_name  - [string] part of file name after 'err', default is '' (empty string)
+%   islog   - [boolean] whether to plot on log scale or not, default is false
+%   f_ext   - [string] file extension, default is .png.
 
 function plot_error(errors, freqcomb_idx, n, colors, title_str, isub, DIROUT, varargin)
 
     g = finputcheck(varargin, { ...
         'f_name'    'string'     { }     '';
         'islog'     'boolean'    { }     false;
-        });
+        'f_ext'    'string'     { }     '.png';
+         });
     if ischar(g), error(g); end
 
     max_err = max(cellfun(@max, errors), [], 'all');
@@ -58,6 +60,10 @@ function plot_error(errors, freqcomb_idx, n, colors, title_str, isub, DIROUT, va
     t.FontSize = 15;
     
     % save figure
-    save_err = [DIROUT 'err' g.f_name '_' int2str(isub) '.png'];
-    exportgraphics(gcf, save_err)
+    save_err = [DIROUT 'err' g.f_name '_' int2str(isub) g.f_ext];
+    if strcmpi(g.f_ext, '.fig')
+        saveas(gcf, save_err)
+    else
+        exportgraphics(gcf, save_err)
+    end
 end

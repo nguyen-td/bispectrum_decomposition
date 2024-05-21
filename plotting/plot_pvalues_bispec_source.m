@@ -10,12 +10,15 @@
 %
 % Optional input:
 %   bispec_type   - [string] type of bispectrum (for file name), default is '' (empty string)
-
+%   istitle       - [boolean] whether to show a title, default is true
+%   f_ext         - [string] file extension, default is .png.
 
 function plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_source, varargin)
     
     g = finputcheck(varargin, { ...
         'bispec_type'    'string'     { }     '';
+        'istitle'        'boolean'    { }     true;
+        'f_ext'          'string'     { }     '.png';
         });
     if ischar(g), error(g); end
     n = size(P_source_fdr, 1);
@@ -41,8 +44,18 @@ function plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_
         end
         colormap(cmap)
         set(gca, 'YDir','normal')
+        xticks(1:n);
+        yticks(1:n);
     end
-    title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))
-    save_P_source = [DIROUT 'P' g.bispec_type '_source_' int2str(isub) '.png'];
-    exportgraphics(gcf, save_P_source)
+    if g.istitle
+        title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))
+    end
+
+    % saving figure
+    save_P_source = [DIROUT 'P' g.bispec_type '_source_' int2str(isub) g.f_ext];
+    if strcmpi(g.f_ext, '.fig')
+        saveas(gcf, save_P_source)
+    else
+        exportgraphics(gcf, save_P_source)
+    end
 end

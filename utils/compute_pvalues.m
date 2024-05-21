@@ -12,7 +12,7 @@
 %   shuf_dim  - shuffling dimension, default is 3
 %
 % Outputs:
-%   P    - array containing p-values, has the same dimension as true_val
+%   P     - array containing p-values, has the same dimension as true_val
 %   P_fdr - array containing FDR-corrected values, has the same dimension as P
 
 function [P, P_fdr] = compute_pvalues(true_val, shuf_vals, n_shuf, alpha, varargin)

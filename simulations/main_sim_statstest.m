@@ -19,8 +19,8 @@
 
 function main_sim_statstest(n_shuf, n_iter, varargin)
     
-    local_path = '/data/tdnguyen/git_repos/';
-%     local_path = '/Users/nguyentiendung/GitHub/';
+    % local_path = '/data/tdnguyen/git_repos/';
+    local_path = '/Users/nguyentiendung/GitHub/';
     DIROUT = [local_path 'bispectrum_decomposition/simulations/results/'];
 
     if ~exist(DIROUT, 'dir')
@@ -81,12 +81,10 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
                 P_fdr{i_iter} = bsfit_stats(signal_sensor, freqinds(1), freqinds(2), g.n, n_shuf, frqs, ...
                     segleng, segshift, epleng, g.alpha, L, 'train_test', 'on');
             end
-            fpr_iter = cellfun(@(x) x < g.alpha, P_fdr{i_iter}, 'UniformOutput', false);
-            fpr_iter(:, i_iter) = cell2mat(cellfun(@(x) sum(x, 'all'), fpr_iter, 'UniformOutput', false));
+            c = cellfun(@(x) x < g.alpha, P_fdr{i_iter}, 'UniformOutput', false);
+            fpr_iter(:, i_iter) = cell2mat(cellfun(@(x) sum(x, 'all'), c, 'UniformOutput', false));
         end
         toc
-        % fpr = mean(fpr_iter, 2);
-
     
         % shut down current parallel pool
         poolobj = gcp('nocreate');

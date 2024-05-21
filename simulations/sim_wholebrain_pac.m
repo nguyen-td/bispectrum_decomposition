@@ -1,4 +1,4 @@
-% Script to simulate whole-brain signals with univariate and bivariate PAC interactions. 
+% Script to simulate whole-brain signals with univariate and bivariate PAC interactions for f1 = [9 11] Hz and f2 = [58 62] Hz. 
 % Based on Franziska Pellegrini's PAC repository https://github.com/fpellegrini/PAC/blob/master/fp_pac_sim.m.
 %
 % Inputs:

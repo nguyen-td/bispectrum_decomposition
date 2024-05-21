@@ -16,6 +16,8 @@
 %   custom_label  - [boolean] whether to show custom labels, only activate when plotting univariate bispectra where 
 %                   both axes correspond to frequencies
 %   title_str     - [string] title, default is "p-values (univariate sensor bispectrum)"
+%   f_ext         - [string] file extension, default is .png.
+%   label_latex   - [boolean] whether x and y labels should be printed using the Latex interpreter
 
 function plot_pvalues_univ(P_sens_fdr, frqs, isub, cmap, DIROUT, varargin)
 
@@ -25,6 +27,8 @@ function plot_pvalues_univ(P_sens_fdr, frqs, isub, cmap, DIROUT, varargin)
         'label_y'        'string'     { }     '$f_2$ (Hz)';
         'custom_label'   'boolean'    { }     1;
         'title_str'      'string'     { }     'p-values (univariate sensor bispectrum)';
+        'f_ext'          'string'     { }     '.png';
+        'label_latex'    'boolean'    { }     true;
         });
     if ischar(g), error(g); end
 
@@ -44,9 +48,19 @@ function plot_pvalues_univ(P_sens_fdr, frqs, isub, cmap, DIROUT, varargin)
         set(gca, 'YTick', custom_label(label_idx));
         set(gca, 'YTickLabel', frqs(label_idx));
     end
-    xlabel(g.label_x, 'Interpreter', 'latex');
-    ylabel(g.label_y, 'Interpreter', 'latex');
-    save_P_sensor = [DIROUT 'P' g.bispec_type '_sensor_' int2str(isub) '.png'];
-    exportgraphics(gcf, save_P_sensor)
+    if g.label_latex
+        xlabel(g.label_x, 'Interpreter', 'latex');
+        ylabel(g.label_y, 'Interpreter', 'latex');
+    else
+        xlabel(g.label_x);
+        ylabel(g.label_y);
+    end
+    set(gca, 'YDir','normal', 'FontSize', 15)
+    save_P_sensor = [DIROUT 'P' g.bispec_type '_sensor_' int2str(isub) g.f_ext];
+    if strcmpi(g.f_ext, '.fig')
+        saveas(gcf, save_P_sensor)
+    else
+        exportgraphics(gcf, save_P_sensor)
+    end
 
 end
