@@ -19,8 +19,8 @@
 
 function main_sim_statstest(n_shuf, n_iter, varargin)
     
-    % local_path = '/data/tdnguyen/git_repos/';
-    local_path = '/Users/nguyentiendung/GitHub/';
+    local_path = '/data/tdnguyen/git_repos/';
+    % local_path = '/Users/nguyentiendung/GitHub/';
     DIROUT = [local_path 'bispectrum_decomposition/simulations/results/'];
 
     if ~exist(DIROUT, 'dir')
