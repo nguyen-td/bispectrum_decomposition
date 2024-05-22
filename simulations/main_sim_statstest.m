@@ -50,7 +50,8 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         sim_case = 3;
     end
 %     f_name = ['_snr' int2str(20 * log10(g.isnr / (1 - g.isnr))) '_case' int2str(sim_case)];
-    
+
+    parpool(g.poolsize)
     for snr = g.isnr
         disp(['Test statistical test for SNR ' num2str(snr) '...'])
         % generate simulated data
@@ -68,11 +69,10 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
     
         % run statistics on decomposition and compute FPR
         disp(['Start computing FPR ' int2str(n_iter) ' times...'])
-        parpool(g.poolsize)
         fpr_iter = zeros(length(g.n), n_iter); 
         P_fdr = {};
         tic
-        parfor i_iter = 1:n_iter
+        for i_iter = 1:n_iter
         % for i_iter = 1:n_iter
             if strcmpi(g.train_test, 'off')
                 P_fdr{i_iter} = bsfit_stats(signal_sensor, freqinds(1), freqinds(2), g.n, n_shuf, frqs, ...
