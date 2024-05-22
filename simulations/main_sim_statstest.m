@@ -86,14 +86,14 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         end
         toc
     
-        % shut down current parallel pool
-        poolobj = gcp('nocreate');
-        delete(poolobj);
-        % 
         % save structs
         save([DIROUT 'P_fdr_traintest_' g.train_test '_snr' num2str(snr) '_case' int2str(sim_case) '.mat'], 'P_fdr', '-v7.3')
         save([DIROUT 'FPR_traintest_' g.train_test '_snr' num2str(snr) '_case' int2str(sim_case) '.mat'], 'fpr_iter', '-v7.3')
     end
+    
+    % shut down current parallel pool
+    poolobj = gcp('nocreate');
+    delete(poolobj);
 
 %     % raincloud/half-violin plot on linearly scaled y-axis
 %     for i_source = 1:g.n
