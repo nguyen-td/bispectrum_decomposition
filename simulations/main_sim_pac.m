@@ -33,10 +33,10 @@ function main_sim_pac(n_shuf, varargin)
 %     [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(2, 0, 1, 0.5);
 
     %% Simulate one bivariate PAC interaction between an occopital and a parietal region
+    rng('default')
     roi_idx1 = 27; % lingual L
     roi_idx2 = 59; % superiorparietal L
     [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(2, 0, 1, 0.5, [roi_idx1 roi_idx2]);
-    % plot pac
     
     % sampling frequency
     fres = fs; 
