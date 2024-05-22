@@ -11,8 +11,8 @@
 function main_sim_pac(n_shuf, varargin)
 
     %% Setup
-%     local_path = '/data/tdnguyen/git_repos/';
-    local_path = '/Users/nguyentiendung/GitHub/';
+    local_path = '/data/tdnguyen/git_repos/';
+    % local_path = '/Users/nguyentiendung/GitHub/';
     DIROUT = [local_path 'bispectrum_decomposition/simulations/sim_pac/figures/'];
 
     if ~exist(DIROUT, 'dir')
