@@ -10,11 +10,15 @@
 %
 % Optional input:
 %   bispec_type   - [string] type of bispectrum (for file name), default is '' 
+%   istitle       - [boolean] whether to show a title, default is true
+%   f_ext         - [string] file extension, default is .png.
 
 function plot_bispectra(D, f1, f2, isub, name, DIROUT, cmap, varargin)
 
     g = finputcheck(varargin, { ...
         'bispec_type'    'string'     { }     '';
+        'istitle'        'boolean'    { }     true;
+        'f_ext'          'string'     { }     '.png';
         });
     if ischar(g), error(g); end
     
@@ -37,7 +41,16 @@ function plot_bispectra(D, f1, f2, isub, name, DIROUT, cmap, varargin)
         set(gca, 'YDir','normal')
         colormap(cmap)
     end
-    title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))
-    save_D = [DIROUT 'D' g.bispec_type '_source_' name '_' int2str(isub) '.png'];
-    exportgraphics(gcf, save_D)
+    
+    if g.istitle
+        title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))
+    end
+
+    % saving
+    save_D = [DIROUT 'D' g.bispec_type '_source_' name '_' int2str(isub) g.f_ext];
+    if strcmpi(g.f_ext, '.fig')
+        saveas(gcf, save_D)
+    else
+        exportgraphics(gcf, save_D)
+    end
 end

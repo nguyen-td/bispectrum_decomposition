@@ -18,6 +18,7 @@
 %   title_str     - [string] title, default is "p-values (univariate sensor bispectrum)"
 %   f_ext         - [string] file extension, default is .png.
 %   label_latex   - [boolean] whether x and y labels should be printed using the Latex interpreter
+%   istitle       - [boolean] whether to show a title, default is true\
 
 function plot_pvalues_univ(P_sens_fdr, frqs, isub, cmap, DIROUT, varargin)
 
@@ -29,6 +30,7 @@ function plot_pvalues_univ(P_sens_fdr, frqs, isub, cmap, DIROUT, varargin)
         'title_str'      'string'     { }     'p-values (univariate sensor bispectrum)';
         'f_ext'          'string'     { }     '.png';
         'label_latex'    'boolean'    { }     true;
+        'istitle'        'boolean'    { }     true;
         });
     if ischar(g), error(g); end
 
@@ -37,8 +39,10 @@ function plot_pvalues_univ(P_sens_fdr, frqs, isub, cmap, DIROUT, varargin)
     colormap(cmap)
     c = colorbar();
     c.Label.String = '-log10(p)';
-    title(g.title_str)
-    set(gca, 'YDir','normal')
+    set(gca, 'YDir','normal', 'FontSize', 15)
+    if g.istitle
+        title(g.title_str)
+    end
     
     if g.custom_label
         label_idx = 1:20:size(P_sens_fdr, 2); % show only every 20th label

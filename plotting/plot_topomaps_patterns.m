@@ -11,11 +11,13 @@
 %
 % Optional input:
 %   bispec_type   - [string] type of bispectrum (for file name), default is '' (empty string)
+%   f_ext         - [string] file extension, default is .png.
 
 function plot_topomaps_patterns(A, n, chanlocs, cmap, isub, name, DIROUT, varargin)
 
     g = finputcheck(varargin, { ...
         'bispec_type'    'string'     { }     '';
+        'f_ext'          'string'     { }     '.png';
         });
     if ischar(g), error(g); end
     
@@ -30,12 +32,20 @@ function plot_topomaps_patterns(A, n, chanlocs, cmap, isub, name, DIROUT, vararg
         t = title(i);
         t.FontSize = 20;
         if i == n
-            topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); colorbar; clim([-max_val max_val])
+            topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); 
+            c = colorbar(); 
+            c.Label.String = 'a.u.';
+            c.FontSize = 15;
+            clim([-max_val max_val])
         else
             topoplot(A(:, i), chanlocs, 'electrodes', 'on', 'colormap', cmap); clim([-max_val max_val])
         end
     end
-    save_A = [DIROUT 'A' g.bispec_type '_' name '_' int2str(isub) '.png'];
-    exportgraphics(gcf, save_A)
+    save_A = [DIROUT 'A' g.bispec_type '_' name '_' int2str(isub) g.f_ext];
+    if strcmpi(g.f_ext, '.fig')
+        saveas(gcf, save_A)
+    else
+        exportgraphics(gcf, save_A)
+    end
     
 end

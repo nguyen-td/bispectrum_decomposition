@@ -129,7 +129,7 @@ function main(n_shuf, isub, varargin)
         plot_topomaps_patterns(A_demixed{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'demixed', DIROUT, 'bispec_type', file_name)
     
         % plot sources
-        plot_sources(F_moca{n_idx}, F{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', file_name)
+        plot_sources(F_moca{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', file_name)
         
         % plot D_hat and D_demixed
         plot_bispectra(D_hat{n_idx}, f1, f2, isub, 'estimated', DIROUT, cm17a, 'bispec_type', file_name)
