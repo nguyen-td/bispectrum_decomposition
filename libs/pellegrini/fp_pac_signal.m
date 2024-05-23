@@ -33,7 +33,7 @@ function [sig,brain_noise,sensor_noise, L_save,iroi_phase,iroi_amplt,D, fres, n_
 N = 120000; 
 
 %Sampling frequency
-fs = 200;
+fs = 100;
 fres = fs; 
 frqs = sfreqs(fres, fs); % freqs in Hz
 
@@ -41,8 +41,8 @@ frqs = sfreqs(fres, fs); % freqs in Hz
 n_trials = 60;
 
 %interacting bands 
-low = [9 11]; %in Hz
-high = [58 62]; %in Hz
+low = [5 7]; %in Hz
+high = [30 34]; %in Hz
 band_inds_low = find(frqs >= low(1) & frqs <= low(2)); % indices of interacting low frequencies
 band_inds_high = find(frqs >= high(1) & frqs <= high(2)); % indices of interacting high frequencies
 
