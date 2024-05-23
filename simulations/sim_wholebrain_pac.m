@@ -30,7 +30,7 @@ function [signal_sensor, fs, sources, filt, L] = sim_wholebrain_pac(sim_case, n_
     end
 
     % set parameters (see fp_pac_signal.m for documentation)
-    params.case = sim_case; % univariate + bivariate case
+    params.case = sim_case; 
     params.iReg = 1; 
     params.iss = 0.9; % brain noise to sensor noise ration (19 dB)
     params.isnr = isnr; % total SNR 

@@ -12,7 +12,7 @@
 %   n_univ     - [integer] number of univariate interactions, default is 1
 %   n_biv      - [integer] number of bivariate interactions, default is 0
 %   isnr       - [float] total signal-to-noise ratio which controls the ratio of signal (PAC) and 1/f noise on sensor level, 
-%                default is 0.5 (0 dB). Can also be an array of SNRs, e.g., [0.2 0.4 0.5 0.6 0.8].
+%                default is 0 (noise only). Can also be an array of SNRs, e.g., [0.2 0.4 0.5 0.6 0.8].
 %   alpha      - [float] significance level, default is 0.05.
 %   epleng     - [integer] epoch length (see METH toolbox documentation)
 %   train_test - ['on' | 'off'] whether A should be fitted on train data and D on test data. If yes, the train-test split is 80-20. Default is 'off'.
@@ -33,7 +33,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         'n'              'integer'       { }                1;
         'n_univ'         'integer'       { }                1;
         'n_biv'          'integer'       { }                0;
-        'isnr'           'float'         { }               0.5; 
+        'isnr'           'float'         { }               0; 
         'epleng'         'integer'       { }                2;
         'alpha'          'float'         { }              0.05;
         'poolsize'       'integer'       { }                1;
@@ -52,6 +52,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
 %     f_name = ['_snr' int2str(20 * log10(g.isnr / (1 - g.isnr))) '_case' int2str(sim_case)];
 
     parpool(g.poolsize)
+    tic
     for snr = g.isnr
         disp(['Test statistical test for SNR ' num2str(snr) '...'])
         % generate simulated data
@@ -71,8 +72,7 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         disp(['Start computing FPR ' int2str(n_iter) ' times...'])
         fpr_iter = zeros(length(g.n), n_iter); 
         P_fdr = {};
-        tic
-        for i_iter = 1:n_iter
+        parfor i_iter = 1:n_iter
         % for i_iter = 1:n_iter
             if strcmpi(g.train_test, 'off')
                 P_fdr{i_iter} = bsfit_stats(signal_sensor, freqinds(1), freqinds(2), g.n, n_shuf, frqs, ...
@@ -84,13 +84,13 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
             c = cellfun(@(x) x < g.alpha, P_fdr{i_iter}, 'UniformOutput', false);
             fpr_iter(:, i_iter) = cell2mat(cellfun(@(x) sum(x, 'all'), c, 'UniformOutput', false));
         end
-        toc
     
         % save structs
         save([DIROUT 'P_fdr_traintest_' g.train_test '_snr' num2str(snr) '_case' int2str(sim_case) '.mat'], 'P_fdr', '-v7.3')
         save([DIROUT 'FPR_traintest_' g.train_test '_snr' num2str(snr) '_case' int2str(sim_case) '.mat'], 'fpr_iter', '-v7.3')
     end
-    
+    toc
+
     % shut down current parallel pool
     poolobj = gcp('nocreate');
     delete(poolobj);

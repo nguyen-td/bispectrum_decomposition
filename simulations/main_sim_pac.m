@@ -30,7 +30,7 @@ function main_sim_pac(n_shuf, varargin)
     load cm17
     
     %% Simulate one univariate PAC interaction at a random region
-%     [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(2, 0, 1, 0.5);
+%     [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(1, 1, 0, 0.5);
 
     %% Simulate one bivariate PAC interaction between an occopital and a parietal region
     rng('default')
