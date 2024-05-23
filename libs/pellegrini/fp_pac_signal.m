@@ -75,6 +75,7 @@ if params.case==1 % in univariate case
         iroi_amplt = [];
     else
         iroi_phase = params.iroi_phase;
+        iroi_amplt = [];
     end
     
 elseif params.case==2 % in bivariate case 
