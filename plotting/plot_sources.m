@@ -19,7 +19,7 @@ function plot_sources(F_moca, n, cortex75k, cortex2k, source_inds, cm, isub, DIR
 
     g = finputcheck(varargin, { ...
         'bispec_type'        'string'     { }     '';
-        'cortex_BS'          'struct'     { }     [];
+        'cortex_BS'          'struct'     { }     struct;
         'in_normal_to_high'  'float'      { }     [];
          });
     if ischar(g), error(g); end
@@ -31,8 +31,8 @@ function plot_sources(F_moca, n, cortex75k, cortex2k, source_inds, cm, isub, DIR
         % plot and save demixed source
         source_moca = sum(F_moca(:, :, i).^2, 2); 
         f_name_moca = [DIROUT 'F' g.bispec_type '_demixed' int2str(i) '_' int2str(isub) '_'];
-        if isempty(g.cortex_BS)
-            allplots_cortex_nyhead(cortex75k, source_moca(cortex2k.in_to_cortex75K_geod), [0 max_val], cm, 'a.u.', 0.1, f_name_moca, ...
+        if isempty(fieldnames(g.cortex_BS))
+            allplots_cortex_nyhead_v2(cortex75k, source_moca(cortex2k.in_to_cortex75K_geod), [0 max_val], cm, 'a.u.', 0, f_name_moca, ...
                 {cortex75k.vc_smooth(cortex2k.in_from_cortex75K(source_inds), :)})
         else
             if isempty(g.in_normal_to_high)

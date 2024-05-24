@@ -24,10 +24,11 @@
 %   isub       - subject ID, used for file name
 %
 % Optional inputs:
-%   cbar_label - [string] label of the colorbar, default is '|Bispectrum|'
-%   isplot     - [boolean] whether to plot or not, default is true
-%   f_name     - [string] part of file name after 'err', default is '' (empty string)
-%   f_ext      - [string] file extension, default is .png.
+%   cbar_label  - [string] label of the colorbar, default is '|Bispectrum|'
+%   isplot      - [boolean] whether to plot or not, default is true
+%   f_name      - [string] part of file name after 'err', default is '' (empty string)
+%   f_ext       - [string] file extension, default is .png.
+%   isplot_pval - [boolean] whether to plot p-values or bispectral slices
 %
 % Output:
 %   B_sliced   - (n_chan x n_chan) bispectral slice
@@ -37,8 +38,9 @@ function B_sliced = plot_bispec_slices(B, slice_idx, cmap, isub, DIROUT, varargi
     g = finputcheck(varargin, { ...
         'cbar_label'    'string'     { }     '|Bispectrum|';
         'isplot'        'boolean'    { }     true;    
-        'f_name'        'string'         { }     '';
+        'f_name'        'string'     { }     '';
         'f_ext'         'string'     { }     '.png';
+        'isplot_pval'   'boolean'    { }     true;
         });
     if ischar(g), error(g); end
     
@@ -80,7 +82,11 @@ function B_sliced = plot_bispec_slices(B, slice_idx, cmap, isub, DIROUT, varargi
     end
 
     % save figure
-    save_B = [DIROUT 'B_slice' g.f_name '_' int2str(isub) g.f_ext];
+    if g.isplot_pval
+        save_B = [DIROUT 'P_slice' g.f_name '_' int2str(isub) g.f_ext]; 
+    else
+        save_B = [DIROUT 'B_slice' g.f_name '_' int2str(isub) g.f_ext]; 
+    end
     if strcmpi(g.f_ext, '.fig')
         saveas(gcf, save_B)
     else

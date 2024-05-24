@@ -1,4 +1,4 @@
-% Pipeline to run the decomposition method on simulated PAC data for f1 = [9 11] Hz and f2 = [58 62] Hz with a
+% Pipeline to run the decomposition method on simulated PAC data for f1 = [5 7] Hz and f2 = [30 34] Hz with a
 % specified number of univariate and bivariate interactions. 
 %
 % Input:

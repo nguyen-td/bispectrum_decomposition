@@ -17,21 +17,17 @@ function main_allsubjects(nshuf, varargin)
 
     subjects = [317, 511, 429, 306, 355, 360, 441, 330, 385, 413];
     f1 = [9.6, 9.4, 9.4, 9.1, 9.8, 10.4, 10.4, 9.9, 9.4, 9.2];
-    antisymm = {[1 2 3], [3, 2, 1]}; % no point in TACB, just try one partial antisymmetry for now
-    % remove titles from plots
 
     for isub = 1:length(subjects)
         disp(['Subject ' int2str(isub) '..............................................................................................'])
-        for ianti = 1:length(antisymm)
-            % (f1, f1, 2*f1)
-            tic
-            main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', antisymm{ianti})
-            toc
-    
-            % (f1, f2, f1+f2)
-            tic
-            main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', 2 * f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', antisymm{ianti})
-            toc
-        end
+        % (f1, f1, 2*f1)
+        tic
+        main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', [3 2 1])
+        toc
+
+        % (f1, f2, f1+f2)
+        tic
+        main(nshuf, subjects(isub), 'n', g.n, 'alpha', g.alpha, 'freq_manual', g.freq_manual, 'f1', f1(isub), 'f2', 2 * f1(isub), 'run_ica', g.run_ica, 'poolsize', g.poolsize, 'antisymm', [2 1 3])
+        toc
     end
 end

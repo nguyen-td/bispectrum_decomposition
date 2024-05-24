@@ -27,7 +27,10 @@ else
     sm = '';
 end
 
-surface_pars = struct('alpha_const', 1, 'colormap', cm, 'colorlimits', colorlimits, 'colorbars', 0, 'dipnames', [], 'directions', [0 0 1 1 1 1], 'showdirections', 0);
+% surface_pars = struct('alpha_const', 1, 'colormap', cm, 'colorlimits', colorlimits, 'colorbars', 0, 'dipnames', [], 'directions', [0 0 1 1 1 1], 'showdirections', 0);
+surface_pars = struct('alpha_const', 1, 'colormap', cm, 'colorlimits', colorlimits, ...
+    'showdirections', 0, 'colorbars', 0, 'dipnames', [], 'mymarkersize', 15, 'directions', [0 0 1 1 1 1], ...
+    'printcbar', 1, 'userticks', []);
 
 if length(varargin) > 0
    varargin1 = varargin{1};
@@ -42,67 +45,92 @@ if length(varargin) > 1
       surface_pars = setfield(surface_pars, finames{ifi}, getfield(input_pars, finames{ifi}));
     end
 end
-    
+
+figure('position', [60 828 950 500]);
+subplot(2,3,1);
 surface_pars.myviewdir = [-1 0 0];
-figure; showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
+showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
+% figure; showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_left'], ['-r' num2str(res)], '-a2'); 
-exportgraphics(gcf, [printfolder 'cortex' sm '_left.png'])
+% exportgraphics(gcf, [printfolder 'cortex' sm '_left.png'])
 
-
-figure; showsurface3(vc, cortex.tri_right, surface_pars, data, varargin1{:});
+% 
+% figure; showsurface3(vc, cortex.tri_right, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_right_inner'], ['-r' num2str(res)], '-a2'); 
-exportgraphics(gcf, [printfolder 'cortex' sm '_right_inner.png'])
+% exportgraphics(gcf, [printfolder 'cortex' sm '_right_inner.png'])
 
 
 surface_pars.myviewdir = [1 0 0];
-
-figure; showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
+subplot(2,3,2);
+showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
+% figure; showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_left_inner'], ['-r' num2str(res)], '-a2'); 
-exportgraphics(gcf, [printfolder 'cortex' sm '_left_inner.png'])
+% exportgraphics(gcf, [printfolder 'cortex' sm '_left_inner.png'])
 
 
-figure; showsurface3(vc, cortex.tri_right, surface_pars, data, varargin1{:});
+% figure; showsurface3(vc, cortex.tri_right, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_right'], ['-r' num2str(res)], '-a2'); 
-exportgraphics(gcf, [printfolder 'cortex' sm '_right.png'])
+% exportgraphics(gcf, [printfolder 'cortex' sm '_right.png'])
 
 surface_pars.myviewdir = [-1e-10 0 1];
 surface_pars.directions = [1 1 1 1 0 0];
 
-figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
+% figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_top'], ['-r' num2str(res)], '-a2'); 
-exportgraphics(gcf, [printfolder 'cortex' sm '_top.png'])
+% exportgraphics(gcf, [printfolder 'cortex' sm '_top.png'])
 
 
 surface_pars.myviewdir = [0 0 1];
 
-figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
+subplot(2,3,4);
+showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
+% figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_top_upright'], ['-r' num2str(res)], '-a2'); 
-exportgraphics(gcf, [printfolder 'cortex' sm '_top_upright.png'])
+% exportgraphics(gcf, [printfolder 'cortex' sm '_top_upright.png'])
 
 
-surface_pars.myviewdir = [-1e-10 0 -1];
-
-figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
+% surface_pars.myviewdir = [-1e-10 0 -1];
+% 
+% figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_bottom'], ['-r' num2str(res)], '-a2'); 
-exportgraphics(gcf, [printfolder 'cortex' sm '_bottom.png'])
+% exportgraphics(gcf, [printfolder 'cortex' sm '_bottom.png'])
 
 
 surface_pars.myviewdir = [0 1e-10 -1];
-
-figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
+subplot(2,3,5);
+showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
+% figure; showsurface3(vc, cortex.tri, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_bottom_upright'], ['-r' num2str(res)], '-a2'); 
-exportgraphics(gcf, [printfolder 'cortex' sm '_bottom_upright.png'])
+% exportgraphics(gcf, [printfolder 'cortex' sm '_bottom_upright.png'])
 
 
-figure; 
-hf = imagesc(randn(5)); colormap(cm)
-set(gca, 'clim', colorlimits, 'position', [0.1 0.1 0.6 0.8], 'visible', 'off')
-set(hf, 'visible', 'off')
-cb = colorbar; 
-set(cb, 'fontsize', 30)
-ylabel(cb, unit)
-% export_fig([printfolder 'cortex_cbar'], ['-r' num2str(res)], '-a2')  
-exportgraphics(gcf, [printfolder 'cortex_cbar.png'])
+% figure; 
+% hf = imagesc(randn(5)); colormap(cm)
+% set(gca, 'clim', colorlimits, 'position', [0.1 0.1 0.6 0.8], 'visible', 'off')
+% set(hf, 'visible', 'off')
+% cb = colorbar; 
+% set(cb, 'fontsize', 30)
+% ylabel(cb, unit)
+% % export_fig([printfolder 'cortex_cbar'], ['-r' num2str(res)], '-a2')  
+% exportgraphics(gcf, [printfolder 'cortex_cbar.png'])
+
+if isfield(surface_pars, 'printcbar') && surface_pars.printcbar
+    h = subplot(2,3,3);
+    hf = imagesc(randn(5)); colormap(cm)
+    set(h, 'clim', colorlimits, 'visible', 'off'); %, 'position', [0.1 0.1 0.6 0.8]
+    set(hf, 'visible', 'off')
+    cb = colorbar;
+    set(cb, 'fontsize', 30)
+    if ~isempty(surface_pars.userticks)
+        set(cb, 'xtick', sort([colorlimits, surface_pars.userticks]))
+    end
+    ylabel(cb, unit)
+    %export_fig([printfolder 'cortex_cbar'], ['-r' num2str(res)], '-a2', '-transparent')
+end
+if ~isempty(printfolder)
+    export_fig([printfolder 'cortex' sm ''], ['-r' num2str(res)], '-a2', '-transparent');
+end
+
 
 
 % set(0,'DefaultFigureColor','remove')
@@ -115,7 +143,7 @@ exportgraphics(gcf, [printfolder 'cortex_cbar.png'])
 % ylabel(cb, unit)
 % export_fig([printfolder 'slices_cbar'], ['-r' num2str(res)], '-a2')  
 
-set(0,'DefaultFigureColor',[1 1 1])
+% set(0,'DefaultFigureColor',[1 1 1])
 % 
 % figure; showmri_transp3(sa.mri, struct('orientation', 'axial', ...
 %     'trcut', 0.5, 'colormaps', {{cm}}, 'colorbars', 0, 'colorlimits', colorlimits), [cortex.vc(sa.cortex5K.in_from_cortex75K, :) data(sa.cortex5K.in_from_cortex75K)], varargin1{:})

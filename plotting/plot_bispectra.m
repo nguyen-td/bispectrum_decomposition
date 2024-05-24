@@ -40,6 +40,8 @@ function plot_bispectra(D, f1, f2, isub, name, DIROUT, cmap, varargin)
         end
         set(gca, 'YDir','normal')
         colormap(cmap)
+        xticks(1:n);
+        yticks(1:n);
     end
     
     if g.istitle
