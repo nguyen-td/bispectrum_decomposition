@@ -105,7 +105,7 @@ function main_sim_pac(n_shuf, varargin)
     n = [1 2 3]; % number of fitted source interactions
     err_colors = ['r', 'b', 'k'];
     [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, errors] = bsfit_stats(signal_sensor, freqinds(1), ...
-        freqinds(2), n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L);
+        freqinds(2), n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L, 'bs_orig', bs_orig, 'bs_all', bs_all);
 
     % plotting (normal cross-bispectrum)
     plot_error(errors, 1, n, err_colors, '', '', DIROUT, 'islog', true, 'f_name', '_log', 'f_ext', '.fig')
@@ -118,7 +118,7 @@ function main_sim_pac(n_shuf, varargin)
     % run decomposition on partially antisymmetrized cross-bispectrum
     antisymm = [2 1 3]; % will correspond to B_ijk - B_jik
     [P_source_anti_fdr, P_source_anti, F_anti, F_moca_anti, A_hat_anti, A_demixed_anti, D_hat_anti, D_demixed_anti, errors_anti] = bsfit_stats(signal_sensor, freqinds(1), ...
-        freqinds(2), n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L, 'antisymm', antisymm);
+        freqinds(2), n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L, 'antisymm', antisymm, 'bs_orig', bs_orig, 'bs_all', bs_all);
 
     % plotting (partially antisymmetrized source cross-bispectrum)
     plot_error(errors_anti, 1, n, err_colors, '', '', DIROUT, 'islog', true, 'f_name', '_log_anti', 'f_ext', '.fig')
@@ -130,7 +130,7 @@ function main_sim_pac(n_shuf, varargin)
     if sim_case == 2 || sim_case == 3
         % run decomposition on totally antisymmetrized source cross-bispectrum 
         [P_source_total_fdr, ~, ~, ~, ~, ~, ~, D_demixed_total, errors_total] = bsfit_stats(signal_sensor, freqinds(1), ...
-            freqinds(2), n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L, 'total_antisymm', 'on');
+            freqinds(2), n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L, 'total_antisymm', 'on', 'bs_orig', bs_orig, 'bs_all', bs_all);
 
         % plotting (totally antisymmetrized source cross-bispectrum)
         plot_error(errors_total, 1, n, err_colors, '', '', DIROUT, 'islog', true, 'f_name', '_log_total', 'f_ext', '.fig')
