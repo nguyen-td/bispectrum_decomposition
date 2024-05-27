@@ -92,6 +92,10 @@ function main_sim_pac(n_shuf, varargin)
     [~, P_sens_fdr] = compute_pvalues(squeeze(mean(abs(bs_orig), 3)), squeeze(mean(abs(bs_all), 3)), n_shuf, g.alpha);
     p_cmap = cmap_pvalues(P_sens_fdr, cm17, cm17a);
     plot_pvalues_univ(P_sens_fdr, frqs, '', p_cmap, DIROUT, 'bispec_type', ['_cross_chan' int2str(3)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
+    
+    % save bispectra
+    save([DIROUT 'bs_orig.mat'], 'bs_orig', '-v7.3')
+    save([DIROUT 'bs_all.mat'], 'bs_all', '-v7.3')
 
     % analyze antisymmetrized sensor cross-bispectrum
     bs_orig_anti = bs_orig - permute(bs_orig, [2, 1, 3]); % B_ijk - B_jik
