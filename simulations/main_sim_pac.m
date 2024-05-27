@@ -100,6 +100,14 @@ function main_sim_pac(n_shuf, varargin)
     P_sens_anti_fdr(logical(eye(size(P_sens_anti_fdr)))) = 1; % exclude diagonal elements from analysis, 1 will become zero after log transformation
     p_cmap = cmap_pvalues(P_sens_anti_fdr, cm17, cm17a);
     plot_pvalues_univ(P_sens_anti_fdr, frqs, '', p_cmap, DIROUT, 'bispec_type', ['_cross_anti_chan' int2str(3)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
+    
+    % analyze totally antisymmetrized sensor cross-bispectrum
+    bs_orig_total = bs_orig + permute(bs_orig, [3, 1, 2]) + permute(bs_orig, [2, 3, 1]) - permute(bs_orig, [3, 2, 1]) - permute(bs_orig, [2, 1, 3]) - permute(bs_orig, [1, 3, 2]); % TACB
+    bs_all_total = bs_all + permute(bs_all, [3, 1, 2, 4]) + permute(bs_all, [2, 3, 1, 4]) - permute(bs_all, [3, 2, 1, 4]) - permute(bs_all, [2, 1, 3, 4]) - permute(bs_all, [1, 3, 2, 4]); % TACB
+    [~, P_sens_total_fdr] = compute_pvalues(squeeze(mean(abs(bs_orig_total), 3)), squeeze(mean(abs(bs_all_total), 3)), n_shuf, g.alpha);
+    P_sens_total_fdr(logical(eye(size(P_sens_total_fdr)))) = 1; % exclude diagonal elements from analysis, 1 will become zero after log transformation
+    p_cmap = cmap_pvalues(P_sens_total_fdr, cm17, cm17a);
+    plot_pvalues_univ(P_sens_total_fdr, frqs, '', p_cmap, DIROUT, 'bispec_type', ['_cross_total_chan' int2str(3)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
 
     % run decomposition on normal cross-bispectrum
     n = [1 2 3]; % number of fitted source interactions
