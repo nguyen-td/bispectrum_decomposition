@@ -92,9 +92,11 @@ function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, err, bs_orig,
     if strcmpi(g.total_antisymm, 'on')
         disp('Perform total antisymmetrization')
         bs_orig = bs_orig + permute(bs_orig, [3, 1, 2]) + permute(bs_orig, [2, 3, 1]) - permute(bs_orig, [3, 2, 1]) - permute(bs_orig, [2, 1, 3]) - permute(bs_orig, [1, 3, 2]);
+        bs_all = bs_all + permute(bs_all, [3, 1, 2, 4]) + permute(bs_all, [2, 3, 1, 4]) - permute(bs_all, [3, 2, 1, 4]) - permute(bs_all, [2, 1, 3, 4]) - permute(bs_all, [1, 3, 2, 4]);
     elseif ~isequal(g.antisymm, [1, 2, 3])
         disp('Perform partial antisymmetrization')
         bs_orig = bs_orig - permute(bs_orig, g.antisymm); 
+        bs_all = bs_all - permute(bs_all, [g.antisymm, 4]); 
     else
         disp('No antisymmetrization')
     end

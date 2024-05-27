@@ -43,15 +43,14 @@ function plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_
             c.Label.String = '-log10(p)';
         end
         colormap(cmap)
-        set(gca, 'YDir','normal')
+        set(gca, 'YDir','normal', 'FontSize', 15)
         xticks(1:n);
         yticks(1:n);
     end
     if g.istitle
         title(tl1, sprintf('Subject %d, f1 = %d Hz, f2 = %d Hz', isub, f1, f2))
     end
-    set(gca, 'YDir','normal', 'FontSize', 15)
-
+    
     % saving figure
     save_P_source = [DIROUT 'P' g.bispec_type '_source_' int2str(isub) g.f_ext];
     if strcmpi(g.f_ext, '.fig')
