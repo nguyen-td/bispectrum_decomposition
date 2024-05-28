@@ -83,6 +83,9 @@ function main(n_shuf, isub, varargin)
     epleng = EEG.srate * g.epleng; % create epochs of [e.epleng] seconds 
     fres = EEG.srate;
     frqs = sfreqs(fres, EEG.srate);
+
+    f1 = g.f1;
+    f2 = g.f2;
     
     % make frequency pre-selection by assessing the significance of frequency pairs of the univariate sensor bispectrum if 'freq_manual' = 'off'
     if strcmpi(g.freq_manual, 'off')
@@ -91,24 +94,58 @@ function main(n_shuf, isub, varargin)
         f1 = g.f1;
         f2 = g.f2;
     end
-        
+    
+    % analyze univariate sensor cross-bispectrum
+    load cm17.mat 
+    % [~, ~, P_sens_fdr_uni, ~] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
+    % p_cmap = cmap_pvalues(P_sens_fdr_uni, cm17, cm17a);
+    % plot_pvalues_univ(P_sens_fdr_uni, frqs, isub, p_cmap, DIROUT, 'f_ext', '.fig', 'istitle', false)
+
+    % analyze normal sensor cross-bispectrum
+    dim_chan = 2;
+    freqpairs = get_freqindices(round_to_05(f1), round_to_05(f2), frqs); 
+    para.nrun = n_shuf;
+    [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para); % compute surrogate and true cross-bispectra
+    [~, P_sens_fdr] = compute_pvalues(squeeze(mean(abs(bs_orig), dim_chan)), squeeze(mean(abs(bs_all), dim_chan)), n_shuf, g.alpha); % collapse over 2nd dimension
+    p_cmap = cmap_pvalues(P_sens_fdr, cm17, cm17a);
+    plot_pvalues_univ(P_sens_fdr, frqs, isub, p_cmap, DIROUT, 'bispec_type', ['_cross_chan' int2str(dim_chan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
+    
+    % analyze antisymmetrized sensor cross-bispectrum
+    bs_orig_anti = bs_orig - permute(bs_orig, g.antisymm); % B_ijk - B_jik
+    bs_all_anti = bs_all - permute(bs_all, [g.antisymm, 4]); % B_ijk - B_jik
+    [~, P_sens_anti_fdr] = compute_pvalues(squeeze(mean(abs(bs_orig_anti), dim_chan)), squeeze(mean(abs(bs_all_anti), dim_chan)), n_shuf, g.alpha);
+    P_sens_anti_fdr(logical(eye(size(P_sens_anti_fdr)))) = 1; % exclude diagonal elements from analysis, 1 will become zero after log transformation
+    p_cmap = cmap_pvalues(P_sens_anti_fdr, cm17, cm17a);
+    plot_pvalues_univ(P_sens_anti_fdr, frqs, isub, p_cmap, DIROUT, 'bispec_type', ['_cross_anti_chan' int2str(dim_chan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
+    
+    if ~(f1 == f2)
+        % analyze totally antisymmetrized sensor cross-bispectrum
+        bs_orig_total = bs_orig + permute(bs_orig, [3, 1, 2]) + permute(bs_orig, [2, 3, 1]) - permute(bs_orig, [3, 2, 1]) - permute(bs_orig, [2, 1, 3]) - permute(bs_orig, [1, 3, 2]); % TACB
+        bs_all_total = bs_all + permute(bs_all, [3, 1, 2, 4]) + permute(bs_all, [2, 3, 1, 4]) - permute(bs_all, [3, 2, 1, 4]) - permute(bs_all, [2, 1, 3, 4]) - permute(bs_all, [1, 3, 2, 4]); % TACB
+        [~, P_sens_total_fdr] = compute_pvalues(squeeze(mean(abs(bs_orig_total), dim_chan)), squeeze(mean(abs(bs_all_total), dim_chan)), n_shuf, g.alpha);
+        P_sens_total_fdr(logical(eye(size(P_sens_total_fdr)))) = 1; % exclude diagonal elements from analysis, 1 will become zero after log transformation
+        p_cmap = cmap_pvalues(P_sens_total_fdr, cm17, cm17a);
+        plot_pvalues_univ(P_sens_total_fdr, frqs, isub, p_cmap, DIROUT, 'bispec_type', ['_cross_total_chan' int2str(dim_chan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
+    end
+
     % test significance of the fitted normal, partially antisymmetrized and totally antisymmetrized source cross-bispectrum within subjects  
     [L_3D, cortex75k, cortex2k] = reduce_leadfield_nyhead(EEG); 
-    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, errors, bs_orig, bs_all] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, 'train_test', g.train_test);    
+    [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, errors] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, 'train_test', g.train_test, 'bs_orig', bs_orig, 'bs_all', bs_all);    
     [P_source_anti_fdr, P_source_anti, F_anti, F_moca_anti, A_hat_anti, A_demixed_anti, D_hat_anti, D_demixed_anti, errors_anti] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, 'antisymm', g.antisymm, 'train_test', g.train_test, 'bs_orig', bs_orig, 'bs_all', bs_all);    
     if ~(f1 == f2)
         [P_source_total_fdr, P_source_total, F_total, F_moca_total, A_hat_total, A_demixed_total, D_hat_total, D_demixed_total, errors_total] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, 'total_antisymm', 'on', 'train_test', g.train_test, 'bs_orig', bs_orig, 'bs_all', bs_all);    
     end
 
-    % save p-values
+    % save p-values and bispectra
     save([DIROUT 'P_source_fdr.mat'], 'P_source_fdr', '-v7.3')
     save([DIROUT 'P_source_anti_fdr.mat'], 'P_source_anti_fdr', '-v7.3')
     if ~(f1 == f2)
         save([DIROUT 'P_source_total_fdr.mat'], 'P_source_total_fdr', '-v7.3')
     end
+    save([DIROUT 'bs_orig.mat'], 'bs_orig', '-v7.3')
+    save([DIROUT 'bs_all.mat'], 'bs_all', '-v7.3')
 
     % plotting
-    load cm17.mat 
     err_colors = ['r', 'b', 'k', 'g', 'o'];
     if max(g.n) > length(err_colors)
         err_colors = 0;

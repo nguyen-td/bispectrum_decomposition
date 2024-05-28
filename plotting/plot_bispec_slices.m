@@ -72,7 +72,7 @@ function B_sliced = plot_bispec_slices(B, slice_idx, cmap, isub, DIROUT, varargi
     
     % plotting
     if g.isplot
-        imagesc(B_sliced)
+        figure; imagesc(B_sliced)
         colormap(cmap)
         c = colorbar();
         c.Label.String = g.cbar_label;
