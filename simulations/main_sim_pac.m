@@ -120,6 +120,9 @@ function main_sim_pac(n_shuf, varargin)
         P_sens_total_fdr(logical(eye(size(P_sens_total_fdr)))) = 1; % exclude diagonal elements from analysis, 1 will become zero after log transformation
         p_cmap = cmap_pvalues(P_sens_total_fdr, cm17, cm17a);
         plot_pvalues_univ(P_sens_total_fdr, frqs, '', p_cmap, DIROUT, 'bispec_type', ['_cross_total_chan' int2str(dim_chan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
+    else
+        load([DIROUT 'bs_orig.mat'])
+        load([DIROUT 'bs_all.mat'])
     end
 
     % run decomposition on normal cross-bispectrum
