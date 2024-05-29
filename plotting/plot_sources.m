@@ -26,14 +26,14 @@ function plot_sources(F_moca, n, cortex75k, cortex2k, source_inds, cm, isub, DIR
 
     % get max. absolute value
     max_val = max(sum(F_moca.^2, 2), [], 'all');
-
+    
+    close all
     for i = 1:n
         % plot and save demixed source
         source_moca = sum(F_moca(:, :, i).^2, 2); 
         f_name_moca = [DIROUT 'F' g.bispec_type '_demixed' int2str(i) '_' int2str(isub) '_'];
         if isempty(fieldnames(g.cortex_BS))
-            allplots_cortex_nyhead_v2(cortex75k, source_moca(cortex2k.in_to_cortex75K_geod), [0 max_val], cm, 'a.u.', 0, f_name_moca, ...
-                {cortex75k.vc_smooth(cortex2k.in_from_cortex75K(source_inds), :)})
+            allplots_cortex_nyhead_v2(cortex75k, source_moca(cortex2k.in_to_cortex75K_geod), [0 max_val], cm, 'a.u.', 0, f_name_moca);
         else
             if isempty(g.in_normal_to_high)
                 error('The "in_normal_to_high" is missing for plotting sources on the high-resolution cortex.')

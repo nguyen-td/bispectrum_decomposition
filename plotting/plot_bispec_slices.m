@@ -26,7 +26,7 @@
 % Optional inputs:
 %   cbar_label  - [string] label of the colorbar, default is '|Bispectrum|'
 %   isplot      - [boolean] whether to plot or not, default is true
-%   f_name      - [string] part of file name after 'err', default is '' (empty string)
+%   f_name      - [string] part of file name after 'P_slice', default is '' (empty string)
 %   f_ext       - [string] file extension, default is .png.
 %   isplot_pval - [boolean] whether to plot p-values or bispectral slices
 %

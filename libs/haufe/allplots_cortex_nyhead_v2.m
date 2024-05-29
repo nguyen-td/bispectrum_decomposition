@@ -12,8 +12,8 @@ else
 end
 
 set(0,'DefaultFigureColor',[1 1 1])
-% printfolder = [printfolder '/'];
-% if ~isdir(printfolder)
+% if ~isempty(printfolder)
+%     printfolder = [printfolder '/'];
 %     mkdir(printfolder)
 % end
 
@@ -62,7 +62,8 @@ showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
 
 surface_pars.myviewdir = [1 0 0];
 subplot(2,3,2);
-showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
+showsurface3(vc, cortex.tri_right, surface_pars, data, varargin1{:});
+% showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
 % figure; showsurface3(vc, cortex.tri_left, surface_pars, data, varargin1{:});
 % export_fig([printfolder 'cortex' sm '_left_inner'], ['-r' num2str(res)], '-a2'); 
 % exportgraphics(gcf, [printfolder 'cortex' sm '_left_inner.png'])

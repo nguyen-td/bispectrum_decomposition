@@ -12,6 +12,7 @@
 %   bispec_type   - [string] type of bispectrum (for file name), default is '' (empty string)
 %   istitle       - [boolean] whether to show a title, default is true
 %   f_ext         - [string] file extension, default is .png.
+%   dim_chan      - [integer] channel over which the bispectrum will becollapsed. Default is 2.
 
 function plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_source, varargin)
     
@@ -19,6 +20,7 @@ function plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_
         'bispec_type'    'string'     { }     '';
         'istitle'        'boolean'    { }     true;
         'f_ext'          'string'     { }     '.png';
+        'dim_chan'       'integer'    {1 2 3}       2; 
         });
     if ischar(g), error(g); end
     n = size(P_source_fdr, 1);
@@ -32,7 +34,14 @@ function plot_pvalues_bispec_source(f1, f2, isub, DIROUT, cmap, P_source_fdr, P_
     tl1 = tiledlayout(1, n);
     for i = 1:n 
         nexttile;
-        imagesc(-log10(squeeze(P_source_fdr(i, :, :))));
+        switch g.dim_chan
+            case 1
+                imagesc(-log10(squeeze(P_source_fdr(i, :, :))));
+            case 2
+                imagesc(-log10(squeeze(P_source_fdr(:, i, :))));
+            otherwise
+                imagesc(-log10(squeeze(P_source_fdr(:, :, i))));
+        end
 %         hold on;
 %         imagesc(-log10(squeeze(P_source(i, :, :))), 'AlphaData', 0.7);
         try

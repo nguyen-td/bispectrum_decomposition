@@ -19,6 +19,7 @@
 %   bispec_type    - [string] type of bispectrum (for file name), default is '_cross'.
 %   antisymm       - [int, int, int] array of integer combinations to partially antisymmetrize, e.g. [1 3 2] would compute B_xyz - B_xzy. Default is [1 2 3] (no antisymmetrization).
 %   train_test     - ['on' | 'off'] whether A should be fitted on train data and D on test data. If yes, the train-test split is 80-20. Default is 'off'.
+%   dim_chan       - [integer] channel over which the bispectrum will becollapsed. Default is 2.
 
 function main(n_shuf, isub, varargin)
 
@@ -38,6 +39,7 @@ function main(n_shuf, isub, varargin)
         'bispec_type'      'string'        { }              ''; 
         'antisymm'         'integer'       { }              [1 2 3];
         'train_test'       'string'        { 'on' 'off'}    'off';
+        'dim_chan'         'integer'       { 1 2 3}         2;
         });
     if ischar(g), error(g); end
 
@@ -102,7 +104,7 @@ function main(n_shuf, isub, varargin)
     % plot_pvalues_univ(P_sens_fdr_uni, frqs, isub, p_cmap, DIROUT, 'f_ext', '.fig', 'istitle', false)
 
     % analyze normal sensor cross-bispectrum
-    dim_chan = 2;
+    dim_chan = g.dim_chan;
     freqpairs = get_freqindices(round_to_05(f1), round_to_05(f2), frqs); 
     para.nrun = n_shuf;
     [bs_all, bs_orig, ~] = data2bs_event_surro_final(data(:, :)', segleng, segshift, epleng, freqpairs, para); % compute surrogate and true cross-bispectra
@@ -136,14 +138,23 @@ function main(n_shuf, isub, varargin)
         [P_source_total_fdr, P_source_total, F_total, F_moca_total, A_hat_total, A_demixed_total, D_hat_total, D_demixed_total, errors_total] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, 'total_antisymm', 'on', 'train_test', g.train_test, 'bs_orig', bs_orig, 'bs_all', bs_all);    
     end
 
-    % save p-values and bispectra
+    % save values
     save([DIROUT 'P_source_fdr.mat'], 'P_source_fdr', '-v7.3')
     save([DIROUT 'P_source_anti_fdr.mat'], 'P_source_anti_fdr', '-v7.3')
     if ~(f1 == f2)
         save([DIROUT 'P_source_total_fdr.mat'], 'P_source_total_fdr', '-v7.3')
+        save([DIROUT 'D_demixed_total.mat'], 'D_demixed_total', '-v7.3')
+        save([DIROUT 'F_moca_total.mat'], 'F_moca_total', '-v7.3')
+        save([DIROUT 'A_demixed_total.mat'], 'A_demixed_anti', '-v7.3')
     end
     save([DIROUT 'bs_orig.mat'], 'bs_orig', '-v7.3')
     save([DIROUT 'bs_all.mat'], 'bs_all', '-v7.3')
+    save([DIROUT 'D_demixed.mat'], 'D_demixed', '-v7.3')
+    save([DIROUT 'D_demixed_anti.mat'], 'D_demixed_anti', '-v7.3')
+    save([DIROUT 'F_moca.mat'], 'F_moca', '-v7.3')
+    save([DIROUT 'F_moca_anti.mat'], 'F_moca_anti', '-v7.3')
+    save([DIROUT 'A_demixed.mat'], 'A_demixed', '-v7.3')
+    save([DIROUT 'A_demixed_anti.mat'], 'A_demixed_anti', '-v7.3')
 
     % plotting
     err_colors = ['r', 'b', 'k', 'g', 'o'];
@@ -162,32 +173,35 @@ function main(n_shuf, isub, varargin)
 
         % plot p-values and source cross-bispectra for normal, partially antisymmetrized and totally antisymmetrized source cross-bispectra
         p_cmap = cmap_pvalues(P_source_fdr{n_idx}, cm17, cm17a); % normal 
-        plot_bispec_slices(-log10(P_source_fdr{n_idx}), [1 1 1], p_cmap, isub , DIROUT, 'cbar_label', '-log10(p)', 'f_ext', '.fig'); % only diagonals are relevant because it cannot be proven if off-diagonals result from interactions involving 2 or 3 sources
-        plot_bispectra(D_demixed{n_idx}, '', '', isub, 'demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig')
+        plot_bispec_slices(-log10(P_source_fdr{n_idx}), [1 1 1], p_cmap, isub , DIROUT, 'cbar_label', '-log10(p)', 'f_ext', '.fig', 'f_name', file_name); % only diagonals are relevant because it cannot be proven if off-diagonals result from interactions involving 2 or 3 sources
+        p_cmap = cmap_pvalues(D_demixed{n_idx}, cm17, cm17a); % normal 
+        plot_bispectra(D_demixed{n_idx}, '', '', isub, 'demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig', 'bispec_type', file_name, 'dim_chan', g.dim_chan)
 
         p_cmap = cmap_pvalues(P_source_anti_fdr{n_idx}, cm17, cm17a); % partially  antisymmetrized
-        plot_bispec_slices(-log10(P_source_anti_fdr{n_idx}), [1 2 2], p_cmap, isub , DIROUT, 'cbar_label', '-log10(p)', 'f_name', '_anti', 'f_ext', '.fig'); 
-        plot_bispectra(D_demixed_anti{n_idx}, '', '', isub, 'anti_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig')
+        plot_bispec_slices(-log10(P_source_anti_fdr{n_idx}), [1 2 2], p_cmap, isub , DIROUT, 'cbar_label', '-log10(p)', 'f_name', ['_anti' file_name], 'f_ext', '.fig'); 
+        p_cmap = cmap_pvalues(D_demixed_anti{n_idx}, cm17, cm17a); % partially  antisymmetrized
+        plot_bispectra(D_demixed_anti{n_idx}, '', '', isub, 'anti_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig', 'bispec_type', file_name, 'dim_chan', g.dim_chan)
 
         if ~(f1 == f2)
             p_cmap = cmap_pvalues(P_source_total_fdr{n_idx}, cm17, cm17a); % totally  antisymmetrized
-            plot_pvalues_bispec_source(f1, f2, isub, DIROUT, p_cmap, P_source_total_fdr{n_idx}, P_source_total{n_idx}, 'bispec_type', '_total', 'istitle', false, 'f_ext', '.fig')
+            plot_pvalues_bispec_source(f1, f2, isub, DIROUT, p_cmap, P_source_total_fdr{n_idx}, P_source_total{n_idx}, 'bispec_type', '_total', 'istitle', false, 'f_ext', '.fig', 'dim_chan', g.dim_chan)
+            p_cmap = cmap_pvalues(D_demixed_anti{n_idx}, cm17, cm17a); % partially  antisymmetrized
             plot_bispectra(D_demixed_total{n_idx}, '', '', isub, 'total_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig')
         end
 
         % plot estimated and demixed spatial patterns and demixed sources
         plot_topomaps_patterns(A_hat{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'estimated', DIROUT, 'bispec_type', file_name, 'f_ext', '.fig') 
         plot_topomaps_patterns(A_demixed{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'demixed', DIROUT, 'bispec_type', file_name, 'f_ext', '.fig')
-        plot_sources(F_moca{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT)
+        plot_sources(F_moca{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', file_name)
 
         plot_topomaps_patterns(A_hat_anti{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'anti_estimated', DIROUT, 'bispec_type', file_name, 'f_ext', '.fig') 
         plot_topomaps_patterns(A_demixed_anti{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'anti_demixed', DIROUT, 'bispec_type', file_name, 'f_ext', '.fig')
-        plot_sources(F_moca_anti{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', '_anti')
+        plot_sources(F_moca_anti{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', ['_anti' file_name])
 
         if ~(f1 == f2)
             plot_topomaps_patterns(A_hat_total{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'estimated', DIROUT, 'bispec_type', file_name, 'f_ext', '.fig') 
             plot_topomaps_patterns(A_demixed_total{n_idx}, m_order, EEG.chanlocs, cm17, isub, 'demixed', DIROUT, 'bispec_type', file_name, 'f_ext', '.fig')
-            plot_sources(F_moca_total{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', '_total')
+            plot_sources(F_moca_total{n_idx}, m_order, cortex75k, cortex2k, [], cm17a, isub, DIROUT, 'bispec_type', ['_total' file_name])
         end
     end
 
