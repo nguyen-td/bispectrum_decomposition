@@ -154,8 +154,6 @@ function main_sim_pac(n_shuf, varargin)
     % save stuff
     save([DIROUT 'P_source_fdr.mat'], 'P_source_fdr', '-v7.3')
     save([DIROUT 'P_source_anti_fdr.mat'], 'P_source_anti_fdr', '-v7.3')
-    save([DIROUT 'bs_orig.mat'], 'bs_orig', '-v7.3')
-    save([DIROUT 'bs_all.mat'], 'bs_all', '-v7.3')
     save([DIROUT 'D_demixed.mat'], 'D_demixed', '-v7.3')
     save([DIROUT 'D_demixed_anti.mat'], 'D_demixed_anti', '-v7.3')
     save([DIROUT 'F_moca.mat'], 'F_moca', '-v7.3')
