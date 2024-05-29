@@ -21,10 +21,6 @@
 function main_sim_pac(n_shuf, varargin)
 
     %% Setup
-    if ~exist(DIROUT, 'dir')
-        mkdir(DIROUT)
-    end
-
     eeglab
     g = finputcheck(varargin, { ...
         'alpha'          'float'         { }              0.05;
@@ -42,6 +38,10 @@ function main_sim_pac(n_shuf, varargin)
     % local_path = '/Users/nguyentiendung/GitHub/';
     name_folder = [int2str(g.n_biv) 'biv_' g.n_uni 'uni'];
     DIROUT = [local_path 'bispectrum_decomposition/simulations/sim_pac/' name_folder '/figures/'];
+    
+    if ~exist(DIROUT, 'dir')
+        mkdir(DIROUT)
+    end
 
     % setup plotting
     load cm17
