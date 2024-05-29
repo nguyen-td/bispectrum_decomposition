@@ -178,12 +178,14 @@ function main(n_shuf, isub, varargin)
         plot_bispectra(D_demixed{n_idx}, '', '', isub, 'demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig', 'bispec_type', file_name, 'dim_chan', g.dim_chan)
 
         p_cmap = cmap_pvalues(P_source_anti_fdr{n_idx}, cm17, cm17a); % partially  antisymmetrized
+        P_source_anti_fdr{n_idx} = set_diagonals(P_source_anti_fdr{n_idx}, 1); % manually exclude diagonals, could be non-zero due to fitting errors (already in D_anti)
         plot_bispec_slices(-log10(P_source_anti_fdr{n_idx}), [1 2 2], p_cmap, isub , DIROUT, 'cbar_label', '-log10(p)', 'f_name', ['_anti' file_name], 'f_ext', '.fig'); 
         p_cmap = cmap_pvalues(D_demixed_anti{n_idx}, cm17, cm17a); % partially  antisymmetrized
         plot_bispectra(D_demixed_anti{n_idx}, '', '', isub, 'anti_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig', 'bispec_type', file_name, 'dim_chan', g.dim_chan)
 
         if ~(f1 == f2)
             p_cmap = cmap_pvalues(P_source_total_fdr{n_idx}, cm17, cm17a); % totally  antisymmetrized
+            P_source_total_fdr{n_idx} = set_diagonals(P_source_total_fdr{n_idx}, 1); % manually exclude diagonals, could be non-zero due to fitting errors (already in D_total)
             plot_pvalues_bispec_source(f1, f2, isub, DIROUT, p_cmap, P_source_total_fdr{n_idx}, P_source_total{n_idx}, 'bispec_type', '_total', 'istitle', false, 'f_ext', '.fig', 'dim_chan', g.dim_chan)
             p_cmap = cmap_pvalues(D_demixed_anti{n_idx}, cm17, cm17a); % partially  antisymmetrized
             plot_bispectra(D_demixed_total{n_idx}, '', '', isub, 'total_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig')
