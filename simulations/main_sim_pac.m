@@ -148,7 +148,7 @@ function main_sim_pac(n_shuf, varargin)
     plot_error(errors_anti, 1, n, err_colors, '', '', DIROUT, 'islog', true, 'f_name', '_log_anti', 'f_ext', '.fig')
     plot_error(errors_anti, 1, n, err_colors, '', '', DIROUT, 'islog', false, 'f_name', '_linear_anti', 'f_ext', '.fig')
     p_cmap = cmap_pvalues(P_source_anti_fdr{m_order}, cm17, cm17a);
-    P_source_anti_fdr{n_idx} = set_diagonals(P_source_anti_fdr{n_idx}, 1); % manually exclude diagonals, could be non-zero due to fitting errors (already in D_anti)
+    P_source_anti_fdr{m_order} = set_diagonals(P_source_anti_fdr{m_order}, 1); % manually exclude diagonals, could be non-zero due to fitting errors (already in D_anti)
     plot_bispec_slices(-log10(P_source_anti_fdr{m_order}), [1 2 2], p_cmap, '', DIROUT, 'cbar_label', '-log10(p)', 'f_name', '_anti', 'f_ext', '.fig');
     plot_bispectra(D_demixed_anti{m_order}, '', '', '', 'anti_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig', 'dim_chan', g.dim_chan)
     
@@ -178,7 +178,7 @@ function main_sim_pac(n_shuf, varargin)
         plot_error(errors_total, 1, n, err_colors, '', '', DIROUT, 'islog', true, 'f_name', '_log_total', 'f_ext', '.fig')
         plot_error(errors_total, 1, n, err_colors, '', '', DIROUT, 'islog', false, 'f_name', '_linear_total', 'f_ext', '.fig')
         p_cmap = cmap_pvalues(P_source_total_fdr{m_order}, cm17, cm17a);
-        P_source_total_fdr{n_idx} = set_diagonals(P_source_total_fdr{n_idx}, 1); % manually exclude diagonals, could be non-zero due to fitting errors (already in D_total)
+        P_source_total_fdr{m_order} = set_diagonals(P_source_total_fdr{m_order}, 1); % manually exclude diagonals, could be non-zero due to fitting errors (already in D_total)
         plot_pvalues_bispec_source(freqinds(1), freqinds(2), '', DIROUT, p_cmap, P_source_total_fdr{m_order}, P_source_total_fdr{m_order}, 'bispec_type', '_total', 'istitle', false, 'f_ext', '.fig')
         plot_bispectra(D_demixed_total{m_order}, '', '', '', 'total_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig', 'dim_chan', g.dim_chan)
     end
