@@ -159,8 +159,10 @@ function main_sim_pac(n_shuf, varargin)
     save([DIROUT 'D_demixed_anti.mat'], 'D_demixed_anti', '-v7.3')
     save([DIROUT 'F_moca.mat'], 'F_moca', '-v7.3')
     save([DIROUT 'F_moca_anti.mat'], 'F_moca_anti', '-v7.3')
+    save([DIROUT 'A_hat.mat'], 'A_hat', '-v7.3')
     save([DIROUT 'A_demixed.mat'], 'A_demixed', '-v7.3')
     save([DIROUT 'A_demixed_anti.mat'], 'A_demixed_anti', '-v7.3')
+    save([DIROUT 'A_hat_anti.mat'], 'A_hat_anti', '-v7.3')
 
     if sim_case == 2 || sim_case == 3
         % run decomposition on totally antisymmetrized source cross-bispectrum 
@@ -169,6 +171,7 @@ function main_sim_pac(n_shuf, varargin)
         save([DIROUT 'P_source_total_fdr.mat'], 'P_source_total_fdr', '-v7.3')
         save([DIROUT 'D_demixed_total.mat'], 'D_demixed_total', '-v7.3')
         save([DIROUT 'F_moca_total.mat'], 'F_moca_total', '-v7.3')
+        save([DIROUT 'A_hat_total.mat'], 'A_demixed_total', '-v7.3')
         save([DIROUT 'A_demixed_total.mat'], 'A_demixed_total', '-v7.3')
 
         % plotting (totally antisymmetrized source cross-bispectrum)
