@@ -25,8 +25,8 @@ function [signal_sensor, fs, sources, filt, L] = sim_wholebrain_pac(sim_case, n_
         params.iroi_amplt = [];
     else
         warning('You have manually specified interacting regions. Make sure that the number of interactions, the case, and the number of passed ROIs coincide.')
-        params.iroi_phase = iroi_pac(:, 1);
-        params.iroi_amplt = iroi_pac(:, 2);
+        params.iroi_phase = iroi_pac(:, 1)';
+        params.iroi_amplt = iroi_pac(:, 2)';
     end
 
     % set parameters (see fp_pac_signal.m for documentation)

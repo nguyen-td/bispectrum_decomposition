@@ -101,7 +101,7 @@ elseif params.case==3 % uni + bivariate case (not published)
     if isempty(params.iroi_phase)
         iroi_phase = randperm(D.nroi,sum(params.iInt))'; %select regions for both uni and bivariate interactions
     else
-        iroi_phase = params.iroi_phase;
+        iroi_phase = params.iroi_phase';
     end
    
     % first entries of iroi_amplt are copies of iroi_phase for uni interactions
@@ -111,7 +111,7 @@ elseif params.case==3 % uni + bivariate case (not published)
     if isempty(params.iroi_amplt)
         bivar_a = randperm(D.nroi,params.iInt(2));
     else
-        bivar_a = params.iroi_amplt;
+        bivar_a = params.iroi_amplt(end-(params.iInt(2)-1):end);
     end
 
     %be sure that no region is selected twice

@@ -34,8 +34,8 @@ function main_sim_pac(n_shuf, varargin)
         });
     if ischar(g), error(g); end
 
-    local_path = '/data/tdnguyen/git_repos/';
-    % local_path = '/Users/nguyentiendung/GitHub/';
+    % local_path = '/data/tdnguyen/git_repos/';
+    local_path = '/Users/nguyentiendung/GitHub/';
     name_folder = [int2str(g.n_biv) 'biv_' int2str(g.n_univ) 'uni'];
     DIROUT = [local_path 'bispectrum_decomposition/simulations/sim_pac/' name_folder '/figures/'];
     
@@ -66,7 +66,7 @@ function main_sim_pac(n_shuf, varargin)
             roi_idx3 = 28; % lingual R
             roi_idx4 = 60; % superiorparietal R
             roi_idx5 = 5; % 'caudalmiddlefrontal L'
-            iroi_pac = [[roi_idx1 roi_idx2]; [roi_idx3 roi_idx4]; [roi_idx5 roi_idx5]];
+            iroi_pac = [[roi_idx5 roi_idx5]; [roi_idx1 roi_idx2]; [roi_idx3 roi_idx4]];
             [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr, iroi_pac);
         else
             roi_idx1 = 27; % lingual L
