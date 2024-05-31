@@ -39,7 +39,7 @@ function main(n_shuf, isub, varargin)
         'bispec_type'      'string'        { }              ''; 
         'antisymm'         'integer'       { }              [1 2 3];
         'train_test'       'string'        { 'on' 'off'}    'off';
-        'dim_chan'         'integer'       { 1 2 3}         2;
+        'dim_chan'         'integer'       { 1 2 3 }         2;
         });
     if ischar(g), error(g); end
 
