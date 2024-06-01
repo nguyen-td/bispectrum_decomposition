@@ -188,10 +188,10 @@ function main_sim_pac(n_shuf, varargin)
     if sim_case == 1 % plot results for normal (not antisymmetrized) bispectra
         plot_topomaps_patterns(A_hat{m_order}, m_order, chanlocs, cm17, '', 'estimated', DIROUT, 'f_ext', '.fig') 
         plot_topomaps_patterns(A_demixed{m_order}, m_order, chanlocs, cm17, '', 'demixed', DIROUT, 'f_ext', '.fig') 
-        plot_sources(F_moca{m_order}, m_order, [], [], [], p_cmap, '', DIROUT, 'bispec_type', '', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        plot_sources(F_moca{m_order}, m_order, [], [], [], cm17a, '', DIROUT, 'bispec_type', '', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
     else % plot results for partially antisymmetrized bispectra
         plot_topomaps_patterns(A_hat_anti{m_order}, m_order, chanlocs, cm17, '', 'estimated', DIROUT, 'f_ext', '.fig') 
         plot_topomaps_patterns(A_demixed_anti{m_order}, m_order, chanlocs, cm17, '', 'demixed', DIROUT, 'f_ext', '.fig') 
-        plot_sources(F_moca_anti{m_order}, m_order, [], [], [], p_cmap, '', DIROUT, 'bispec_type', '_anti', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        plot_sources(F_moca_anti{m_order}, m_order, [], [], [], cm17a, '', DIROUT, 'bispec_type', '_anti', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
     end
 end
