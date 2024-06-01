@@ -63,10 +63,8 @@ function main_sim_pac(n_shuf, varargin)
         if sim_case == 3
             roi_idx1 = 27; % lingual L
             roi_idx2 = 59; % superiorparietal L
-            roi_idx3 = 28; % lingual R
-            roi_idx4 = 60; % superiorparietal R
             roi_idx5 = 5; % 'caudalmiddlefrontal L'
-            iroi_pac = [[roi_idx5 roi_idx5]; [roi_idx1 roi_idx2]; [roi_idx3 roi_idx4]];
+            iroi_pac = [[roi_idx5 roi_idx5]; [roi_idx1 roi_idx2]; [roi_idx2 roi_idx1]];
             [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr, iroi_pac);
         else
             roi_idx1 = 27; % lingual L
