@@ -72,8 +72,8 @@ function main_sim_statstest(n_shuf, n_iter, varargin)
         disp(['Start computing FPR ' int2str(n_iter) ' times...'])
         fpr_iter = zeros(length(g.n), n_iter); 
         P_fdr = {};
-        % parfor i_iter = 1:n_iter
-        for i_iter = 1:n_iter
+        parfor i_iter = 1:n_iter
+        % for i_iter = 1:n_iter
             if mod(i_iter, 5) == 0
                 fprintf('%d', i_iter);
             elseif mod(i_iter, 2) == 0
