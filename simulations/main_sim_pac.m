@@ -34,8 +34,8 @@ function main_sim_pac(n_shuf, varargin)
         });
     if ischar(g), error(g); end
 
-    % local_path = '/data/tdnguyen/git_repos/';
-    local_path = '/Users/nguyentiendung/GitHub/';
+    local_path = '/data/tdnguyen/git_repos/';
+    % local_path = '/Users/nguyentiendung/GitHub/';
     name_folder = [int2str(g.n_biv) 'biv_' int2str(g.n_univ) 'uni'];
     DIROUT = [local_path 'bispectrum_decomposition/simulations/sim_pac/' name_folder '/figures/'];
     
