@@ -34,8 +34,8 @@ function main_sim_pac(n_shuf, varargin)
         });
     if ischar(g), error(g); end
 
-    local_path = '/data/tdnguyen/git_repos/';
-    % local_path = '/Users/nguyentiendung/GitHub/';
+    % local_path = '/data/tdnguyen/git_repos/';
+    local_path = '/Users/nguyentiendung/GitHub/';
     name_folder = [int2str(g.n_biv) 'biv_' int2str(g.n_univ) 'uni'];
     DIROUT = [local_path 'bispectrum_decomposition/simulations/sim_pac/' name_folder '/figures/'];
     
@@ -208,9 +208,10 @@ function main_sim_pac(n_shuf, varargin)
 
         % compute Euclidian distance between true and estimated source
         [~, ~, F_true] = apply_moca(L, A_true, size(A_true, 2));
+        F_matched = match_sources(F_moca{size(A_true, 2)}, P);
         plot_sources(F_true, size(A_true, 2), [], [], [], cm17a, '', DIROUT, 'bispec_type', '_true', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
-        plot_sources(P * F_moca{size(A_true, 2)}, size(A_true, 2), [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '_matched', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
-        eucl_dist = calc_source_eucl_dist(F_true, P * F_moca{size(A_true, 2)});
+        plot_sources(F_matched, size(A_true, 2), [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '_matched', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        eucl_dist = calc_source_eucl_dist(F_true, F_matched);
         disp(['The Euclidian distance is ' num2str(eucl_dist)])
 
     else % plot results for partially antisymmetrized bispectra
@@ -225,15 +226,17 @@ function main_sim_pac(n_shuf, varargin)
         end
 
         % compute subspace angle between the true and estimated topomap
-        [A_matched, ~] = nearest2(A_demixed_anti{size(A_true, 2)}', A_true'); % find matching using the Hungarian algorithm
+        [A_matched, P] = nearest2(A_demixed_anti{size(A_true, 2)}', A_true'); % find matching using the Hungarian algorithm
         plot_topomaps_patterns(A_matched', size(A_true, 2), chanlocs, cm17, '', 'matched', DIROUT, 'f_ext', '.fig') 
-        theta = calc_topo_subspace_angle(A_true, A_matched);
+        theta = calc_topo_subspace_angle(A_true, A_matched');
         disp(['The subspace angle is ' num2str(theta)])
 
         % compute Euclidian distance between true and estimated source
         [~, ~, F_true] = apply_moca(L, A_true, size(A_true, 2));
-        plot_sources(F_true, size(A_true, 2), [], [], [], cm17a, '', DIROUT, 'bispec_type', '_true', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
-        eucl_dist = calc_source_eucl_dist(F_true, F_moca_anti{size(A_true, 2)});
+        F_matched = match_sources(F_moca_anti{size(A_true, 2)}, P);
+        plot_sources(F_true, size(A_true, 2), [], [], [], cm17a, '', DIROUT, 'bispec_type', '_true', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)        
+        plot_sources(F_matched, size(A_true, 2), [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '_matched', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        eucl_dist = calc_source_eucl_dist(F_true, F_matched);
         disp(['The Euclidian distance is ' num2str(eucl_dist)])
     end
 end

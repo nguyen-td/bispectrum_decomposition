@@ -19,6 +19,6 @@ function eucl_dist = calc_source_eucl_dist(F_true, F_est)
         [~, max_est] = max(sum(F_est(:, :, i).^2, 2)); 
 
         % compute subspace angle
-        eucl_dist = norm(F_true(max_true, :, i) - F_est(max_est, :, i));
+        eucl_dist(i) = norm(F_true(max_true, :, i) - F_est(max_est, :, i));
     end
 end
