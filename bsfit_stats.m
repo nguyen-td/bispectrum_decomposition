@@ -149,9 +149,15 @@ function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, err, bs_orig,
         [A_moca, F_moca{end+1}, F{end+1}] = apply_moca(L_3D, A_hat{n_idx}, n(n_idx));
         A_demixed{end+1} = A_hat{n_idx} * A_moca'; % demix sensor pattern
         D_demixed{end+1} = calc_bsmodel(A_moca', D_hat{n_idx}); % demix source cross-bispectrum
+        
+        % demix shuffles
+        D_shuf_demixed = zeros(n_idx, n_idx, n_idx, nshuf);
+        for ishuf = 1:n_idx
+            D_shuf_demixed(:, :, :, ishuf) = calc_bsmodel(A_moca', D_shuf{n_idx}(:, :, :, ishuf));
+        end
 
         % compute p-values
-        [P{end+1}, P_fdr{end+1}] = compute_pvalues(abs(D_demixed{n_idx}), abs(D_shuf{n_idx}), nshuf, alpha, 'shuf_dim', 4);
+        [P{end+1}, P_fdr{end+1}] = compute_pvalues(abs(D_demixed{n_idx}), abs(D_shuf_demixed), nshuf, alpha, 'shuf_dim', 4);
     end
 
 end

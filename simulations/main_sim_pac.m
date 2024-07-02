@@ -201,18 +201,21 @@ function main_sim_pac(n_shuf, varargin)
         plot_sources(F_moca{m_order}, m_order, [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
 
         % compute subspace angle between the true and estimated topomap
-        theta = calc_topo_subspace_angle(A_true, A_demixed{m_order});
+        [A_matched, P] = nearest2(A_demixed{size(A_true, 2)}', A_true'); % find matching using the Hungarian algorithm
+        plot_topomaps_patterns(A_matched', size(A_true, 2), chanlocs, cm17, '', 'matched', DIROUT, 'f_ext', '.fig') 
+        theta = calc_topo_subspace_angle(A_true, A_matched');
         disp(['The subspace angle is ' num2str(theta)])
 
         % compute Euclidian distance between true and estimated source
         [~, ~, F_true] = apply_moca(L, A_true, size(A_true, 2));
         plot_sources(F_true, size(A_true, 2), [], [], [], cm17a, '', DIROUT, 'bispec_type', '_true', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
-        eucl_dist = calc_source_subspace_angle(F_true, F_moca{size(A_true, 2)});
+        plot_sources(P * F_moca{size(A_true, 2)}, size(A_true, 2), [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '_matched', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        eucl_dist = calc_source_eucl_dist(F_true, P * F_moca{size(A_true, 2)});
         disp(['The Euclidian distance is ' num2str(eucl_dist)])
 
     else % plot results for partially antisymmetrized bispectra
         plot_topomaps_patterns(A_hat_anti{m_order}, m_order, chanlocs, cm17, '', 'estimated', DIROUT, 'f_ext', '.fig') 
-        plot_topomaps_patterns(A_demixed_anti{m_order}, m_order, chanlocs, cm17, '', 'demixed', DIROUT, 'f_ext', '.fig') 
+        plot_topomaps_patterns(A_demixed_anti{m_order}', m_order, chanlocs, cm17, '', 'demixed', DIROUT, 'f_ext', '.fig') 
         if sim_case == 3
             roi_vox = get_coordinates_brainplot_BS(cortex, D.sub_ind_roi([roi_idx1, roi_idx2, roi_idx5]));
             plot_sources(F_moca_anti{m_order}, m_order, [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '_anti', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high, 'allseeds', 'on')
@@ -222,13 +225,15 @@ function main_sim_pac(n_shuf, varargin)
         end
 
         % compute subspace angle between the true and estimated topomap
-        theta = calc_topo_subspace_angle(A_true, A_demixed_anti{m_order});
+        [A_matched, ~] = nearest2(A_demixed_anti{size(A_true, 2)}', A_true'); % find matching using the Hungarian algorithm
+        plot_topomaps_patterns(A_matched', size(A_true, 2), chanlocs, cm17, '', 'matched', DIROUT, 'f_ext', '.fig') 
+        theta = calc_topo_subspace_angle(A_true, A_matched);
         disp(['The subspace angle is ' num2str(theta)])
 
         % compute Euclidian distance between true and estimated source
         [~, ~, F_true] = apply_moca(L, A_true, size(A_true, 2));
         plot_sources(F_true, size(A_true, 2), [], [], [], cm17a, '', DIROUT, 'bispec_type', '_true', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
-        eucl_dist = calc_source_subspace_angle(F_true, F_moca_anti{size(A_true, 2)});
+        eucl_dist = calc_source_eucl_dist(F_true, F_moca_anti{size(A_true, 2)});
         disp(['The Euclidian distance is ' num2str(eucl_dist)])
     end
 end
