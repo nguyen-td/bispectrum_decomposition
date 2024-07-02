@@ -78,6 +78,10 @@ function main(n_shuf, isub, varargin)
             'title_str', ['psd_downsampled' num2str(isub)], 'f1', g.f1)
     end
 
+    % rereference data to common average
+    H = eye(EEG.nbchan) - ones(EEG.nbchan) ./ EEG.nbchan;
+    EEG.data = reshape(H * EEG.data(:, :), EEG.nbchan, EEG.pnts, EEG.trials);
+
     % set parameter values for (cross)-bispectrum estimation
     data = EEG.data;
     segleng = EEG.srate * g.epleng; 
@@ -88,7 +92,7 @@ function main(n_shuf, isub, varargin)
 
     f1 = g.f1;
     f2 = g.f2;
-    
+
     % make frequency pre-selection by assessing the significance of frequency pairs of the univariate sensor bispectrum if 'freq_manual' = 'off'
     if strcmpi(g.freq_manual, 'off')
         [f1, f2, P_sens_fdr, P_sens] = freq_preselection(data, n_shuf, frqs, segleng, segshift, epleng, g.alpha, g.poolsize);
@@ -130,8 +134,11 @@ function main(n_shuf, isub, varargin)
         plot_pvalues_univ(P_sens_total_fdr, frqs, isub, p_cmap, DIROUT, 'bispec_type', ['_cross_total_chan' int2str(dim_chan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
     end
 
+    % rereference lead field to common average
+    [L_3D, cortex75k, cortex2k] = reduce_leadfield_nyhead(EEG);
+    L_3D = reshape(H * L_3D(:, :), EEG.nbchan, size(L_3D, 2), 3);
+
     % decompose normal, partially antisymmetrized and totally antisymmetrized sensor cross-bispectrum within subjects  
-    [L_3D, cortex75k, cortex2k] = reduce_leadfield_nyhead(EEG); 
     [P_source_fdr, P_source, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, errors] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, 'train_test', g.train_test, 'bs_orig', bs_orig, 'bs_all', bs_all);    
     [P_source_anti_fdr, P_source_anti, F_anti, F_moca_anti, A_hat_anti, A_demixed_anti, D_hat_anti, D_demixed_anti, errors_anti] = bsfit_stats(data, f1, f2, g.n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L_3D, 'antisymm', g.antisymm, 'train_test', g.train_test, 'bs_orig', bs_orig, 'bs_all', bs_all);    
     if ~(f1 == f2)
