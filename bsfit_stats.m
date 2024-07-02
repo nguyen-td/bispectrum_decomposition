@@ -151,7 +151,7 @@ function [P_fdr, P, F, F_moca, A_hat, A_demixed, D_hat, D_demixed, err, bs_orig,
         D_demixed{end+1} = calc_bsmodel(A_moca', D_hat{n_idx}); % demix source cross-bispectrum
 
         % compute p-values
-        [P{end+1}, P_fdr{end+1}] = compute_pvalues(abs(D_hat{n_idx}), abs(D_shuf{n_idx}), nshuf, alpha, 'shuf_dim', 4);
+        [P{end+1}, P_fdr{end+1}] = compute_pvalues(abs(D_demixed{n_idx}), abs(D_shuf{n_idx}), nshuf, alpha, 'shuf_dim', 4);
     end
 
 end

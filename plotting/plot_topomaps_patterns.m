@@ -47,5 +47,4 @@ function plot_topomaps_patterns(A, n, chanlocs, cmap, isub, name, DIROUT, vararg
     else
         exportgraphics(gcf, save_A)
     end
-    
 end

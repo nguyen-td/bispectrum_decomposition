@@ -15,8 +15,10 @@
 %   fs         - [integer] sampling frequency
 %   source     - ([epleng * n_epochs] x [n_univ + n_biv]) source data containing source PAC
 %   filt       - filter settings
+%   L          - (n_chan x n_voxels x n_dum)leadfield matrix
+%   D          - atlas structure, in this case of the Desikan- Killiany atlas, see fp_get_Desikan.m for the full documentation
 
-function [signal_sensor, fs, sources, filt, L] = sim_wholebrain_pac(sim_case, n_univ, n_biv, isnr, iroi_pac)
+function [signal_sensor, fs, sources, filt, L, D] = sim_wholebrain_pac(sim_case, n_univ, n_biv, isnr, iroi_pac)
 
     %% Signal generation
     

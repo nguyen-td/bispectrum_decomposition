@@ -14,7 +14,7 @@
 %   isrand_simroi  - [boolean] whether to simulate interactions at randomly chosen ROIs. If true, regions are selected randomly. If false,
 %                     interactions will be simulated in the occipital region (univariate PAC) and parietal-occipital region (bivariate PAC).
 %                     See the 'iroi_pac' parameter in sim_wholebrain_pac.m for more details. Default is false
-%   dim_chan       - [integer] channel over which the bispectrum will becollapsed. Default is 2. 
+%   dim_chan       - [integer] channel over which the bispectrum will becollapsed. Default is 3. 
 %   load_bs        - [boolean] whether to load 'bs_orig.mat' and'bs_all.mat' instead of computing them again. If true, this will also skip the 
 %                     computation of sensor-level bispectra. Default is false
  
@@ -34,8 +34,8 @@ function main_sim_pac(n_shuf, varargin)
         });
     if ischar(g), error(g); end
 
-    local_path = '/data/tdnguyen/git_repos/';
-    % local_path = '/Users/nguyentiendung/GitHub/';
+    % local_path = '/data/tdnguyen/git_repos/';
+    local_path = '/Users/nguyentiendung/GitHub/';
     name_folder = [int2str(g.n_biv) 'biv_' int2str(g.n_univ) 'uni'];
     DIROUT = [local_path 'bispectrum_decomposition/simulations/sim_pac/' name_folder '/figures/'];
     
@@ -58,18 +58,28 @@ function main_sim_pac(n_shuf, varargin)
 
     rng('default')
     if g.isrand_simroi
-        [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr);
+        [signal_sensor, fs, source, filt, L, D] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr);
     else
         if sim_case == 3
             roi_idx1 = 27; % lingual L
             roi_idx2 = 59; % superiorparietal L
             roi_idx5 = 5; % 'caudalmiddlefrontal L'
             iroi_pac = [[roi_idx5 roi_idx5]; [roi_idx1 roi_idx2]; [roi_idx2 roi_idx1]];
-            [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr, iroi_pac);
+            [signal_sensor, fs, source, filt, L, D] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr, iroi_pac);
+
+            % compute original topomaps
+            A_true = compute_topomap(L, D, [roi_idx1, roi_idx2, roi_idx5], DIROUT);
         else
             roi_idx1 = 27; % lingual L
             roi_idx2 = 59; % superiorparietal L, will be ignored for sim_case == 1
-            [signal_sensor, fs, source, filt, L] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr, [roi_idx1 roi_idx2]);
+            [signal_sensor, fs, source, filt, L, D] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr, [roi_idx1 roi_idx2]);
+
+            % compute original topomaps
+            if sim_case == 1
+                A_true = compute_topomap(L, D, roi_idx1, DIROUT);
+            else
+                A_true = compute_topomap(L, D, [roi_idx1, roi_idx2], DIROUT);
+            end
         end
     end
     
@@ -82,7 +92,7 @@ function main_sim_pac(n_shuf, varargin)
     len_epochs = 2; % 2-second epochs
     segleng = fs * len_epochs; 
     segshift = floor(segleng/2);
-    epleng = fs * len_epochs; % create epochs of [e.epleng] seconds 
+    epleng = fs * len_epochs; % create epochs of [e.epleng] seconds
     
     if ~g.load_bs
         % analyze univariate sensor cross-bispectrum
@@ -162,24 +172,22 @@ function main_sim_pac(n_shuf, varargin)
     save([DIROUT 'A_hat_anti.mat'], 'A_hat_anti', '-v7.3')
     save([DIROUT 'A_demixed_anti.mat'], 'A_demixed_anti', '-v7.3')
 
-    if sim_case == 2 || sim_case == 3
-        % run decomposition on totally antisymmetrized source cross-bispectrum 
-        [P_source_total_fdr, P_source_total, F_total, F_moca_total, A_hat_total, A_demixed_total, D_hat_total, D_demixed_total, errors_total] = bsfit_stats(signal_sensor, freqinds(1), ...
-            freqinds(2), n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L, 'total_antisymm', 'on', 'bs_orig', bs_orig, 'bs_all', bs_all);
-        save([DIROUT 'P_source_total_fdr.mat'], 'P_source_total_fdr', '-v7.3')
-        save([DIROUT 'D_demixed_total.mat'], 'D_demixed_total', '-v7.3')
-        save([DIROUT 'F_moca_total.mat'], 'F_moca_total', '-v7.3')
-        save([DIROUT 'A_hat_total.mat'], 'A_hat_total', '-v7.3')
-        save([DIROUT 'A_demixed_total.mat'], 'A_demixed_total', '-v7.3')
+    % run decomposition on totally antisymmetrized source cross-bispectrum 
+    [P_source_total_fdr, P_source_total, F_total, F_moca_total, A_hat_total, A_demixed_total, D_hat_total, D_demixed_total, errors_total] = bsfit_stats(signal_sensor, freqinds(1), ...
+        freqinds(2), n, n_shuf, frqs, segleng, segshift, epleng, g.alpha, L, 'total_antisymm', 'on', 'bs_orig', bs_orig, 'bs_all', bs_all);
+    save([DIROUT 'P_source_total_fdr.mat'], 'P_source_total_fdr', '-v7.3')
+    save([DIROUT 'D_demixed_total.mat'], 'D_demixed_total', '-v7.3')
+    save([DIROUT 'F_moca_total.mat'], 'F_moca_total', '-v7.3')
+    save([DIROUT 'A_hat_total.mat'], 'A_hat_total', '-v7.3')
+    save([DIROUT 'A_demixed_total.mat'], 'A_demixed_total', '-v7.3')
 
-        % plotting (totally antisymmetrized source cross-bispectrum)
-        plot_error(errors_total, 1, n, err_colors, '', '', DIROUT, 'islog', true, 'f_name', '_log_total', 'f_ext', '.fig')
-        plot_error(errors_total, 1, n, err_colors, '', '', DIROUT, 'islog', false, 'f_name', '_linear_total', 'f_ext', '.fig')
-        p_cmap = cmap_pvalues(P_source_total_fdr{m_order}, cm17, cm17a);
-        P_source_total_fdr{m_order} = set_diagonals(P_source_total_fdr{m_order}, 1); % manually exclude diagonals, could be non-zero due to fitting errors (already in D_total)
-        plot_pvalues_bispec_source(freqinds(1), freqinds(2), '', DIROUT, p_cmap, P_source_total_fdr{m_order}, P_source_total_fdr{m_order}, 'bispec_type', '_total', 'istitle', false, 'f_ext', '.fig')
-        plot_bispectra(D_demixed_total{m_order}, '', '', '', 'total_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig', 'dim_chan', g.dim_chan)
-    end
+    % plotting (totally antisymmetrized source cross-bispectrum)
+    plot_error(errors_total, 1, n, err_colors, '', '', DIROUT, 'islog', true, 'f_name', '_log_total', 'f_ext', '.fig')
+    plot_error(errors_total, 1, n, err_colors, '', '', DIROUT, 'islog', false, 'f_name', '_linear_total', 'f_ext', '.fig')
+    p_cmap = cmap_pvalues(P_source_total_fdr{m_order}, cm17, cm17a);
+    P_source_total_fdr{m_order} = set_diagonals(P_source_total_fdr{m_order}, 1); % manually exclude diagonals, could be non-zero due to fitting errors (already in D_total)
+    plot_pvalues_bispec_source(freqinds(1), freqinds(2), '', DIROUT, p_cmap, P_source_total_fdr{m_order}, P_source_total_fdr{m_order}, 'bispec_type', '_total', 'istitle', false, 'f_ext', '.fig')
+    plot_bispectra(D_demixed_total{m_order}, '', '', '', 'total_demixed', DIROUT, p_cmap, 'istitle', false, 'f_ext', '.fig', 'dim_chan', g.dim_chan)
 
     % plot topographies and localized sources 
     chanlocs = readlocs('channel_BrainProducts_ActiCap_97.mat');
@@ -188,10 +196,39 @@ function main_sim_pac(n_shuf, varargin)
     if sim_case == 1 % plot results for normal (not antisymmetrized) bispectra
         plot_topomaps_patterns(A_hat{m_order}, m_order, chanlocs, cm17, '', 'estimated', DIROUT, 'f_ext', '.fig') 
         plot_topomaps_patterns(A_demixed{m_order}, m_order, chanlocs, cm17, '', 'demixed', DIROUT, 'f_ext', '.fig') 
-        plot_sources(F_moca{m_order}, m_order, [], [], [], cm17a, '', DIROUT, 'bispec_type', '', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        
+        roi_vox = get_coordinates_brainplot_BS(cortex, D.sub_ind_roi(roi_idx1));
+        plot_sources(F_moca{m_order}, m_order, [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+
+        % compute subspace angle between the true and estimated topomap
+        theta = calc_topo_subspace_angle(A_true, A_demixed{m_order});
+        disp(['The subspace angle is ' num2str(theta)])
+
+        % compute Euclidian distance between true and estimated source
+        [~, ~, F_true] = apply_moca(L, A_true, size(A_true, 2));
+        plot_sources(F_true, size(A_true, 2), [], [], [], cm17a, '', DIROUT, 'bispec_type', '_true', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        eucl_dist = calc_source_subspace_angle(F_true, F_moca{size(A_true, 2)});
+        disp(['The Euclidian distance is ' num2str(eucl_dist)])
+
     else % plot results for partially antisymmetrized bispectra
         plot_topomaps_patterns(A_hat_anti{m_order}, m_order, chanlocs, cm17, '', 'estimated', DIROUT, 'f_ext', '.fig') 
         plot_topomaps_patterns(A_demixed_anti{m_order}, m_order, chanlocs, cm17, '', 'demixed', DIROUT, 'f_ext', '.fig') 
-        plot_sources(F_moca_anti{m_order}, m_order, [], [], [], cm17a, '', DIROUT, 'bispec_type', '_anti', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        if sim_case == 3
+            roi_vox = get_coordinates_brainplot_BS(cortex, D.sub_ind_roi([roi_idx1, roi_idx2, roi_idx5]));
+            plot_sources(F_moca_anti{m_order}, m_order, [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '_anti', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high, 'allseeds', 'on')
+        else
+            roi_vox = get_coordinates_brainplot_BS(cortex, D.sub_ind_roi([roi_idx1, roi_idx2]));
+            plot_sources(F_moca_anti{m_order}, m_order, [], [], roi_vox, cm17a, '', DIROUT, 'bispec_type', '_anti', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        end
+
+        % compute subspace angle between the true and estimated topomap
+        theta = calc_topo_subspace_angle(A_true, A_demixed_anti{m_order});
+        disp(['The subspace angle is ' num2str(theta)])
+
+        % compute Euclidian distance between true and estimated source
+        [~, ~, F_true] = apply_moca(L, A_true, size(A_true, 2));
+        plot_sources(F_true, size(A_true, 2), [], [], [], cm17a, '', DIROUT, 'bispec_type', '_true', 'cortex_BS', cortex_highres, 'in_normal_to_high', in_normal_to_high)
+        eucl_dist = calc_source_subspace_angle(F_true, F_moca_anti{size(A_true, 2)});
+        disp(['The Euclidian distance is ' num2str(eucl_dist)])
     end
 end

@@ -42,13 +42,13 @@ A = B * M;
 
 %% Plot and save mixed and demixed sources
 load cm17
-plot_sources(F_moca, F, n, sa.cortex75K, sa.cortex2K, vox_ind, cm17, '', DIROUT)
+plot_sources(F_moca, n, sa.cortex75K, sa.cortex2K, vox_ind, cm17a, '', DIROUT)
 
 %% Plot and save topomaps of mixed and demixed patterns
 load chanlocs 
 eeglab
-plot_topomaps(B, n, chanlocs, '', 'original', DIROUT) 
-plot_topomaps(A, n, chanlocs, '', 'mixed', DIROUT)
+plot_topomaps_patterns(B, n, chanlocs, cm17, '', 'original', DIROUT) 
+plot_topomaps_patterns(A, n, chanlocs, cm17, '', 'mixed', DIROUT)
 
 B_hat = A * A_moca'; % demixed patterns
-plot_topomaps(B_hat, n, chanlocs, '', 'demixed', DIROUT) 
+plot_topomaps_patterns(B_hat, n, chanlocs, cm17, '', 'demixed', DIROUT) 

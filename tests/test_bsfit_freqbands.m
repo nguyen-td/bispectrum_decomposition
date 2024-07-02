@@ -51,6 +51,7 @@ bs_orig_c = data2bs_event(data(:, :)', segleng, segshift, epleng, freqpairs_c);
 bs_orig_d = data2bs_event(data(:, :)', segleng, segshift, epleng, freqpairs_d);
 
 %% Sanity check if bsfit.m and bsfit_freqbands.m give the same results for single frequencies
+n = 3;
 [A_a, D_a] = bsfit(bs_orig_a, n);
 [A_a1, D_a1] = bsfit_freqbands(bs_orig_a, n);
 if isequal(A_a, A_a1) && isequal(D_a, D_a1)

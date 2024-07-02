@@ -16,7 +16,7 @@
 %   L_save        - leadfield matrix
 %   iroi_phase    - ROI indices for phase coupling
 %   iroi_amplt    - ROI indices for amplitude coupling
-%   D             - atlas structure, in this case of the Desikan-Killiany atlas
+%   D             - atlas structure, in this case of the Desikan-Killiany atlas, see fp_get_Desikan.m for the full documentation
 %   fres          - sampling frequency
 %   n_trials      - numer of trials/epochs
 %   filt          - filter parameters 
