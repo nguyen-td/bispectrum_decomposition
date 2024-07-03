@@ -34,7 +34,7 @@ function plot_sources(F_moca, n, cortex75k, cortex2k, roi_inds, cm, isub, DIROUT
         source_moca = sum(F_moca(:, :, i).^2, 2); 
         f_name_moca = [DIROUT 'F' g.bispec_type '_demixed' int2str(i) '_' int2str(isub) '_'];
         if isempty(fieldnames(g.cortex_BS)) % use New York head
-            if istrcmpi(g.allseeds, 'off')
+            if strcmpi(g.allseeds, 'off')
                 try
                     allplots_cortex_nyhead_v2(cortex75k, source_moca(cortex2k.in_to_cortex75K_geod), [0 max_val], cm, 'a.u.', 0, f_name_moca, ...
                         {roi_inds(i, :)});
