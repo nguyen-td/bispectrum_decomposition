@@ -115,6 +115,10 @@ function main(n_shuf, isub, varargin)
     [~, P_sens_fdr] = compute_pvalues(squeeze(mean(abs(bs_orig), dim_chan)), squeeze(mean(abs(bs_all), dim_chan)), n_shuf, g.alpha); % collapse over 2nd dimension
     p_cmap = cmap_pvalues(P_sens_fdr, cm17, cm17a);
     plot_pvalues_univ(P_sens_fdr, frqs, isub, p_cmap, DIROUT, 'bispec_type', ['_cross_chan' int2str(dim_chan)], 'label_x', 'channel', 'label_y', 'channel', 'custom_label', 0, 'f_ext', '.fig', 'label_latex', false, 'istitle', false)
+    
+    % save bispectra
+    save([DIROUT 'bs_orig.mat'], 'bs_orig', '-v7.3')
+    save([DIROUT 'bs_all.mat'], 'bs_all', '-v7.3')
 
     % analyze antisymmetrized sensor cross-bispectrum
     bs_orig_anti = bs_orig - permute(bs_orig, g.antisymm); % B_ijk - B_jik
