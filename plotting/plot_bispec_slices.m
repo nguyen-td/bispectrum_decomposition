@@ -2,23 +2,21 @@
 % example, if the *B_ijj* slice should be plotted, the function will create
 % and plot the following matrix:
 %
-% | 1x1x1 | 1x2x2 | 1x3x3 |
-% | 2x1x1 | 2x2x2 | 2x3x3 |
 % | 3x1x1 | 3x2x2 | 3x3x3 |
+% | 2x1x1 | 2x2x2 | 2x3x3 |
+% | 1x1x1 | 1x2x2 | 1x3x3 |
 %
 % If the *B_jij* slice should be plotted, the function will create the
 % following matrix:
 %
-% | 1x1x1 | 1x2x1 | 1x3x1 |
-% | 2x1x2 | 2x2x2 | 2x3x2 |
-% | 3x1x3 | 3x2x3 | 3x3x3 |
+% | 1x3x1 | 2x3x2 | 3x3x3 |
+% | 1x2x1 | 2x2x2 | 3x2x3 |
+% | 1x1x1 | 2x1x2 | 3x1x3 |
 %
-% Note that i is the inner index (column index) and j is is the outer index (row index). 
-% B(ichan, jchan) fills the lower triangle, B(jchan, ichan) the upper triangle  of the B_sliced 
-% matrix.
+% Note that i is the out index (row index) and j is is the inner index (column index). 
+% B(ichan, jchan) fills the upper left triangle, B(jchan, ichan) the lower right triangle  
+% of the B_sliced matrix.
 %
-% TODO: This effectively computes B_jii slices instead of B_ijj slices.
-% Need to redo and double-check it!
 %
 % Inputs:
 %   B          - (n_chan x n_chan x n_chan) cross-bispectrum, must be real-valued
@@ -51,22 +49,21 @@ function B_sliced = plot_bispec_slices(B, slice_idx, cmap, isub, DIROUT, varargi
     B_sliced = zeros(n_chan, n_chan);
     
     % create bispectral slice
-    % TODO: make ichan outer loop and jchan inner loop
-    for jchan = 1:n_chan
-        for ichan = jchan:n_chan
+    for ichan = 1:n_chan
+        for jchan = ichan:n_chan
             if isequal(slice_idx, [1 2 2]) % B_ijj
-                B_sliced(ichan, jchan) = B(jchan, ichan, ichan);
-                B_sliced(jchan, ichan) = B(ichan, jchan, jchan);
+                B_sliced(ichan, jchan) = B(ichan, jchan, jchan);
+                B_sliced(jchan, ichan) = B(jchan, ichan, ichan);
             elseif isequal(slice_idx, [2 1 2]) % B_jij
-                B_sliced(ichan, jchan) = B(ichan, jchan, ichan);
-                B_sliced(jchan, ichan) = B(jchan, ichan, jchan);
+                B_sliced(ichan, jchan) = B(jchan, ichan, jchan);
+                B_sliced(jchan, ichan) = B(ichan, jchan, ichan);
             elseif isequal(slice_idx, [2 2 1]) % B_jji
-                B_sliced(ichan, jchan) = B(ichan, ichan, jchan);
-                B_sliced(jchan, ichan) = B(jchan, jchan, ichan);
+                B_sliced(ichan, jchan) = B(jchan, jchan, ichan);
+                B_sliced(jchan, ichan) = B(ichan, ichan, jchan);
             elseif isequal(slice_idx, [1 1 1]) % B_iii
                 if jchan == ichan
-                    B_sliced(ichan, jchan) = B(jchan, jchan, jchan);
-                    B_sliced(jchan, ichan) = B(ichan, ichan, ichan);
+                    B_sliced(ichan, jchan) = B(ichan, ichan, ichan);
+                    B_sliced(jchan, ichan) = B(jchan, jchan, jchan);
                 end
             else
                 warning('Only B_iii, B_ijj, B_jij and B_jji slices can be extracted. If you want to extract any other slice, you will have to define it yourself first.')
