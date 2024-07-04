@@ -13,7 +13,7 @@
 % | 1x2x1 | 2x2x2 | 3x2x3 |
 % | 1x1x1 | 2x1x2 | 3x1x3 |
 %
-% Note that i is the out index (row index) and j is is the inner index (column index). 
+% Note that i is the outer index (row index) and j is is the inner index (column index). 
 % B(ichan, jchan) fills the upper left triangle, B(jchan, ichan) the lower right triangle  
 % of the B_sliced matrix.
 %

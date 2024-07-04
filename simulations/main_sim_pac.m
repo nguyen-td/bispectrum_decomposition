@@ -64,7 +64,7 @@ function main_sim_pac(n_shuf, varargin)
             roi_idx1 = 27; % lingual L
             roi_idx2 = 59; % superiorparietal L
             roi_idx5 = 5; % 'caudalmiddlefrontal L'
-            iroi_pac = [[roi_idx5 roi_idx5]; [roi_idx1 roi_idx2]; [roi_idx2 roi_idx1]];
+            iroi_pac = [[roi_idx5 roi_idx5]; [roi_idx1 roi_idx2]; [roi_idx2 roi_idx1]]; % not sure if it works correctly
             [signal_sensor, fs, source, filt, L, D] = sim_wholebrain_pac(sim_case, g.n_univ, g.n_biv, g.isnr, iroi_pac);
 
             % compute original topomaps
