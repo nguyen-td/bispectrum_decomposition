@@ -4,7 +4,7 @@
 clear
 
 f_path = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/Lemon/data/';
-DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/tests/figures/';
+DIROUT = '/Users/nguyentiendung/GitHub/bispectrum_decomposition/tests/figures/f1_f2/';
 isub = 317;
 freq_down = 125; % new sampling frequency after downsampling (Hz)
 n_shuf = 2;
@@ -27,16 +27,20 @@ epleng = EEG.pnts;
 
 %% Set frequency pairs
 f1_a = 9.5;
-f2_a = f1_a * 2;
+% f2_a = f1_a * 2;
+f2_a = f1_a;
 
 f1_b = [8 10];
-f2_b = f1_b * 2;
+% f2_b = f1_b * 2;
+f2_b = f1_b;
 
 f1_c = [9 10];
-f2_c = f1_c * 2;
+% f2_c = f1_c * 2;
+f2_c = f1_c;
 
 f1_d = [9.5 10];
-f2_d = f1_d * 2;
+% f2_d = f1_d * 2;
+f2_d = f1_d;
 
 %% Get frequency bins
 freqpairs_a = get_freqindices(round_to_05(f1_a), round_to_05(f2_a), frqs); 
@@ -81,11 +85,7 @@ end
 %% Plot results
 colors = ['r', 'b', 'k', 'g'];
 
-plot_error(errors, 1, n, colors, ['f1 = ' num2str(f1_a) ' Hz , f2 = ' num2str(f2_a) ' Hz']); exportgraphics(gcf, [DIROUT 'error_a.png'])
-plot_error(errors, 1, n, colors, ['f1 = ' num2str(f1_a) ' Hz , f2 = ' num2str(f2_a) ' Hz'], true); exportgraphics(gcf, [DIROUT 'error_a_log.png'])
-plot_error(errors, 2, n, colors, ['f1 = [' num2str(f1_b) '] Hz , f2 = [' num2str(f2_b) '] Hz']); exportgraphics(gcf, [DIROUT 'error_b.png'])
-plot_error(errors, 2, n, colors, ['f1 = [' num2str(f1_b) '] Hz , f2 = [' num2str(f2_b) '] Hz'], true); exportgraphics(gcf, [DIROUT 'error_b_log.png'])
-plot_error(errors, 3, n, colors, ['f1 = [' num2str(f1_c) '] Hz , f2 = [' num2str(f2_c) '] Hz']); exportgraphics(gcf, [DIROUT 'error_c.png'])
-plot_error(errors, 3, n, colors, ['f1 = [' num2str(f1_c) '] Hz , f2 = [' num2str(f2_c) '] Hz'], true); exportgraphics(gcf, [DIROUT 'error_c_log.png'])
-plot_error(errors, 4, n, colors, ['f1 = [' num2str(f1_d) '] Hz , f2 = [' num2str(f2_d) '] Hz']); exportgraphics(gcf, [DIROUT 'error_d.png'])
-plot_error(errors, 4, n, colors, ['f1 = [' num2str(f1_d) '] Hz , f2 = [' num2str(f2_d) '] Hz'], true); exportgraphics(gcf, [DIROUT 'error_d_log.png'])
+plot_error(errors, 1, n, colors, ['f1 = ' num2str(f1_a) ' Hz , f2 = ' num2str(f2_a) ' Hz'], '', DIROUT, 'f_name', '_a', 'f_ext', '.fig');
+plot_error(errors, 2, n, colors, ['f1 = ' num2str(f1_b(1)) '-' num2str(f1_b(2)) ' Hz , f2 = ' num2str(f2_b(1)) '-' num2str(f2_b(2)) ' Hz'], '', DIROUT, 'f_name', '_b', 'f_ext', '.fig'); 
+plot_error(errors, 3, n, colors, ['f1 = ' num2str(f1_c(1)) '-' num2str(f1_c(2)) ' Hz , f2 = ' num2str(f2_c(1)) '-' num2str(f2_c(2)) ' Hz'], '', DIROUT, 'f_name', '_c', 'f_ext', '.fig'); 
+plot_error(errors, 4, n, colors, ['f1 = ' num2str(f1_d(1)) '-' num2str(f1_d(2)) ' Hz , f2 = ' num2str(f2_d(1)) '-' num2str(f2_d(2)) ' Hz'], '', DIROUT, 'f_name', '_d', 'f_ext', '.fig'); 
