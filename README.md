@@ -32,7 +32,7 @@ $$
 D_{lmn}(f_1, f_2) = \frac{1}{N_e} \ \sum_{e=1}^{N_e} s_{l,e}(f_1) \ s_{m,e}(f_2) \ s_{n,e}^*(f_1+f_2).  
 $$
 
-$D_{lmn}(f_1, f_2)$ can be interpreted as the source-level cross-bispectrum. The aim of the method is to identify subsystems of interacting brain sources from estimates of the sensor cross-bispectrum. This implies finding a set of coefficients $a_{im}$ and a \textit{source} cross-bispectrum $D_{lmn}(f_1, f_2)$ that together approximate the \textit{sensor} cross-bispectrum. The optimzation problem can therefore be expressed as 
+$D_{lmn}(f_1, f_2)$ can be interpreted as the source-level cross-bispectrum. The aim of the method is to identify subsystems of interacting brain sources from estimates of the sensor cross-bispectrum. This implies finding a set of coefficients $a_{im}$ and a _source_ cross-bispectrum $D_{lmn}(f_1, f_2)$ that together approximate the \textit{sensor} cross-bispectrum. The optimzation problem can therefore be expressed as 
 
 
 $$
