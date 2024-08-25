@@ -1,7 +1,7 @@
 # Cross-bispectrum decomposition
 In this repository you can find code for the decomposition method (`bsfit.m`), the statistical test (`bsfit_stats.m`), simulations (`simulations/`) and data analysis. The method itself has been developed by [Guido Nolte](https://www.uke.de/allgemein/arztprofile-und-wissenschaftlerprofile/wissenschaftlerprofilseite_guido_nolte.html) and [Stefan Haufe](https://www.tu.berlin/uniml/about/head-of-group) and is yet unpublished. 
 
-You can find the pipeline that was used for the simulation experiments in `simulations/main_sim_pac.m`. The main function for the real data analysis is `main.m`. A minimal demo script that shows the decomposition on simulated data without any complex analysis can be found in `main_demo.m`. Running code in this repository requires the installation of [EEGLAB](https://github.com/sccn/eeglab). 
+You can find the pipeline that was used for the simulation experiments in `simulations/main_sim_pac.m`. The main function for the real data analysis is `main.m`. A minimal demo script that shows the decomposition on simulated data without any complex analyses can be found in `main_demo.m`. Running code in this repository requires the installation of [EEGLAB](https://github.com/sccn/eeglab). 
 
 💡 If you have any questions about the code or the project, please reach out to `tien-dung.nguyen@utexas.edu`, I am happy to answer your questions! 
 
